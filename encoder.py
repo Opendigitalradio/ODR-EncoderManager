@@ -8,6 +8,9 @@ from twisted.internet import protocol
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 
+from txjsonrpc.web import jsonrpc
+from twisted.web import server
+
 from twisted.internet import reactor
 import re
 import time
@@ -31,17 +34,18 @@ class EncoderManager():
 		self.config = Config(self.configFile)
 	
 	def getStatus(self):
-		string=''
+		result = {}
 		if self.encoderProcess == None:
-			string += 'encoder : not running\n'
+			result['encoder'] = {'status': 'not running', 'pid': 0}
 		else:
-			string += 'encoder : running (pid:%s)\n' % (self.encoderProcess.transport.pid)
+			result['encoder'] = {'status': 'running', 'pid': self.encoderProcess.transport.pid}
 			
 		if self.motProcess == None:
-			string += 'mot-encoder : not running\n'
+			result['mot-encoder'] = {'status': 'not running', 'pid': 0}
 		else:
-			string += 'mot-encoder : running (pid:%s)\n' % (self.motProcess.transport.pid)
-		return string
+			result['mot-encoder'] = {'status': 'running', 'pid': self.motProcess.transport.pid}
+			
+		return result
 		
 	def run_encoder(self):
 		self.autorestart = True
@@ -160,7 +164,6 @@ class EncoderTelnetFactory(ServerFactory):
 	def __init__(self, manager):
 		self.manager = manager
 
-		
 class EncoderTelnetProtocol(LineReceiver):
 	def connectionMade(self):
 		self._peer = self.transport.getPeer()
@@ -172,7 +175,8 @@ class EncoderTelnetProtocol(LineReceiver):
 	def lineReceived(self, line):
 		if line == "status":
 			print '%s - %s' % (self._peer, line)
-			self.transport.write(self.factory.manager.getStatus())
+			for process, status in self.factory.manager.getStatus().iteritems():
+				self.transport.write('%s: %s (pid:%s)\n' % (process, status['status'], status['pid']))
 			self.transport.write('Ok\n')
 		
 		elif line == "restart":
@@ -207,7 +211,6 @@ class EncoderTelnetProtocol(LineReceiver):
 			
 		elif line == "show_config":
 			print '%s - %s' % (self._peer, line)
-			#self.transport.write('Not yet available\n')
 			self.transport.write(config.DisplayConfig())
 			self.transport.write('\n')
 			self.transport.write('Ok\n')
@@ -244,10 +247,54 @@ class EncoderTelnetProtocol(LineReceiver):
 			self.transport.write('Please use help to display all available command.\n')
 			self.transport.write('Ok\n')
 
+
+
+
+class EncoderRPC(jsonrpc.JSONRPC):
+	def __init__(self, manager):
+		self.manager = manager
+	
+		
+	#def jsonrpc_add(self, a, b):
+		#return 'encoder %s' % (a + b)
+	
+	def jsonrpc_status(self):
+		return self.manager.getStatus()
+	
+	def jsonrpc_start(self):
+		if not self.manager.encoderProcess:
+			self.manager.run_encoder()
+		if not self.manager.motProcess:
+			self.manager.run_mot()
+		return 'encoder started'
+	
+	def jsonrpc_stop(self):
+		self.manager.stop_encoder(None)
+		self.manager.stop_mot(None)
+		return 'encoder stoped'
+
+	def jsonrpc_restart(self):
+		self.manager.stop_encoder()
+		self.manager.stop_mot()
+		time.sleep(0.5)
+		if not self.manager.encoderProcess:
+			self.manager.run_encoder()
+		if not self.manager.motProcess:
+			self.manager.run_mot()
+		return 'encoder restarted'
+	
+	def jsonrpc_reload_config(self):
+		self.manager.reload_config()
+		return 'encoder reload_config'
+		
+	def jsonrpc_show_config(self):
+		return config.getConfig()
+	
+
 def signal_handler(signal, frame):
-        print('You pressed Ctrl+C!')
-        manager.autorestart = None
-        reactor.stop()
+	print('You pressed Ctrl+C!')
+	manager.autorestart = None
+	reactor.stop()
 			
 if __name__ == '__main__':
 	# Get configuration file in argument
@@ -273,12 +320,19 @@ if __name__ == '__main__':
 	manager.run_mot()
 	
 	# Start telnet protocol
-	sf = EncoderTelnetFactory(manager)
-	sf.protocol = EncoderTelnetProtocol
-	reactor.listenTCP(int(config.telnet_port), sf, backlog=50, interface=config.telnet_bind_ip)
+	sfTelnet = EncoderTelnetFactory(manager)
+	sfTelnet.protocol = EncoderTelnetProtocol
+	reactor.listenTCP(int(config.telnet_port), sfTelnet, backlog=50, interface=config.telnet_bind_ip)
 	
+	# Start JSON RPC protocol
+	site = server.Site(EncoderRPC(manager))
+	site.displayTracebacks = False
+	reactor.listenTCP(int(config.rpc_port), site, backlog=50, interface=config.rpc_bind_ip)
 	
+	# Catch Ctrl+C
 	signal.signal(signal.SIGINT, signal_handler)
+	
+	# Run Reactor process
 	reactor.run() 
 	
 	print 'ODR encoder Manager Exited'

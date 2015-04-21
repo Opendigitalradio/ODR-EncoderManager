@@ -20,6 +20,10 @@ class Config():
 		self.telnet_port = self.ConfigSectionMap('telnet')['port']
 		self.telnet_bind_ip = self.ConfigSectionMap('telnet')['bind_ip']
 		
+		# RPC configuration
+		self.rpc_port = self.ConfigSectionMap('rpc')['port']
+		self.rpc_bind_ip = self.ConfigSectionMap('rpc')['bind_ip']
+		
 		# Source configuration
 		if self.source_type == 'alsa':
 			self.source_device = self.ConfigSectionMap('source')['device']
@@ -70,10 +74,18 @@ class Config():
 		output = ''
 		for section_name in self.config.sections():
 			output += 'Section: %s\n' % (section_name)
-			#output += '  Options:', self.config.options(section_name)
 			for name, value in self.config.items(section_name):
 				output += '  %s = %s\n' % (name, value)
 		return output
+		
+	def getConfig(self, section=None):
+		result = {}
+		for section_name in self.config.sections():
+			section = {}
+			for name, value in self.config.items(section_name):
+				section[name] = value
+			result[section_name] = section
+		return result
 
 	def ConfigSectionMap(self, section):
 		dict1 = {}

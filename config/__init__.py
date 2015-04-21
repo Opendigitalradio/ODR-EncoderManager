@@ -34,6 +34,7 @@ class Config():
 		# Output configuration
 		self.output_host = self.ConfigSectionMap('output')['host']
 		self.output_port = self.ConfigSectionMap('output')['port']
+		self.output_key_file = self.ConfigSectionMap('output')['key_file']
 		
 		self.output_samplerate = self.ConfigSectionMap('output')['samplerate']
 		self.output_bitrate = self.ConfigSectionMap('output')['bitrate']

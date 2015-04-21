@@ -69,14 +69,6 @@ class Config():
 				self.mot_slide_once = False
 		else:
 			self.mot = False
-			
-	def DisplayConfig(self, section=None):
-		output = ''
-		for section_name in self.config.sections():
-			output += 'Section: %s\n' % (section_name)
-			for name, value in self.config.items(section_name):
-				output += '  %s = %s\n' % (name, value)
-		return output
 		
 	def getConfig(self, section=None):
 		result = {}

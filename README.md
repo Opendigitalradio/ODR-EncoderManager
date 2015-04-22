@@ -10,6 +10,7 @@ First method - Install python module globaly :
   * wget https://bootstrap.pypa.io/get-pip.py
   * python get-pip.py
   * pip install twisted
+  * pip install txJSON-RPC
   * ./encoder.py -c config.ini
 
 
@@ -22,6 +23,7 @@ Second method - Install python module in virtualenv :
   * source /usr/local/bin/virtualenvwrapper.sh
   * mkvirtualenv encoder
   * pip install twisted
+  * pip install txJSON-RPC
   
 
   * To run encoder Manager :

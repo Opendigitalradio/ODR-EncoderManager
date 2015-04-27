@@ -123,44 +123,44 @@ if __name__ == '__main__':
 			}
 		)
 	cherrypy.quickstart(root(),config={
-  '/':
-		{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.screen': False,
-		'tools.sessions.on': True
-		},
-  '/home':
-		{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.screen': False,
-		'tools.sessions.on': True,
-		'tools.staticfile.on': True,
-		'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/home.html")
-		},
-  '/config':
-		{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.screen': False,
-		'tools.sessions.on': True,
-		'tools.staticfile.on': True,
-		'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/config.html")
-		},
-  '/css':
-		{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.screen': False,
-		'tools.sessions.on': True,
-		'tools.staticdir.on': True,
-		'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/css/")
-		},
-  '/js':
-		{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.screen': False,
-		'tools.sessions.on': True,
-		'tools.staticdir.on': True,
-		'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/js/")
-		},
-  '/fonts':
-		{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.screen': False,
-		'tools.sessions.on': True,
-		'tools.staticdir.on': True,
-		'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/fonts/")
-		},
-  })
+		'/':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True
+				},
+		'/home':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True,
+				'tools.staticfile.on': True,
+				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/home.html")
+				},
+		'/config':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True,
+				'tools.staticfile.on': True,
+				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/config.html")
+				},
+		'/css':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True,
+				'tools.staticdir.on': True,
+				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/css/")
+				},
+		'/js':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True,
+				'tools.staticdir.on': True,
+				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/js/")
+				},
+		'/fonts':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True,
+				'tools.staticdir.on': True,
+				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/fonts/")
+				},
+	})

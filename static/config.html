@@ -63,7 +63,7 @@
 				<div class="panel-body">
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Input type:</label>
+						<label class="control-label col-sm-2" for="input_type">Input type:</label>
 						<div class="col-sm-3">
 							<select class="form-control" id="input_type">
 								<option value="alsa">alsa</option>
@@ -75,13 +75,13 @@
 
 					<h4>Source alsa</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Device:</label>
+						<label class="control-label col-sm-2" for="alsa_device">Device:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter audio device (ex: hw:1,0)">
+							<input type="name" class="form-control" id="alsa_device" placeholder="Enter audio device (ex: hw:1,0)">
 						</div>
-						<label class="control-label col-sm-2" for="email">Drift compensation:</label>
+						<label class="control-label col-sm-2" for="alsa_driftcomp">Drift compensation:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="sbr_mode">
+							<select class="form-control" id="alsa_driftcomp">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -91,9 +91,9 @@
 					
 					<h4>Source stream</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Stream URL:</label>
+						<label class="control-label col-sm-2" for="stream_url">Stream URL:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter streaming url">
+							<input type="name" class="form-control" id="stream_url" placeholder="Enter streaming url">
 						</div>
 					</div>
 					
@@ -114,37 +114,37 @@
 					
 					<h4>Audio encoding configuration</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Bitrate:</label>
+						<label class="control-label col-sm-2" for="output_bitrate">Bitrate:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter bitrate (ex: 96)">
+							<input type="name" class="form-control" id="output_bitrate" placeholder="Enter bitrate (ex: 96)">
 						</div>
-						<label class="control-label col-sm-2" for="email">Samplerate:</label>
+						<label class="control-label col-sm-2" for="output_samplerate">Samplerate:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter samplerate (ex: 48000)">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">SBR:</label>
-						<div class="col-sm-3">
-							<select class="form-control" id="sbr_mode">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
-						<label class="control-label col-sm-2" for="email">PS:</label>
-						<div class="col-sm-3">
-							<select class="form-control" id="sbr_mode">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
+							<input type="name" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">After Burner:</label>
+						<label class="control-label col-sm-2" for="output_sbr">SBR:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="afterburner">
+							<select class="form-control" id="output_sbr">
+								<option value="true">true</option>
+								<option value="false">false</option>
+							</select>
+						</div>
+						<label class="control-label col-sm-2" for="output_ps">PS:</label>
+						<div class="col-sm-3">
+							<select class="form-control" id="output_ps">
+								<option value="true">true</option>
+								<option value="false">false</option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="output_afterburner">After Burner:</label>
+						<div class="col-sm-3">
+							<select class="form-control" id="output_afterburner">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -155,24 +155,24 @@
 					
 					<h4>ZMQ configuration</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Host:</label>
+						<label class="control-label col-sm-2" for="zmq_host">Host:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter multiplex hostname or ip">
+							<input type="name" class="form-control" id="zmq_host" placeholder="Enter multiplex hostname or ip">
 						</div>
-						<label class="control-label col-sm-2" for="email">Port:</label>
+						<label class="control-label col-sm-2" for="zmq_port">Port:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter multiplex port">
+							<input type="name" class="form-control" id="zmq_port" placeholder="Enter multiplex port">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Key file:</label>
+						<label class="control-label col-sm-2" for="zmq_keyfile">Key file:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter multiplex hostname or ip">
+							<input type="name" class="form-control" id="zmq_keyfile" placeholder="Enter multiplex hostname or ip">
 						</div>
-						<label class="control-label col-sm-2" for="email">Use key file:</label>
+						<label class="control-label col-sm-2" for="zmq_use_keyfile">Use key file:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="sbr_mode">
+							<select class="form-control" id="zmq_use_keyfile">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -194,17 +194,17 @@
 				<div class="panel-body">
 					
 					<div class="form-group">
-					<label class="control-label col-sm-2" for="email">Enable:</label>
+					<label class="control-label col-sm-2" for="mot_enable">Enable:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="sbr_mode">
+							<select class="form-control" id="mot_enable">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
 						</div>
 
-						<label class="control-label col-sm-2" for="pad">pad:</label>
+						<label class="control-label col-sm-2" for="mot_pad">pad:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="pad">
+							<select class="form-control" id="mot_pad">
 								<option value="23">23</option>
 								<option value="26">26</option>
 								<option value="34">34</option>
@@ -216,14 +216,14 @@
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Slide sleeping (seconds):</label>
+						<label class="control-label col-sm-2" for="mot_slide_sleeping">Slide sleeping (seconds):</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter delay in seconds">
+							<input type="name" class="form-control" id="mot_slide_sleeping" placeholder="Enter delay in seconds">
 						</div>
 						
-						<label class="control-label col-sm-2" for="email">Remove slide</label>
+						<label class="control-label col-sm-2" for="mot_slide_once">Remove slide</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="sbr_mode">
+							<select class="form-control" id="mot_slide_once">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -231,22 +231,22 @@
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">Slide directory:</label>
+						<label class="control-label col-sm-2" for="mot_slide_directory">Slide directory:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter slide directory">
+							<input type="name" class="form-control" id="mot_slide_directory" placeholder="Enter slide directory">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">PAD fifo file:</label>
+						<label class="control-label col-sm-2" for="mot_pad_fifo_file">PAD fifo file:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter pad fifo file">
+							<input type="name" class="form-control" id="mot_pad_fifo_file" placeholder="Enter pad fifo file">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="email">DLS fifo file:</label>
+						<label class="control-label col-sm-2" for="mot_dls_fifo_file">DLS fifo file:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="bitrate" placeholder="Enter dls fifo file">
+							<input type="name" class="form-control" id="mot_dls_fifo_file" placeholder="Enter dls fifo file">
 						</div>
 					</div>
 					<hr />

@@ -9,12 +9,7 @@ import os
 import sys
 
 import argparse
-
-from twisted.internet import reactor
-from txjsonrpc.web.jsonrpc import Proxy
-from twisted.internet.defer import inlineCallbacks
-from  twisted.internet import defer
-
+import requests
 
 # ---------- API ------------------------------------------------------------
 
@@ -34,39 +29,29 @@ class getConfig:
 		pass
 
 	def GET(self):
-		output = []
-		#return json.dumps(output)
-		r = rpc_inline('show_config')
-		r.call()
-		return r.result()
+		r = rpc_request()
+		return json.dumps(r.call('show_config'))
+
 
 # ---------- RPC -------------------------------------------------------------
 
-class rpc_inline:
-	def __init__(self, method):
-		self.method = method
-		self.value = ''
+class rpc_request:
+	def __init__(self):
+		self.rpc_uri = 'http://%s:%s/' % (cli_args.rpc_host, cli_args.rpc_port)
+		self.rpc_headers = {'content-type': 'application/json'}
 	
-	def result(self):
-		return self.method + '-' + self.value
-	
-	def printValue(self, value):
-		self.value = yield repr(value)
-
-	def printError(self, error):
-		self.value = 'error', error
-			
-	def shutDown(self, data=None):
-		reactor.stop()
-	
-	@inlineCallbacks
-	def call(self):
+	def call(self, method, param=[]):
+		payload = {
+			"method": method,
+			"params": param,
+			"jsonrpc": "2.0",
+			"id": 0,
+		}
 		try:
-			proxy = Proxy('http://%s:%s/' % (cli_args.rpc_host, cli_args.rpc_port))
-			yield proxy.callRemote(self.method).addCallback(self.printValue).addErrback(self.printError).addBoth(self.shutDown)
-			reactor.run()
+			response = requests.post( self.rpc_uri, data=json.dumps(payload), headers=self.rpc_headers).json()
+			return response["result"]
 		except Exception,e:
-			self.value = e.message
+			return e.message
 
 # ---------- MAIN ------------------------------------------------------------
 class root(object):
@@ -93,7 +78,7 @@ if __name__ == '__main__':
 	parser.add_argument('--host', default='0.0.0.0', help='socket host (default: 0.0.0.0)',required=False)
 	parser.add_argument('--port', default='8080', help='socket port (default: 8080)',required=False)
 	parser.add_argument('--rpc_host', default='127.0.0.1', help='encoder RPC host (default: 127.0.0.1)',required=False)
-	parser.add_argument('--rpc_port', default='7780', help='encoder RPC port (default: 7780)',required=False)
+	parser.add_argument('--rpc_port', default='7080', help='encoder RPC port (default: 7780)',required=False)
 	cli_args = parser.parse_args()
 	
 	# Check if log_dir exist and is writeable

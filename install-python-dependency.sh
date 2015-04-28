@@ -8,5 +8,10 @@ fi
 
 wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
 python /tmp/get-pip.py
+
+# for encoder daemon
 pip install twisted
 pip install txJSON-RPC
+
+# for api daemon
+pip install requests

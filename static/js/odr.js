@@ -35,8 +35,11 @@ $(function(){
 	});
 	
 	$('#restart').click(function() {
-		$.getJSON( "/api/restart", function( data ) {
-			alert(data);
-		});
+		var r = confirm("Restart encoder. Are your sure ?");
+		if (r == true) {
+			$.getJSON( "/api/restart", function( data ) {
+				alert(data);
+			});
+		}
 	});
 });

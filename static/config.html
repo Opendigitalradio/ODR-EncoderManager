@@ -92,7 +92,7 @@
 					<h4>Source stream</h4>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="source_url">Stream URL:</label>
-						<div class="col-sm-3">
+						<div class="col-sm-8">
 							<input type="text" class="form-control" id="source_url" placeholder="Enter streaming url">
 						</div>
 					</div>
@@ -249,15 +249,67 @@
 							<input type="text" class="form-control" id="mot_dls_fifo_file" placeholder="Enter dls fifo file">
 						</div>
 					</div>
-					<hr />
-					
 					
 				</div>
 			</div>
 		</div>
-				<button type="button" class="btn btn-info" id="reload">Reload current configuration</button>
-				<button type="button" class="btn btn-primary" id="save">Save changes</button>
-				<button type="button" class="btn btn-danger" id="restart">Restart encoder</button>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" href="#collapseADVANCED">Advanced</a>
+				</h4>
+			</div>
+			<div id="collapseADVANCED" class="panel-collapse collapse">
+				<div class="panel-body">
+					
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="global_encoder_path">dabplus-enc path:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="global_encoder_path" placeholder="Enter dabplus-enc full path">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="global_mot_path">mot-encoder path:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="global_mot_path" placeholder="Enter mot-encoder full path">
+						</div>
+					</div>
+					<hr />
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="telnet_bind_ip">Telnet Bind IP:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="telnet_bind_ip" placeholder="Enter telnet bind IP (blank to bind all IP)">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="telnet_port">Telnet port:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="telnet_port" placeholder="Enter telnet port (default 9000)">
+						</div>
+					</div>
+					<hr />
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="rpc_bind_ip">RPC Bind IP:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="rpc_bind_ip" placeholder="Enter RPC bind IP (blank to bind all IP)">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="rpc_port">RPC port:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="rpc_port" placeholder="Enter RPC port (default 7080)">
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<button type="button" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="bottom" title="Load configuration from configuration file.">Reload current configuration</button>
+		<button type="button" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="bottom" title="Write configuration in configuration file.">Write changes</button>
+		<button type="button" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="bottom" title="Apply configuration from configuration file and restart dabplus-enc and mot-encoder.">Apply and Restart encoder</button>
 
 		</form>
 		

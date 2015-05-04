@@ -24,7 +24,6 @@ function requestConfiguration(callback) {
 
 
 // Button handler
-
 $(function(){
 	$('#reload').click(function() {
 		requestConfiguration();
@@ -42,4 +41,10 @@ $(function(){
 			});
 		}
 	});
+});
+
+
+// ToolTip init
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
 });

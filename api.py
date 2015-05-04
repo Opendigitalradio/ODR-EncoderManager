@@ -17,7 +17,8 @@ class API:
 	exposed = True
 	def __init__(self):
 		self.getConfig = getConfig()
-		#self.setMetadata = setMetadata()
+		self.getStatus = getStatus()
+		self.restart = restart()
 
 	def GET(self):
 		return "api - Your IP is %s " % ( cherrypy.request.remote.ip )
@@ -32,6 +33,23 @@ class getConfig:
 		r = rpc_request()
 		return json.dumps(r.call('show_config'))
 
+class getStatus:
+	exposed = True
+	def __init__(self):
+		pass
+	
+	def GET(self):
+		r = rpc_request()
+		return json.dumps(r.call('status'))
+	
+class restart:
+	exposed = True
+	def __init__(self):
+		pass
+	
+	def GET(self):
+		r = rpc_request()
+		return json.dumps(r.call('restart'))
 
 # ---------- RPC -------------------------------------------------------------
 

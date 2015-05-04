@@ -35,6 +35,8 @@ $(function(){
 	});
 	
 	$('#restart').click(function() {
-		alert('restart not yet ready');
+		$.getJSON( "/api/restart", function( data ) {
+			alert(data);
+		});
 	});
 });

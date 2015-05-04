@@ -19,6 +19,28 @@ $(function(){
 		$('#status > tbody').empty();
 		requestStatus();
 	});
+	
+	$('#stop').click(function() {
+		var r = confirm("Stop all services. Are you really sure ?");
+		if (r == true) {
+			$.getJSON( "/api/stop", function( data ) {
+				alert(data);
+			});
+			$('#status > tbody').empty();
+			requestStatus();
+		}
+	});
+	
+	$('#start').click(function() {
+		var r = confirm("Start all services. Are you really sure ?");
+		if (r == true) {
+			$.getJSON( "/api/start", function( data ) {
+				alert(data);
+			});
+			$('#status > tbody').empty();
+			requestStatus();
+		}
+	});
 });
 
 

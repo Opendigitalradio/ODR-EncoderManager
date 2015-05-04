@@ -17,6 +17,7 @@ class API:
 	exposed = True
 	def __init__(self):
 		self.getConfig = getConfig()
+		self.setConfig = setConfig()
 		self.getStatus = getStatus()
 		self.start = start()
 		self.stop = stop()
@@ -34,7 +35,17 @@ class getConfig:
 	def GET(self):
 		r = rpc_request()
 		return json.dumps(r.call('show_config'))
+		
+class setConfig:
+	exposed = True
+	def __init__(self):
+		pass
 
+	def POST(self, param=None):
+		r = rpc_request()
+		return json.dumps(r.call('set_config', param))
+
+		
 class getStatus:
 	exposed = True
 	def __init__(self):

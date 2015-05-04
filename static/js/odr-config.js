@@ -34,7 +34,7 @@ $(function(){
 	});
 	
 	$('#restart').click(function() {
-		var r = confirm("Restart encoder. Are your sure ?");
+		var r = confirm("Restart encoder. Are you really sure ?");
 		if (r == true) {
 			$.getJSON( "/api/restart", function( data ) {
 				alert(data);

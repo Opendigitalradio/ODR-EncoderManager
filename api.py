@@ -18,6 +18,8 @@ class API:
 	def __init__(self):
 		self.getConfig = getConfig()
 		self.getStatus = getStatus()
+		self.start = start()
+		self.stop = stop()
 		self.restart = restart()
 
 	def GET(self):
@@ -41,7 +43,25 @@ class getStatus:
 	def GET(self):
 		r = rpc_request()
 		return json.dumps(r.call('status'))
+
+class start:
+	exposed = True
+	def __init__(self):
+		pass
 	
+	def GET(self):
+		r = rpc_request()
+		return json.dumps(r.call('start'))
+		
+class stop:
+	exposed = True
+	def __init__(self):
+		pass
+	
+	def GET(self):
+		r = rpc_request()
+		return json.dumps(r.call('stop'))
+		
 class restart:
 	exposed = True
 	def __init__(self):

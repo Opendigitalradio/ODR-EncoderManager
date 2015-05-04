@@ -63,9 +63,9 @@
 				<div class="panel-body">
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="input_type">Input type:</label>
+						<label class="control-label col-sm-2" for="source_type">Input type:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="input_type">
+							<select type="select" class="form-control" id="source_type">
 								<option value="alsa">alsa</option>
 								<option value="stream">stream</option>
 							</select>
@@ -75,13 +75,13 @@
 
 					<h4>Source alsa</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="alsa_device">Device:</label>
+						<label class="control-label col-sm-2" for="source_device">Device:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="alsa_device" placeholder="Enter audio device (ex: hw:1,0)">
+							<input type="text" class="form-control" id="source_device" placeholder="Enter audio device (ex: hw:1,0)">
 						</div>
-						<label class="control-label col-sm-2" for="alsa_driftcomp">Drift compensation:</label>
+						<label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="alsa_driftcomp">
+							<select type="select" class="form-control" id="source_driftcomp">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -91,9 +91,9 @@
 					
 					<h4>Source stream</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="stream_url">Stream URL:</label>
+						<label class="control-label col-sm-2" for="source_url">Stream URL:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="stream_url" placeholder="Enter streaming url">
+							<input type="text" class="form-control" id="source_url" placeholder="Enter streaming url">
 						</div>
 					</div>
 					
@@ -116,25 +116,25 @@
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="output_bitrate">Bitrate:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="output_bitrate" placeholder="Enter bitrate (ex: 96)">
+							<input type="text" class="form-control" id="output_bitrate" placeholder="Enter bitrate (ex: 96)">
 						</div>
 						<label class="control-label col-sm-2" for="output_samplerate">Samplerate:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)">
+							<input type="text" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)">
 						</div>
 					</div>
 					
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="output_sbr">SBR:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="output_sbr">
+							<select type="select" class="form-control" id="output_sbr">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
 						</div>
 						<label class="control-label col-sm-2" for="output_ps">PS:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="output_ps">
+							<select type="select" class="form-control" id="output_ps">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -144,7 +144,7 @@
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="output_afterburner">After Burner:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="output_afterburner">
+							<select type="select" class="form-control" id="output_afterburner">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -155,28 +155,28 @@
 					
 					<h4>ZMQ configuration</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="zmq_host">Host:</label>
+						<label class="control-label col-sm-2" for="output_host">Host:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="zmq_host" placeholder="Enter multiplex hostname or ip">
+							<input type="text" class="form-control" id="output_host" placeholder="Enter multiplex hostname or ip">
 						</div>
-						<label class="control-label col-sm-2" for="zmq_port">Port:</label>
+						<label class="control-label col-sm-2" for="output_port">Port:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="zmq_port" placeholder="Enter multiplex port">
+							<input type="text" class="form-control" id="output_port" placeholder="Enter multiplex port">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="zmq_keyfile">Key file:</label>
+						<label class="control-label col-sm-2" for="output_key_file">Key file:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="zmq_keyfile" placeholder="Enter multiplex hostname or ip">
+							<input type="text" class="form-control" id="output_key_file" placeholder="Enter ZMQ key file full path if needed">
 						</div>
-						<label class="control-label col-sm-2" for="zmq_use_keyfile">Use key file:</label>
+						<!--<label class="control-label col-sm-2" for="zmq_use_keyfile">Use key file:</label>
 						<div class="col-sm-3">
 							<select class="form-control" id="zmq_use_keyfile">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
-						</div>
+						</div>-->
 					</div>
 					
 				</div>
@@ -196,7 +196,7 @@
 					<div class="form-group">
 					<label class="control-label col-sm-2" for="mot_enable">Enable:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="mot_enable">
+							<select type="select" class="form-control" id="mot_enable">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -204,7 +204,7 @@
 
 						<label class="control-label col-sm-2" for="mot_pad">pad:</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="mot_pad">
+							<select type="select" class="form-control" id="mot_pad">
 								<option value="23">23</option>
 								<option value="26">26</option>
 								<option value="34">34</option>
@@ -218,12 +218,12 @@
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="mot_slide_sleeping">Slide sleeping (seconds):</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="mot_slide_sleeping" placeholder="Enter delay in seconds">
+							<input type="text" class="form-control" id="mot_slide_sleeping" placeholder="Enter delay in seconds">
 						</div>
 						
 						<label class="control-label col-sm-2" for="mot_slide_once">Remove slide</label>
 						<div class="col-sm-3">
-							<select class="form-control" id="mot_slide_once">
+							<select type="select" class="form-control" id="mot_slide_once">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -233,20 +233,20 @@
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="mot_slide_directory">Slide directory:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="mot_slide_directory" placeholder="Enter slide directory">
+							<input type="text" class="form-control" id="mot_slide_directory" placeholder="Enter slide directory">
 						</div>
 					</div>
 					
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="mot_pad_fifo_file">PAD fifo file:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="mot_pad_fifo_file" placeholder="Enter pad fifo file">
+							<input type="text" class="form-control" id="mot_pad_fifo_file" placeholder="Enter pad fifo file">
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="mot_dls_fifo_file">DLS fifo file:</label>
 						<div class="col-sm-3">
-							<input type="name" class="form-control" id="mot_dls_fifo_file" placeholder="Enter dls fifo file">
+							<input type="text" class="form-control" id="mot_dls_fifo_file" placeholder="Enter dls fifo file">
 						</div>
 					</div>
 					<hr />
@@ -255,9 +255,9 @@
 				</div>
 			</div>
 		</div>
-				<button type="button" class="btn btn-info">Reload current configuration</button>
-				<button type="button" class="btn btn-primary">Save changes</button>
-				<button type="button" class="btn btn-danger">Restart encoder</button>
+				<button type="button" class="btn btn-info" id="reload">Reload current configuration</button>
+				<button type="button" class="btn btn-primary" id="save">Save changes</button>
+				<button type="button" class="btn btn-danger" id="restart">Restart encoder</button>
 
 		</form>
 		
@@ -267,7 +267,7 @@
 
 
 <script type="text/javascript">
-        requestConfiguration(readDataConfiguration);
+        requestConfiguration();
 </script>
 	
 </body>

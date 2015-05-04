@@ -138,6 +138,13 @@ if __name__ == '__main__':
 				'tools.staticfile.on': True,
 				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/home.html")
 				},
+		'/status':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.sessions.on': True,
+				'tools.staticfile.on': True,
+				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/status.html")
+				},
 		'/config':
 				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
 				'log.screen': False,

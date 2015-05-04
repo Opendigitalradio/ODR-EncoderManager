@@ -271,7 +271,7 @@ class EncoderRPC(jsonrpc.JSONRPC):
 	def jsonrpc_stop(self):
 		self.manager.stop_encoder(None)
 		self.manager.stop_mot(None)
-		return 'encoder stoped'
+		return 'encoder stopped'
 
 	def jsonrpc_restart(self):
 		self.manager.stop_encoder()

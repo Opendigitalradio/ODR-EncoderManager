@@ -57,6 +57,23 @@ function setConfiguration(callback) {
 					},
 	}
 	console.log(param);
+	
+	$.ajax({
+		type: "POST",
+		url: "/api/setConfig",
+		data: JSON.stringify(param),
+		contentType: 'application/json',
+		dataType: 'json',
+		
+		error: function(data) {
+			console.log( 'ERROR: ' + data );
+			alert("connexion error");
+		},
+		success: function(data) {
+			console.log( data );
+			alert("connexion success");
+		}
+	});
 }
 
 // Button handler

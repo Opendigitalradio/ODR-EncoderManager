@@ -15,6 +15,8 @@ from twisted.internet import reactor
 import re
 import time
 
+import json
+
 from config import Config
 
 import signal
@@ -289,6 +291,11 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		
 	def jsonrpc_show_config(self):
 		return config.getConfig()
+		
+	def jsonrpc_set_config(self, cparam):
+		#Todo : Parse cparam and write change in config file
+		#print json.dumps(cparam['config'])
+		return cparam['config']
 	
 
 def signal_handler(signal, frame):

@@ -41,9 +41,14 @@ class setConfig:
 	def __init__(self):
 		pass
 
-	def POST(self, param=None):
+	def POST(self):
+		cl = cherrypy.request.headers['Content-Length']
+		rawbody = cherrypy.request.body.read(int(cl))
+		body = json.loads(rawbody)
+		        
 		r = rpc_request()
-		return json.dumps(r.call('set_config', param))
+		rpcconfig = [ { "config" : body } ]
+		return json.dumps(r.call('set_config', rpcconfig))
 
 		
 class getStatus:

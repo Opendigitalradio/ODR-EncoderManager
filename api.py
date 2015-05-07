@@ -19,6 +19,7 @@ class API:
 		self.getConfig = getConfig()
 		self.setConfig = setConfig()
 		self.getStatus = getStatus()
+		self.reloadConfig = reloadConfig()
 		self.start = start()
 		self.stop = stop()
 		self.restart = restart()
@@ -49,7 +50,6 @@ class setConfig:
 		r = rpc_request()
 		rpcconfig = [ { "config" : body } ]
 		return json.dumps(r.call('set_config', rpcconfig))
-
 		
 class getStatus:
 	exposed = True
@@ -77,6 +77,15 @@ class stop:
 	def GET(self):
 		r = rpc_request()
 		return json.dumps(r.call('stop'))
+
+class reloadConfig:
+	exposed = True
+	def __init__(self):
+		pass
+	
+	def GET(self):
+		r = rpc_request()
+		return json.dumps(r.call('reload_config'))
 		
 class restart:
 	exposed = True

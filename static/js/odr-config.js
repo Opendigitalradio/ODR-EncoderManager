@@ -86,6 +86,12 @@ $(function(){
 		setConfiguration();
 	});
 	
+	$('#apply').click(function() {
+		$.getJSON( "/api/reloadConfig", function( data ) {
+				alert(data);
+			});
+	});
+	
 	$('#restart').click(function() {
 		var r = confirm("Restart encoder. Are you really sure ?");
 		if (r == true) {

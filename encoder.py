@@ -295,6 +295,7 @@ class EncoderRPC(jsonrpc.JSONRPC):
 	def jsonrpc_set_config(self, cparam):
 		#Todo : Parse cparam and write change in config file
 		#print json.dumps(cparam['config'])
+		config.setConfig(cparam['config'])
 		return cparam['config']
 	
 

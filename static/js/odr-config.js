@@ -1,24 +1,34 @@
 function requestConfiguration(callback) {
-	$.getJSON( "/api/getConfig", function( data ) {
-		$.each( data, function( section_key, section_val ) {
-			if ( typeof section_val === 'object') {
-				$.each( section_val, function( param_key, param_val ) {
-					form_key = section_key + '_' + param_key
+	$.ajax({
+		type: "GET",
+		url: "/api/getConfig",
+		contentType: 'application/json',
+		dataType: 'json',
+		
+		error: function(data) {
+			alert("error " + data['status'] + " : " + data['statusText']);
+		},
+		success: function(data) {
+			$.each( data, function( section_key, section_val ) {
+				if ( typeof section_val === 'object') {
+					$.each( section_val, function( param_key, param_val ) {
+						form_key = section_key + '_' + param_key
+						
+						if ( $('#'+form_key).attr('type') == 'text' ) {
+							$('#'+form_key).val(param_val);
+						}
+						else if ( $('#'+form_key).attr('type') == 'select' ) {
+							$('#'+form_key+' option[value="'+param_val+'"]').prop('selected', true);
+						}
+						else {
+							debug = section_key + '_' + param_key + ':' + param_val;
+							console.log('Not found in form: '+debug);
+						}
+					});
 					
-					if ( $('#'+form_key).attr('type') == 'text' ) {
-						$('#'+form_key).val(param_val);
-					}
-					else if ( $('#'+form_key).attr('type') == 'select' ) {
-						$('#'+form_key+' option[value="'+param_val+'"]').prop('selected', true);
-					}
-					else {
-						debug = section_key + '_' + param_key + ':' + param_val;
-						console.log('Not found in form: '+debug);
-					}
-				});
-				
-			}
-		});
+				}
+			});
+		}
 	});
 }
 
@@ -56,7 +66,6 @@ function setConfiguration(callback) {
 						"slide_once": $('#mot_slide_once').val(),
 					},
 	}
-	//console.log(param);
 	
 	$.ajax({
 		type: "POST",
@@ -66,11 +75,9 @@ function setConfiguration(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			//console.log( 'ERROR: ' + data );
 			alert("error");
 		},
 		success: function(data) {
-			//console.log( data );
 			alert(data);
 		}
 	});
@@ -87,16 +94,36 @@ $(function(){
 	});
 	
 	$('#apply').click(function() {
-		$.getJSON( "/api/reloadConfig", function( data ) {
+		$.ajax({
+			type: "GET",
+			url: "/api/reloadConfig",
+			contentType: 'application/json',
+			dataType: 'json',
+			
+			error: function(data) {
+				alert("error " + data['status'] + " : " + data['statusText']);
+			},
+			success: function(data) {
 				alert(data);
-			});
+			}
+		});
 	});
 	
 	$('#restart').click(function() {
 		var r = confirm("Restart encoder. Are you really sure ?");
 		if (r == true) {
-			$.getJSON( "/api/restart", function( data ) {
-				alert(data);
+			$.ajax({
+				type: "GET",
+				url: "/api/restart",
+				contentType: 'application/json',
+				dataType: 'json',
+				
+				error: function(data) {
+					alert("error " + data['status'] + " : " + data['statusText']);
+				},
+				success: function(data) {
+					alert(data);
+				}
 			});
 		}
 	});

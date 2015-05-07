@@ -160,7 +160,7 @@ if __name__ == '__main__':
 	
 	# Start cherrypy
 	cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
-	cherrypy.config.update({'server.socket_host': cli_args.host, 'server.socket_port': int(cli_args.port), 'request.show_tracebacks' : True, })
+	cherrypy.config.update({'server.socket_host': cli_args.host, 'server.socket_port': int(cli_args.port), 'request.show_tracebacks' : False, })
 	cherrypy.tree.mount(
 		API(), '/api/',
 			{'/':

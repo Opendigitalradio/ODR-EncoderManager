@@ -56,7 +56,7 @@ function setConfiguration(callback) {
 						"slide_once": $('#mot_slide_once').val(),
 					},
 	}
-	console.log(param);
+	//console.log(param);
 	
 	$.ajax({
 		type: "POST",
@@ -66,12 +66,12 @@ function setConfiguration(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			console.log( 'ERROR: ' + data );
-			alert("connexion error");
+			//console.log( 'ERROR: ' + data );
+			alert("error");
 		},
 		success: function(data) {
-			console.log( data );
-			alert("connexion success");
+			//console.log( data );
+			alert(data);
 		}
 	});
 }

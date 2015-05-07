@@ -283,7 +283,7 @@ class EncoderRPC(jsonrpc.JSONRPC):
 			self.manager.run_encoder()
 		if not self.manager.motProcess:
 			self.manager.run_mot()
-		return 'encoder restarted'
+		return 'encoder restart'
 	
 	def jsonrpc_reload_config(self):
 		self.manager.reload_config()
@@ -293,10 +293,9 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		return config.getConfig()
 		
 	def jsonrpc_set_config(self, cparam):
-		#Todo : Parse cparam and write change in config file
-		#print json.dumps(cparam['config'])
 		config.setConfig(cparam['config'])
-		return cparam['config']
+		#return cparam['config']
+		return 'encoder set_config'
 	
 
 def signal_handler(signal, frame):

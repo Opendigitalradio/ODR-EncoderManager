@@ -23,6 +23,8 @@ class API:
 		self.start = start()
 		self.stop = stop()
 		self.restart = restart()
+		self.setDLS = setDLS()
+		self.getDLS = getDLS()
 
 	def GET(self):
 		return "api - Your IP is %s " % ( cherrypy.request.remote.ip )
@@ -50,7 +52,36 @@ class setConfig:
 		r = rpc_request()
 		rpcconfig = [ { "config" : body } ]
 		return json.dumps(r.call('set_config', rpcconfig))
+
+class setDLS:
+	exposed = True
+	def __init__(self):
+		pass
+
+	def POST(self):
+		cl = cherrypy.request.headers['Content-Length']
+		rawbody = cherrypy.request.body.read(int(cl))
 		
+		r = rpc_request()
+		rpcconfig = [ { "dls" : rawbody } ]
+		return json.dumps(r.call('set_dls', rpcconfig))
+	      
+		return 'ok post '+rawbody
+	      
+	def GET(self, dls=''):
+		r = rpc_request()
+		rpcconfig = [ { "dls" : dls } ]
+		return json.dumps(r.call('set_dls', rpcconfig))
+
+class getDLS:
+	exposed = True
+	def __init__(self):
+		pass
+	
+	def GET(self):
+		r = rpc_request()
+		return json.dumps(r.call('get_dls'))
+
 class getStatus:
 	exposed = True
 	def __init__(self):

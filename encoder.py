@@ -32,6 +32,28 @@ class EncoderManager():
 		self.config = Config(self.configFile)
 		self.autorestart = True
 	
+	def get_dls(self):
+		try:
+			f = open(self.config.mot_dls_fifo_file, 'r')
+			dls = f.read()
+			f.close()
+		except Exception,e:
+			print 'get_dls Fail to read dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+			return str(e)
+		else:
+			return {'dls': str(dls)}
+
+	def set_dls(self, dls=''):
+		try:
+			f = open(self.config.mot_dls_fifo_file, 'w')
+			f.write(dls)
+			f.close()
+		except Exception,e:
+			print 'set_dls Fail to write dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+			return str(e)
+		else:
+			return dls
+	
 	def reload_config(self):
 		self.config = Config(self.configFile)
 	
@@ -317,6 +339,16 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		config.setConfig(cparam['config'])
 		#return cparam['config']
 		return 'encoder set_config'
+	
+	def jsonrpc_set_dls(self, cparam):
+		dls = cparam['dls']
+		r = self.manager.set_dls(dls)
+		return 'encoder set_dls set to value : '+dls+' ('+r+')'
+	
+	def jsonrpc_get_dls(self):
+		return self.manager.get_dls()
+	      
+
 	
 
 def signal_handler(signal, frame):

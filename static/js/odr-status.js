@@ -22,7 +22,7 @@ function requestStatus(callback) {
 }
 
 function requestDLS(callback) {
-	$("#dls").prop('disabled', true);
+	//$("#dls").prop('disabled', true);
 	$.ajax({
 		type: "GET",
 		url: "/api/getDLS",

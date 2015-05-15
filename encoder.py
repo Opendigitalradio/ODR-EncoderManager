@@ -93,16 +93,7 @@ class EncoderManager():
 			
 		if self.config.mot == True:
 			if not os.path.isfile(self.config.mot_pad_fifo_file):
-				print 'dabplus-enc File %s not exist. Trying to create it.' % (self.config.mot_pad_fifo_file)
-				try:
-					f = open(self.config.mot_pad_fifo_file, 'w')
-					f.close()
-				except Exception,e:
-					print 'dabplus-enc Fail to create file %s, error: %s, Ignoring pad parameters' % (self.config.mot_pad_fifo_file, e)
-				else:
-					print 'dabplus-enc File %s is created.' % (self.config.mot_pad_fifo_file)
-					args += ' --pad=%s' % (self.config.mot_pad)
-					args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
+				print 'dabplus-enc Pad file %s not exist. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file)
 			else:
 				args += ' --pad=%s' % (self.config.mot_pad)
 				args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
@@ -134,6 +125,7 @@ class EncoderManager():
 					print 'mot-encoder Slide directory not exist or not readable. Ignoring slide directory parameters - %s' % (self.config.mot_slide_directory)
 				else:
 					args += ' --dir=%s' % (self.config.mot_slide_directory)
+					args += ' --sleep=%s' % (self.config.mot_slide_sleeping)
 					if self.config.mot_slide_once == True:
 						args += ' --erase'
 						
@@ -145,7 +137,11 @@ class EncoderManager():
 				except Exception,e:
 					print 'mot-encoder Fail to create file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
 					return False
-			
+			else:
+				f = open(self.config.mot_dls_fifo_file, 'w')
+				f.write('')
+				f.close()
+				
 			# Check if config.mot_pad_fifo_file exist and create it if needed.
 			if not os.path.isfile(self.config.mot_pad_fifo_file):
 				try:
@@ -154,11 +150,14 @@ class EncoderManager():
 				except Exception,e:
 					print 'mot-encoder Fail to create file %s, error: %s' % (self.config.mot_pad_fifo_file, e)
 					return False
+			else:
+				f = open(self.config.mot_pad_fifo_file, 'w')
+				f.write('')
+				f.close()
 			
 			args += ' --pad=%s' % (self.config.mot_pad)
 			args += ' --dls=%s' % (self.config.mot_dls_fifo_file)
 			args += ' --output=%s' % (self.config.mot_pad_fifo_file)
-			args += ' --sleep=%s' % (self.config.mot_slide_sleeping)
 			
 				
 			args = args.split()
@@ -229,18 +228,20 @@ class EncoderTelnetProtocol(LineReceiver):
 			self.factory.manager.stop_encoder()
 			self.factory.manager.stop_mot()
 			time.sleep(0.5)
-			if not self.factory.manager.encoderProcess:
-				self.factory.manager.run_encoder()
 			if not self.factory.manager.motProcess:
 				self.factory.manager.run_mot()
+			time.sleep(0.1)
+			if not self.factory.manager.encoderProcess:
+				self.factory.manager.run_encoder()
 			self.transport.write('Ok\n')
 		
 		elif line == "start":
 			print '%s - %s' % (self._peer, line)
-			if not self.factory.manager.encoderProcess:
-				self.factory.manager.run_encoder()
 			if not self.factory.manager.motProcess:
 				self.factory.manager.run_mot()
+			time.sleep(0.1)
+			if not self.factory.manager.encoderProcess:
+				self.factory.manager.run_encoder()
 			self.transport.write('Ok\n')
 		
 		elif line == "stop":
@@ -307,10 +308,11 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		return self.manager.getStatus()
 	
 	def jsonrpc_start(self):
-		if not self.manager.encoderProcess:
-			self.manager.run_encoder()
 		if not self.manager.motProcess:
 			self.manager.run_mot()
+		time.sleep(0.1)
+		if not self.manager.encoderProcess:
+			self.manager.run_encoder()
 		return 'encoder started'
 	
 	def jsonrpc_stop(self):
@@ -322,10 +324,11 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		self.manager.stop_encoder()
 		self.manager.stop_mot()
 		time.sleep(0.5)
-		if not self.manager.encoderProcess:
-			self.manager.run_encoder()
 		if not self.manager.motProcess:
 			self.manager.run_mot()
+		time.sleep(0.1)
+		if not self.manager.encoderProcess:
+			self.manager.run_encoder()
 		return 'encoder restart'
 	
 	def jsonrpc_reload_config(self):
@@ -376,8 +379,9 @@ if __name__ == '__main__':
 	manager = EncoderManager(cli_args.config)
 	
 	# Start process
-	manager.run_encoder()
 	manager.run_mot()
+	time.sleep(0.5)
+	manager.run_encoder()
 	
 	# Start telnet protocol
 	sfTelnet = EncoderTelnetFactory(manager)

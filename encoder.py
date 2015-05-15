@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# -*- coding: utf-8 -*-
 import os
 import sys
 import argparse
@@ -344,15 +345,12 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		return 'encoder set_config'
 	
 	def jsonrpc_set_dls(self, cparam):
-		dls = cparam['dls']
+		dls = cparam['dls'].encode('utf-8')
 		r = self.manager.set_dls(dls)
-		return 'encoder set_dls set to value : '+dls+' ('+r+')'
+		return 'encoder set_dls ('+r+')'
 	
 	def jsonrpc_get_dls(self):
 		return self.manager.get_dls()
-	      
-
-	
 
 def signal_handler(signal, frame):
 	print('You pressed Ctrl+C!')

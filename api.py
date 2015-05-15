@@ -63,12 +63,11 @@ class setDLS:
 		rawbody = cherrypy.request.body.read(int(cl))
 		
 		r = rpc_request()
-		rpcconfig = [ { "dls" : rawbody } ]
+		rpcconfig = [ { "dls" : rawbody.encode('utf-8') } ]
 		return json.dumps(r.call('set_dls', rpcconfig))
 	      
-		return 'ok post '+rawbody
-	      
 	def GET(self, dls=''):
+		dls = dls.encode('utf-8')
 		r = rpc_request()
 		rpcconfig = [ { "dls" : dls } ]
 		return json.dumps(r.call('set_dls', rpcconfig))
@@ -198,6 +197,8 @@ if __name__ == '__main__':
 				{'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
 				'log.screen': False,
 				'tools.sessions.on': True,
+				#'tools.encode.on': True,
+				#'tools.encode.encoding': "utf-8",
 				'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
 			}
 		)

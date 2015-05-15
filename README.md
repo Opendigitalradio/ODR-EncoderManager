@@ -1,35 +1,11 @@
 # ODR-EncoderManager
-OpenDigitalRadio Encoder Manager
+OpenDigitalRadio Encoder Manager is a tools to run and configuration ODR Encoder easly with a WebGUI.
 
-You need to have ODR fdk-aac-dabplus version v0.7.0 or more with libvlc
+ODR-EncoderManager is currently in developpement and is not ready to use in production
 
-This program need to have python twisted module.
+Run install-python-dependency.sh to install python dependency.
 
-
-First method - Install python module globaly :
-  * wget https://bootstrap.pypa.io/get-pip.py
-  * python get-pip.py
-  * pip install twisted
-  * pip install txJSON-RPC
   * ./encoder.py -c config.ini
+  * ./api.py -s static/ -l logs/
 
 
-Second method - Install python module in virtualenv :
-  * wget https://bootstrap.pypa.io/get-pip.py
-  * python get-pip.py
-  * pip install virtualenv
-  * pip install virtualenvwrapper
-
-  * source /usr/local/bin/virtualenvwrapper.sh
-  * mkvirtualenv encoder
-  * pip install twisted
-  * pip install txJSON-RPC
-  
-
-  * To run encoder Manager :
-    * source /usr/local/bin/virtualenvwrapper.sh
-    * workon encoder
-    * ./encoder.py -c config.ini
-
-  * To quit virtualenv :
-    * deactivate

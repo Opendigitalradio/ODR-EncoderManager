@@ -7,6 +7,7 @@ import sys
 
 class Config():
 	def __init__(self,config_file):
+		self.config_file = config_file
 		self.config = ConfigParser.ConfigParser()
 		self.config.read(config_file)
 		
@@ -78,6 +79,19 @@ class Config():
 				section[name] = value
 			result[section_name] = section
 		return result
+		
+	def setConfig(self, param):
+		newConfig = self.config
+		
+		for section in param:
+			for name in param[section]:
+				newConfig.set(section, name, param[section][name])
+				print "set section: %s, name: %s to value: %s" % (section, name, param[section][name])
+		cfgfile = open(self.config_file,'w')
+		newConfig.write(cfgfile)
+		cfgfile.close()
+		
+		
 
 	def ConfigSectionMap(self, section):
 		dict1 = {}

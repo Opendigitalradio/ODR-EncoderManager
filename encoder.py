@@ -15,6 +15,8 @@ from twisted.internet import reactor
 import re
 import time
 
+import json
+
 from config import Config
 
 import signal
@@ -271,7 +273,7 @@ class EncoderRPC(jsonrpc.JSONRPC):
 	def jsonrpc_stop(self):
 		self.manager.stop_encoder(None)
 		self.manager.stop_mot(None)
-		return 'encoder stoped'
+		return 'encoder stopped'
 
 	def jsonrpc_restart(self):
 		self.manager.stop_encoder()
@@ -281,7 +283,7 @@ class EncoderRPC(jsonrpc.JSONRPC):
 			self.manager.run_encoder()
 		if not self.manager.motProcess:
 			self.manager.run_mot()
-		return 'encoder restarted'
+		return 'encoder restart'
 	
 	def jsonrpc_reload_config(self):
 		self.manager.reload_config()
@@ -289,6 +291,11 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		
 	def jsonrpc_show_config(self):
 		return config.getConfig()
+		
+	def jsonrpc_set_config(self, cparam):
+		config.setConfig(cparam['config'])
+		#return cparam['config']
+		return 'encoder set_config'
 	
 
 def signal_handler(signal, frame):

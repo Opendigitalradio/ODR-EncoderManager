@@ -1,5 +1,5 @@
 # ODR-EncoderManager
-OpenDigitalRadio Encoder Manager is a tools to run and configuration ODR Encoder easly with a WebGUI.
+OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder easly with a WebGUI.
 
 ODR-EncoderManager is currently in developpement and is not ready to use in production
 

@@ -218,4 +218,10 @@ if __name__ == '__main__':
 				'tools.staticdir.on': True,
 				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/fonts/")
 				},
+		'/favicon.ico':
+				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+				'log.screen': False,
+				'tools.staticfile.on': True,
+				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/fonts/favicon.ico")
+				},
 	})

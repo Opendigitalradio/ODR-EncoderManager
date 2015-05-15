@@ -70,15 +70,27 @@ class EncoderManager():
 			args += ' --no-afterburner'
 			
 		if self.config.mot == True:
-			args += ' --pad=%s' % (self.config.mot_pad)
-			args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
+			if not os.path.isfile(self.config.mot_pad_fifo_file):
+				print 'dabplus-enc File %s not exist. Trying to create it.' % (self.config.mot_pad_fifo_file)
+				try:
+					f = open(self.config.mot_pad_fifo_file, 'w')
+					f.close()
+				except Exception,e:
+					print 'dabplus-enc Fail to create file %s, error: %s, Ignoring pad parameters' % (self.config.mot_pad_fifo_file, e)
+				else:
+					print 'dabplus-enc File %s is created.' % (self.config.mot_pad_fifo_file)
+					args += ' --pad=%s' % (self.config.mot_pad)
+					args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
+			else:
+				args += ' --pad=%s' % (self.config.mot_pad)
+				args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
 		
 		args += ' -f raw -o tcp://%s:%s' % (self.config.output_host, self.config.output_port)
 		if self.config.output_key_file.strip() != '':
 			if os.path.isfile(self.config.output_key_file):
 				args += ' -k %s' % (self.config.output_key_file)
 			else:
-				print 'ZMQ secret key file not found or not readable. Ignoring this file and secret-key parameters.'
+				print 'dabplus-enc ZMQ secret key file not found or not readable. Ignoring this file and secret-key parameters.'
 		args = args.split()
 		encoderProcessProtocol = MyEncoderProcessProtocol(self)
 		reactor.spawnProcess(encoderProcessProtocol, executable, args, {})
@@ -97,20 +109,29 @@ class EncoderManager():
 			if self.config.mot_slide_directory.strip() != '':
 				# Check if config.mot_slide_directory exist
 				if not os.path.exists(self.config.mot_slide_directory):
-					print 'Slide directory not exist or not readable. Ignoring slide directory parameters - %s' % (self.config.mot_slide_directory)
+					print 'mot-encoder Slide directory not exist or not readable. Ignoring slide directory parameters - %s' % (self.config.mot_slide_directory)
 				else:
 					args += ' --dir=%s' % (self.config.mot_slide_directory)
 					if self.config.mot_slide_once == True:
 						args += ' --erase'
 						
-					
+			# Check if config.mot_dls_fifo_file exist and create it if needed.
+			if not os.path.isfile(self.config.mot_dls_fifo_file):
+				try:
+					f = open(self.config.mot_dls_fifo_file, 'w')
+					f.close()
+				except Exception,e:
+					print 'mot-encoder Fail to create file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+					return False
+			
 			# Check if config.mot_pad_fifo_file exist and create it if needed.
 			if not os.path.isfile(self.config.mot_pad_fifo_file):
 				try:
 					f = open(self.config.mot_pad_fifo_file, 'w')
 					f.close()
 				except Exception,e:
-					print 'Fail to create file %s, error: %s' % (self.config.mot_pad_fifo_file, e)
+					print 'mot-encoder Fail to create file %s, error: %s' % (self.config.mot_pad_fifo_file, e)
+					return False
 			
 			args += ' --pad=%s' % (self.config.mot_pad)
 			args += ' --dls=%s' % (self.config.mot_dls_fifo_file)

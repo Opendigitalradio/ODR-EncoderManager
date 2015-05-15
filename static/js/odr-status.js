@@ -21,8 +21,28 @@ function requestStatus(callback) {
 	});
 }
 
+function requestDLS(callback) {
+	$("#dls").prop('disabled', true);
+	$.ajax({
+		type: "GET",
+		url: "/api/getDLS",
+		contentType: 'application/json',
+		dataType: 'json',
+		
+		error: function(data) {
+			alert("error " + data['status'] + " : " + data['statusText']);
+		},
+		success: function(data) {
+			$('#dls').val(data['dls']);
+		}
+	});
+	setTimeout(function(){
+		requestDLS();},10000);
+}
+
 $(function(){
 	requestStatus();
+	requestDLS();
 	
 	$('#refresh').click(function() {
 		$('#status > tbody').empty();

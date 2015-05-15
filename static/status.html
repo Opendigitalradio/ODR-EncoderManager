@@ -58,9 +58,17 @@
 			<h1>Status</h1>
 		</div>
 		
-		<button type="button" class="btn btn-info" id="refresh">Refresh</button> 
-		<button type="button" class="btn btn-warning" id="start">Start</button> 
-		<button type="button" class="btn btn-danger" id="stop">Stop</button> 
+		
+		<div class="form-group">
+			<label class="sr-only" for="dls">Dynamic Label Segment (DLS)</label>
+			<div class="input-group">
+				<div class="input-group-addon">DLS</div>
+				<input type="text" class="form-control" id="dls" placeholder="Waiting refresh ...">
+				<div class="input-group-addon">DLS</div>
+			</div>
+		</div>
+		
+		<hr />
 		
 		<table id="status" class="table table-hover">
 			<thead>
@@ -73,6 +81,10 @@
 			<tbody>
 			</tbody>
 		</table>
+		
+		<button type="button" class="btn btn-info" id="refresh">Refresh</button> 
+		<button type="button" class="btn btn-warning" id="start">Start</button> 
+		<button type="button" class="btn btn-danger" id="stop">Stop</button> 
 		
 	</div>
 

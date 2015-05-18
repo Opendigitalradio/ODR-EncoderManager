@@ -34,26 +34,32 @@ class EncoderManager():
 		self.autorestart = True
 	
 	def get_dls(self):
-		try:
-			f = open(self.config.mot_dls_fifo_file, 'r')
-			dls = f.read()
-			f.close()
-		except Exception,e:
-			print 'get_dls Fail to read dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
-			return str(e)
+		if self.config.mot == True:
+			try:
+				f = open(self.config.mot_dls_fifo_file, 'r')
+				dls = f.read()
+				f.close()
+			except Exception,e:
+				print 'get_dls Fail to read dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+				return str(e)
+			else:
+				return {'dls': str(dls)}
 		else:
-			return {'dls': str(dls)}
+			return {'dls': 'DLS is disable ...'}
 
 	def set_dls(self, dls=''):
-		try:
-			f = open(self.config.mot_dls_fifo_file, 'w')
-			f.write(dls)
-			f.close()
-		except Exception,e:
-			print 'set_dls Fail to write dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
-			return str(e)
+		if self.config.mot == True:
+			try:
+				f = open(self.config.mot_dls_fifo_file, 'w')
+				f.write(dls)
+				f.close()
+			except Exception,e:
+				print 'set_dls Fail to write dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+				return str(e)
+			else:
+				return dls
 		else:
-			return dls
+			return 'set_dls DLS is disable ...'
 	
 	def reload_config(self):
 		self.config = Config(self.configFile)

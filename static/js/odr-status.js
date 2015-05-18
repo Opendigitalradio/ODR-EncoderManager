@@ -33,7 +33,11 @@ function requestDLS(callback) {
 			alert("error " + data['status'] + " : " + data['statusText']);
 		},
 		success: function(data) {
-			$('#dls').val(data['dls']);
+			if (data['dls'] == '') {
+				$('#dls').val('No DLS data ...');
+			} else {
+				$('#dls').val(data['dls']);
+			}
 		}
 	});
 	setTimeout(function(){

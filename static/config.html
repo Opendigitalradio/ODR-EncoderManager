@@ -131,14 +131,16 @@
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="output_sbr">SBR:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_sbr">
+							<select type="select" class="form-control" id="output_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate over 96 kbps.">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
 						</div>
+						
+						
 						<label class="control-label col-sm-2" for="output_ps">PS:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_ps">
+							<select type="select" class="form-control" id="output_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrate multiple of 8kbps and under 56 kbps.">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -311,10 +313,10 @@
 			</div>
 		</div>
 		
-		<button type="button" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="bottom" title="Load configuration from configuration file.">Reload configuration</button>
-		<button type="button" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="bottom" title="Write configuration in configuration file.">Write changes</button>
-		<button type="button" class="btn btn-primary" id="apply" data-toggle="tooltip" data-placement="bottom" title="Apply configuration from configuration file.">Apply changes</button>
-		<button type="button" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="bottom" title="Restart dabplus-enc and mot-encoder.">Restart encoder</button>
+		<button type="button" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Load configuration from configuration file.">Reload configuration</button>
+		<button type="button" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file.">Write changes</button>
+		<button type="button" class="btn btn-primary" id="apply" data-toggle="tooltip" data-placement="top" title="Apply configuration from configuration file.">Apply changes</button>
+		<button type="button" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc and mot-encoder.">Restart encoder</button>
 
 		</form>
 		

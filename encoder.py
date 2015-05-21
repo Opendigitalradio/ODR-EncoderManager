@@ -365,7 +365,7 @@ def signal_handler(signal, frame):
 			
 if __name__ == '__main__':
 	# Get configuration file in argument
-	parser = argparse.ArgumentParser(description='DAB Plus encoder')
+	parser = argparse.ArgumentParser(description='ODR Encoder Manager')
 	parser.add_argument('-c','--config', help='Configuration file name',required=True)
 	cli_args = parser.parse_args()
 	

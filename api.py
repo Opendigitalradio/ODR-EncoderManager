@@ -165,9 +165,9 @@ class root(object):
 	
 if __name__ == '__main__':
 	# Get configuration file in argument
-	parser = argparse.ArgumentParser(description='ODR WebGUI Encoder Manager')
-	parser.add_argument('-s','--static_dir', help='Full path of static directory content',required=True)
-	parser.add_argument('-l','--log_dir', help='log directory full path',required=True)
+	parser = argparse.ArgumentParser(description='ODR Encoder Manager (WebGUI)')
+	parser.add_argument('-s','--static_dir', help='path of static directory content',required=True)
+	parser.add_argument('-l','--log_dir', help='path of logs directory',required=True)
 	parser.add_argument('--host', default='0.0.0.0', help='socket host (default: 0.0.0.0)',required=False)
 	parser.add_argument('--port', default='8080', help='socket port (default: 8080)',required=False)
 	parser.add_argument('--rpc_host', default='127.0.0.1', help='encoder RPC host (default: 127.0.0.1)',required=False)

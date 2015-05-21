@@ -313,10 +313,13 @@
 			</div>
 		</div>
 		
-		<button type="button" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Load configuration from configuration file.">Reload configuration</button>
-		<button type="button" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file.">Write changes</button>
-		<button type="button" class="btn btn-primary" id="apply" data-toggle="tooltip" data-placement="top" title="Apply configuration from configuration file.">Apply changes</button>
-		<button type="button" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc and mot-encoder.">Restart encoder</button>
+		<div>
+			<a href="#" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Reload configuration from configuration file."><span class="glyphicon glyphicon-refresh"></span> Reload configuration</a>
+			
+			<a href="#" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="badge">1</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-save"></span> Write changes</a>
+			<a href="#" class="btn btn-primary" id="apply" data-toggle="tooltip" data-placement="top" title="Load configuration from configuration file to Encoder Manager."><span class="badge">2</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-certificate"></span> Load changes</a>
+			<a href="#" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc + mot-encoder with loaded configuration."><span class="badge">3</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-off"></span> Restart</a>
+		</div>
 
 		</form>
 		

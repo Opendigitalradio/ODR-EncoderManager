@@ -220,7 +220,7 @@ class EncoderTelnetFactory(ServerFactory):
 class EncoderTelnetProtocol(LineReceiver):
 	def connectionMade(self):
 		self._peer = self.transport.getPeer().host
-		logger.info('TELNET : Connection from %s' % (self._peer.host))
+		logger.info('TELNET : Connection from %s' % (self._peer))
 		
 	def connectionLost(self, e):
 		print 'Lost connection from %s' % (self._peer)

@@ -32,7 +32,7 @@ class EncoderManager():
 		self.encoderProcess = None
 		self.motProcess = None
 		self.configFile = configFile
-		self.config = Config(self.configFile)
+		self.config = Config(self.configFile, logger)
 		self.autorestart = True
 	
 	def get_dls(self):
@@ -64,7 +64,7 @@ class EncoderManager():
 			return 'set_dls DLS is disable ...'
 	
 	def reload_config(self):
-		self.config = Config(self.configFile)
+		self.config = Config(self.configFile, logger)
 	
 	def getStatus(self):
 		result = {}
@@ -223,7 +223,6 @@ class EncoderTelnetProtocol(LineReceiver):
 		logger.info('TELNET : Connection from %s' % (self._peer))
 		
 	def connectionLost(self, e):
-		print 'Lost connection from %s' % (self._peer)
 		logger.info('TELNET : Lost connection from %s' % (self._peer))
 	
 	def lineReceived(self, line):
@@ -412,7 +411,7 @@ if __name__ == '__main__':
 	logger.setLevel( LEVELS.get(cli_args.log_level, logging.NOTSET) )
 	
 	# Load configuration
-	config = Config(cli_args.config)
+	config = Config(cli_args.config, logger)
 	
 	# Load Encoder Manager class
 	manager = EncoderManager(cli_args.config)

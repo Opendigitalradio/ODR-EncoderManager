@@ -6,8 +6,9 @@ import os
 import sys
 
 class Config():
-	def __init__(self,config_file):
+	def __init__(self,config_file, logger):
 		self.config_file = config_file
+		self.logger = logger
 		self.config = ConfigParser.ConfigParser()
 		self.config.read(config_file)
 		
@@ -86,7 +87,7 @@ class Config():
 		for section in param:
 			for name in param[section]:
 				newConfig.set(section, name, param[section][name])
-				print "set section: %s, name: %s to value: %s" % (section, name, param[section][name])
+				self.logger.info('set section: %s, name: %s, value: %s' % (section, name, param[section][name]))
 		cfgfile = open(self.config_file,'w')
 		newConfig.write(cfgfile)
 		cfgfile.close()
@@ -100,8 +101,8 @@ class Config():
 			try:
 				dict1[option] = self.config.get(section, option)
 				if dict1[option] == -1:
-						DebugPrint("skip: %s" % option)
+					self.logger.warn('ConfigSectionMap/skip : %s' % (option))
 			except:
-				print("exception on %s!" % option)
+				self.logger.warn('ConfigSectionMap/exception : %s' % (option))
 				dict1[option] = None
 		return dict1

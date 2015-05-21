@@ -1,11 +1,16 @@
 # ODR-EncoderManager
 OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder easly with a WebGUI.
 
+The first script 'encoder.py' launch dabplus-enc and mot-encoder according config.ini and expose a JSONRPC api
+The second script 'api.py' provide a web server
+
 ODR-EncoderManager is currently in developpement and is not ready to use in production
+
+# INSTALLATION
 
 Run install-python-dependency.sh to install all python dependency.
 
-  * ./encoder.py -c config.ini
+  * ./encoder.py -c config.ini -l logs/
   * ./api.py -s static/ -l logs/
 
 # Warning
@@ -18,9 +23,11 @@ No access protection has been implemented yet instead IP binding configuration. 
 This list is without ordered !
 
   * Add BIG warning when RPC parameters are updated with WebGUI
-  * Update ZMQ Key instead of ZMQ Key path (who need to have ssh access)
-  * Debian startup script, to launch encoder at startup
+  * Update ZMQ Key instead of ZMQ Key path (who need to have ssh access) : Question Upload file or post content in a textarea ?
+  * Debian startup script, to launch encoder at startup : use supervisord ?
   * Create help content on help page
+  * Add documentation about API and how to update automaticly DLS from different automation software.
+  * Add JSONRPC Client IP logging
 
 
 

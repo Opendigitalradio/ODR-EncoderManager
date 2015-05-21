@@ -23,6 +23,8 @@ from config import Config
 import signal
 from signal import SIGKILL
 
+import logging
+from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 
 
 class EncoderManager():
@@ -40,7 +42,7 @@ class EncoderManager():
 				dls = f.read()
 				f.close()
 			except Exception,e:
-				print 'get_dls Fail to read dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+				logger.warn('get_dls Fail to read dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e))
 				return str(e)
 			else:
 				return {'dls': str(dls)}
@@ -54,7 +56,7 @@ class EncoderManager():
 				f.write(dls)
 				f.close()
 			except Exception,e:
-				print 'set_dls Fail to write dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+				logger.warn('set_dls Fail to write dls data in file %s, error: %s' % (self.config.mot_dls_fifo_file, e))
 				return str(e)
 			else:
 				return dls
@@ -100,7 +102,7 @@ class EncoderManager():
 			
 		if self.config.mot == True:
 			if not os.path.isfile(self.config.mot_pad_fifo_file):
-				print 'dabplus-enc Pad file %s not exist. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file)
+				logger.warn('dabplus-enc Pad file %s not exist. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file))
 			else:
 				args += ' --pad=%s' % (self.config.mot_pad)
 				args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
@@ -110,7 +112,7 @@ class EncoderManager():
 			if os.path.isfile(self.config.output_key_file):
 				args += ' -k %s' % (self.config.output_key_file)
 			else:
-				print 'dabplus-enc ZMQ secret key file not found or not readable. Ignoring this file and secret-key parameters.'
+				logger.crit('dabplus-enc ZMQ secret key file not found or not readable. Ignoring this file and secret-key parameters.')
 		args = args.split()
 		encoderProcessProtocol = MyEncoderProcessProtocol(self)
 		reactor.spawnProcess(encoderProcessProtocol, executable, args, {})
@@ -129,7 +131,7 @@ class EncoderManager():
 			if self.config.mot_slide_directory.strip() != '':
 				# Check if config.mot_slide_directory exist
 				if not os.path.exists(self.config.mot_slide_directory):
-					print 'mot-encoder Slide directory not exist or not readable. Ignoring slide directory parameters - %s' % (self.config.mot_slide_directory)
+					logger.warn('mot-encoder Slide directory not exist or not readable. Ignoring slide directory parameters - %s' % (self.config.mot_slide_directory))
 				else:
 					args += ' --dir=%s' % (self.config.mot_slide_directory)
 					args += ' --sleep=%s' % (self.config.mot_slide_sleeping)
@@ -142,7 +144,7 @@ class EncoderManager():
 					f = open(self.config.mot_dls_fifo_file, 'w')
 					f.close()
 				except Exception,e:
-					print 'mot-encoder Fail to create file %s, error: %s' % (self.config.mot_dls_fifo_file, e)
+					logger.warn('mot-encoder Fail to create file %s, error: %s' % (self.config.mot_dls_fifo_file, e))
 					return False
 			else:
 				f = open(self.config.mot_dls_fifo_file, 'w')
@@ -155,7 +157,7 @@ class EncoderManager():
 					f = open(self.config.mot_pad_fifo_file, 'w')
 					f.close()
 				except Exception,e:
-					print 'mot-encoder Fail to create file %s, error: %s' % (self.config.mot_pad_fifo_file, e)
+					logger.warn('mot-encoder Fail to create file %s, error: %s' % (self.config.mot_pad_fifo_file, e))
 					return False
 			else:
 				f = open(self.config.mot_pad_fifo_file, 'w')
@@ -182,12 +184,12 @@ class MyEncoderProcessProtocol(protocol.ProcessProtocol):
 		self.manager = manager
 		
 	def connectionMade(self):
-		print "dabplus-enc connection made!"
+		logger.info('dabplus-enc connection made!')
 		self.manager.encoderProcess = self
 		
 	def processEnded(self, reason):
-		print "dabplus-enc process ended, status %s" % (reason.value.exitCode)
-		#print "encoder autorestart: %s" % (self.manager.autorestart)
+		logger.info('dabplus-enc process ended, status %s' % (reason.value.exitCode))
+		logger.debug('dabplus-enc autorestart value : %s' % (self.manager.autorestart))
 		self.manager.encoderProcess = None
 		# Stop mot (restart itself)
 		self.manager.stop_mot(self.manager.autorestart)
@@ -200,12 +202,12 @@ class MyMotEncoderProcessProtocol(protocol.ProcessProtocol):
 		self.manager = manager
 	
 	def connectionMade(self):
-		print "mot-encoder connection made!"
+		logger.info('mot-encoder connection made!')
 		self.manager.motProcess = self
 
 	def processEnded(self, reason):
-		print "mot-encoder process ended, status %s" % (reason.value.exitCode)
-		#print "encoder autorestart: %s" % (self.manager.autorestart)
+		logger.info('mot-encoder process ended, status %s' % (reason.value.exitCode))
+		logger.debug('mot-encoder autorestart value : %s' % (self.manager.autorestart))
 		self.manager.motProcess = None
 		# Restart mot
 		if self.manager.autorestart == True:
@@ -217,21 +219,22 @@ class EncoderTelnetFactory(ServerFactory):
 
 class EncoderTelnetProtocol(LineReceiver):
 	def connectionMade(self):
-		self._peer = self.transport.getPeer()
-		print 'Connection from %s' % (self._peer)
+		self._peer = self.transport.getPeer().host
+		logger.info('TELNET : Connection from %s' % (self._peer))
 		
 	def connectionLost(self, e):
 		print 'Lost connection from %s' % (self._peer)
+		logger.info('TELNET : Lost connection from %s' % (self._peer))
 	
 	def lineReceived(self, line):
 		if line == "status":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			for process, status in self.factory.manager.getStatus().iteritems():
 				self.transport.write('%s: %s (pid:%s)\n' % (process, status['status'], status['pid']))
 			self.transport.write('Ok\n')
 		
 		elif line == "restart":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.factory.manager.stop_encoder()
 			self.factory.manager.stop_mot()
 			time.sleep(0.5)
@@ -243,7 +246,7 @@ class EncoderTelnetProtocol(LineReceiver):
 			self.transport.write('Ok\n')
 		
 		elif line == "start":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			if not self.factory.manager.motProcess:
 				self.factory.manager.run_mot()
 			time.sleep(0.1)
@@ -252,35 +255,35 @@ class EncoderTelnetProtocol(LineReceiver):
 			self.transport.write('Ok\n')
 		
 		elif line == "stop":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.factory.manager.stop_encoder(None)
 			self.factory.manager.stop_mot(None)
 			self.transport.write('Ok\n')
 		
 		elif line == "reload_config":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.factory.manager.reload_config()
 			self.transport.write('Ok\n')
 			
 		elif line == "show_config":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.transport.write(config.DisplayConfig())
 			self.transport.write('\n')
 			self.transport.write('Ok\n')
 		
 		elif line == "shutdown":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.factory.manager.stop_encoder(None)
 			self.factory.manager.stop_mot(None)
 			self.transport.write('Ok\n')
 			reactor.stop()
 		
 		elif line == "exit":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.transport.loseConnection()
 			
 		elif line == "help":
-			print '%s - %s' % (self._peer, line)
+			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
 			self.transport.write('Available command :\n')
 			self.transport.write('-\n')
 			self.transport.write('help          :  Display this help\n')
@@ -295,7 +298,7 @@ class EncoderTelnetProtocol(LineReceiver):
 			self.transport.write('Ok\n')
 			
 		else:
-			print '%s - Unknown command : %s' % (self._peer, line)
+			logger.warn('TELNET : Receive from %s an unknown command : %s' % (self._peer, line))
 			self.transport.write('Unknown command.\n')
 			self.transport.write('Please use help to display all available command.\n')
 			self.transport.write('Ok\n')
@@ -306,10 +309,6 @@ class EncoderTelnetProtocol(LineReceiver):
 class EncoderRPC(jsonrpc.JSONRPC):
 	def __init__(self, manager):
 		self.manager = manager
-	
-		
-	#def jsonrpc_add(self, a, b):
-		#return 'encoder %s' % (a + b)
 	
 	def jsonrpc_status(self):
 		return self.manager.getStatus()
@@ -359,14 +358,16 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		return self.manager.get_dls()
 
 def signal_handler(signal, frame):
-	print('You pressed Ctrl+C!')
+	logger.info('Ctrl+C pressed')
 	manager.autorestart = None
 	reactor.stop()
 			
 if __name__ == '__main__':
 	# Get configuration file in argument
 	parser = argparse.ArgumentParser(description='ODR Encoder Manager')
-	parser.add_argument('-c','--config', help='Configuration file name',required=True)
+	parser.add_argument('-c','--config', help='configuration filename',required=True)
+	parser.add_argument('-l','--log_dir', help='path of logs directory',required=True)
+	parser.add_argument('--log_level', default='info', help='level of log. This parameters can take value : debug, info, warning, error, critical (default : info)',required=False)
 	cli_args = parser.parse_args()
 	
 	# Check if configuration exist and is readable
@@ -375,6 +376,29 @@ if __name__ == '__main__':
 	else:
 		print "Configuration file is missing or is not readable - %s" % (cli_args.config)
 		sys.exit(1)
+	
+	# Check if log_dir exist and is writeable
+	if os.path.isdir(cli_args.log_dir) and os.access(cli_args.log_dir, os.W_OK):
+		print "Use logging directory %s" % (cli_args.log_dir)
+	else:
+		print "Log directory not exist or is not writeable - %s" % (cli_args.log_dir)
+		sys.exit(1)
+	
+	# Logginf configuration
+	LEVELS = {
+		'debug': logging.DEBUG,
+		'info': logging.INFO,
+		'warning': logging.WARNING,
+		'error': logging.ERROR,
+		'critical': logging.CRITICAL
+	}
+	logHandler = TimedRotatingFileHandler(cli_args.log_dir+'/encoder.log', when="midnight", interval=1, backupCount=30)
+	logFormatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s','%Y-%m-%d %H:%M:%S')
+	logHandler.setFormatter( logFormatter )
+	logHandler.suffix = "%Y-%m-%d"
+	logger = logging.getLogger('ODR-EncoderManager')
+	logger.addHandler( logHandler )
+	logger.setLevel( LEVELS.get(cli_args.log_level, logging.NOTSET) )
 	
 	# Load configuration
 	config = Config(cli_args.config)
@@ -403,5 +427,5 @@ if __name__ == '__main__':
 	# Run Reactor process
 	reactor.run() 
 	
-	print 'ODR encoder Manager Exited'
+	print 'ODR Encoder Manager Exited'
 	

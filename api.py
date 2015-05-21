@@ -190,70 +190,68 @@ if __name__ == '__main__':
 	
 	# Start cherrypy
 	cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
-	cherrypy.config.update({'server.socket_host': cli_args.host, 'server.socket_port': int(cli_args.port), 'request.show_tracebacks' : False, })
+	cherrypy.config.update({
+		'server.socket_host': cli_args.host,
+		'server.socket_port': int(cli_args.port),
+		'request.show_tracebacks' : True,
+		'environment': 'production',
+		'tools.sessions.on': True,
+		#'tools.encode.on': True,
+		#'tools.encode.encoding': "utf-8",
+		'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
+		'log.error_file' : os.path.join(cli_args.log_dir, 'error.log'),
+		'log.screen': False,
+		})
 	cherrypy.tree.mount(
 		API(), '/api/',
 			{'/':
-				{'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				#'tools.encode.on': True,
-				#'tools.encode.encoding': "utf-8",
-				'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+				{
+				'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+				}
 			}
 		)
-	cherrypy.quickstart(root(),config={
-		'/':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True
-				},
-		'/home':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				'tools.staticfile.on': True,
-				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/home.html")
-				},
-		'/status':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				'tools.staticfile.on': True,
-				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/status.html")
-				},
-		'/config':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				'tools.staticfile.on': True,
-				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/config.html")
-				},
-		'/css':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				'tools.staticdir.on': True,
-				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/css/")
-				},
-		'/js':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				'tools.staticdir.on': True,
-				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/js/")
-				},
-		'/fonts':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.sessions.on': True,
-				'tools.staticdir.on': True,
-				'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/fonts/")
-				},
-		'/favicon.ico':
-				{ 'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-				'log.screen': False,
-				'tools.staticfile.on': True,
-				'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/fonts/favicon.ico")
-				},
-	})
+	cherrypy.tree.mount(
+		root(), config={
+			'/':
+					{ 
+					},
+			'/home':
+					{ 
+					'tools.staticfile.on': True,
+					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/home.html")
+					},
+			'/status':
+					{ 
+					'tools.staticfile.on': True,
+					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/status.html")
+					},
+			'/config':
+					{ 
+					'tools.staticfile.on': True,
+					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/config.html")
+					},
+			'/css':
+					{ 
+					'tools.staticdir.on': True,
+					'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/css/")
+					},
+			'/js':
+					{ 
+					'tools.staticdir.on': True,
+					'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/js/")
+					},
+			'/fonts':
+					{ 
+					'tools.staticdir.on': True,
+					'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/fonts/")
+					},
+			'/favicon.ico':
+					{ 
+					'tools.staticfile.on': True,
+					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/fonts/favicon.ico")
+					},
+		}
+	)
+	
+	cherrypy.engine.start()
+	cherrypy.engine.block()

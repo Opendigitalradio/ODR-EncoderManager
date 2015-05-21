@@ -6,7 +6,7 @@ function requestStatus(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			alert("error " + data['status'] + " : " + data['statusText']);
+			alert("getStatus\nerror " + data['status'] + " : " + data['statusText']);
 		},
 		success: function(data) {
 			$.each( data, function( key, val ) {
@@ -30,7 +30,8 @@ function requestDLS(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			alert("error " + data['status'] + " : " + data['statusText']);
+			//alert("getDLS\nerror " + data['status'] + " : " + data['statusText']);
+			$('#dls').val("error " + data['status'] + " : " + data['statusText']);
 		},
 		success: function(data) {
 			if (data['dls'] == '') {
@@ -63,7 +64,7 @@ $(function(){
 				dataType: 'json',
 				
 				error: function(data) {
-					alert("error " + data['status'] + " : " + data['statusText']);
+					alert("stop\nerror " + data['status'] + " : " + data['statusText']);
 				},
 				success: function(data) {
 					alert(data);
@@ -85,7 +86,7 @@ $(function(){
 				dataType: 'json',
 				
 				error: function(data) {
-					alert("error " + data['status'] + " : " + data['statusText']);
+					alert("start\nerror " + data['status'] + " : " + data['statusText']);
 				},
 				success: function(data) {
 					alert(data);

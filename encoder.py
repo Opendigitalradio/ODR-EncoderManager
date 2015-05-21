@@ -220,7 +220,7 @@ class EncoderTelnetFactory(ServerFactory):
 class EncoderTelnetProtocol(LineReceiver):
 	def connectionMade(self):
 		self._peer = self.transport.getPeer().host
-		logger.info('TELNET : Connection from %s' % (self._peer))
+		logger.info('TELNET : Connection from %s' % (self._peer.host))
 		
 	def connectionLost(self, e):
 		print 'Lost connection from %s' % (self._peer)
@@ -309,11 +309,14 @@ class EncoderTelnetProtocol(LineReceiver):
 class EncoderRPC(jsonrpc.JSONRPC):
 	def __init__(self, manager):
 		self.manager = manager
+		self._peer = '**TODO**'
 	
 	def jsonrpc_status(self):
+		logger.info('JSONRPC : Receive from %s command : status' % (self._peer))
 		return self.manager.getStatus()
 	
 	def jsonrpc_start(self):
+		logger.info('JSONRPC : Receive from %s command : start' % (self._peer))
 		if not self.manager.motProcess:
 			self.manager.run_mot()
 		time.sleep(0.1)
@@ -322,11 +325,13 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		return 'encoder started'
 	
 	def jsonrpc_stop(self):
+		logger.info('JSONRPC : Receive from %s command : stop' % (self._peer))
 		self.manager.stop_encoder(None)
 		self.manager.stop_mot(None)
 		return 'encoder stopped'
 
 	def jsonrpc_restart(self):
+		logger.info('JSONRPC : Receive from %s command : restart' % (self._peer))
 		self.manager.stop_encoder()
 		self.manager.stop_mot()
 		time.sleep(0.5)
@@ -338,24 +343,30 @@ class EncoderRPC(jsonrpc.JSONRPC):
 		return 'encoder restart'
 	
 	def jsonrpc_reload_config(self):
+		logger.info('JSONRPC : Receive from %s command : reload_config' % (self._peer))
 		self.manager.reload_config()
 		return 'encoder reload_config'
 		
 	def jsonrpc_show_config(self):
+		logger.info('JSONRPC : Receive from %s command : show_config' % (self._peer))
 		return config.getConfig()
 		
 	def jsonrpc_set_config(self, cparam):
+		logger.info('JSONRPC : Receive from %s command : set_config' % (self._peer))
 		config.setConfig(cparam['config'])
 		#return cparam['config']
 		return 'encoder set_config'
 	
 	def jsonrpc_set_dls(self, cparam):
+		logger.info('JSONRPC : Receive from %s command : set_dls' % (self._peer))
 		dls = cparam['dls'].encode('utf-8')
 		r = self.manager.set_dls(dls)
 		return 'encoder set_dls ('+r+')'
 	
 	def jsonrpc_get_dls(self):
+		logger.info('JSONRPC : Receive from %s command : get_dls' % (self._peer))
 		return self.manager.get_dls()
+
 
 def signal_handler(signal, frame):
 	logger.info('Ctrl+C pressed')

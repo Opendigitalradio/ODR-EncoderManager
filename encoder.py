@@ -5,11 +5,13 @@ import os
 import sys
 import argparse
 
-from twisted.internet import protocol
+from twisted.internet import protocol, defer
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols.basic import LineReceiver
 
 from txjsonrpc.web import jsonrpc
+from txjsonrpc import jsonrpclib
+
 from twisted.web import server
 
 from twisted.internet import reactor
@@ -308,14 +310,41 @@ class EncoderTelnetProtocol(LineReceiver):
 class EncoderRPC(jsonrpc.JSONRPC):
 	def __init__(self, manager):
 		self.manager = manager
-		self._peer = '**TODO**'
 	
-	def jsonrpc_status(self):
-		logger.info('JSONRPC : Receive from %s command : status' % (self._peer))
+	def render(self, request):
+		request.content.seek(0, 0)
+		# Unmarshal the JSON-RPC data.
+		content = request.content.read()
+		parsed = jsonrpclib.loads(content)
+		functionPath = parsed.get("method")
+		args = parsed.get('params')
+		id = parsed.get('id')
+		version = parsed.get('jsonrpc')
+		if version:
+			version = int(float(version))
+		elif id and not version:
+			version = jsonrpclib.VERSION_1
+		else:
+			version = jsonrpclib.VERSION_PRE1
+		# XXX this all needs to be re-worked to support logic for multiple
+		# versions...
+		try:
+			function = self._getFunction(functionPath)
+		except jsonrpclib.Fault, f:
+			self._cbRender(f, request, id, version)
+		else:
+			request.setHeader("content-type", "text/json")
+			d = defer.maybeDeferred(function, *args, **{"request":request})
+			d.addErrback(self._ebRender, id)
+			d.addCallback(self._cbRender, request, id, version)
+		return server.NOT_DONE_YET
+	
+	def jsonrpc_status(self, request):
+		logger.info('JSONRPC : Receive from %s command : status' % (request.client.host))
 		return self.manager.getStatus()
 	
-	def jsonrpc_start(self):
-		logger.info('JSONRPC : Receive from %s command : start' % (self._peer))
+	def jsonrpc_start(self, request):
+		logger.info('JSONRPC : Receive from %s command : start' % (request.client.host))
 		if not self.manager.motProcess:
 			self.manager.run_mot()
 		time.sleep(0.1)
@@ -323,14 +352,14 @@ class EncoderRPC(jsonrpc.JSONRPC):
 			self.manager.run_encoder()
 		return 'encoder started'
 	
-	def jsonrpc_stop(self):
-		logger.info('JSONRPC : Receive from %s command : stop' % (self._peer))
+	def jsonrpc_stop(self, request):
+		logger.info('JSONRPC : Receive from %s command : stop' % (request.client.host))
 		self.manager.stop_encoder(None)
 		self.manager.stop_mot(None)
 		return 'encoder stopped'
 
-	def jsonrpc_restart(self):
-		logger.info('JSONRPC : Receive from %s command : restart' % (self._peer))
+	def jsonrpc_restart(self, request):
+		logger.info('JSONRPC : Receive from %s command : restart' % (request.client.host))
 		self.manager.stop_encoder()
 		self.manager.stop_mot()
 		time.sleep(0.5)
@@ -341,29 +370,28 @@ class EncoderRPC(jsonrpc.JSONRPC):
 			self.manager.run_encoder()
 		return 'encoder restart'
 	
-	def jsonrpc_reload_config(self):
-		logger.info('JSONRPC : Receive from %s command : reload_config' % (self._peer))
+	def jsonrpc_reload_config(self, request):
+		logger.info('JSONRPC : Receive from %s command : reload_config' % (request.client.host))
 		self.manager.reload_config()
 		return 'encoder reload_config'
 		
-	def jsonrpc_show_config(self):
-		logger.info('JSONRPC : Receive from %s command : show_config' % (self._peer))
+	def jsonrpc_show_config(self, request):
+		logger.info('JSONRPC : Receive from %s command : show_config' % (request.client.host))
 		return config.getConfig()
 		
-	def jsonrpc_set_config(self, cparam):
-		logger.info('JSONRPC : Receive from %s command : set_config' % (self._peer))
+	def jsonrpc_set_config(self, cparam, request):
+		logger.info('JSONRPC : Receive from %s command : set_config' % (request.client.host))
 		config.setConfig(cparam['config'])
-		#return cparam['config']
 		return 'encoder set_config'
 	
-	def jsonrpc_set_dls(self, cparam):
-		logger.info('JSONRPC : Receive from %s command : set_dls' % (self._peer))
+	def jsonrpc_set_dls(self, cparam, request):
+		logger.info('JSONRPC : Receive from %s command : set_dls' % (request.client.host))
 		dls = cparam['dls'].encode('utf-8')
 		r = self.manager.set_dls(dls)
 		return 'encoder set_dls ('+r+')'
 	
-	def jsonrpc_get_dls(self):
-		logger.info('JSONRPC : Receive from %s command : get_dls' % (self._peer))
+	def jsonrpc_get_dls(self, request):
+		logger.info('JSONRPC : Receive from %s command : get_dls' % (request.client.host))
 		return self.manager.get_dls()
 
 

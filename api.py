@@ -230,6 +230,16 @@ if __name__ == '__main__':
 					'tools.staticfile.on': True,
 					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/config.html")
 					},
+			'/help':
+					{ 
+					'tools.staticfile.on': True,
+					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/help.html")
+					},
+			'/about':
+					{ 
+					'tools.staticfile.on': True,
+					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/about.html")
+					},
 			'/css':
 					{ 
 					'tools.staticdir.on': True,

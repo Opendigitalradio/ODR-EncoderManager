@@ -161,13 +161,15 @@ class root(object):
 	default.exposed = True
 
 
-
+def handle_sigint():
+	print "Ctrl+C pressed"
 	
 if __name__ == '__main__':
 	# Get configuration file in argument
 	parser = argparse.ArgumentParser(description='ODR Encoder Manager (WebGUI)')
 	parser.add_argument('-s','--static_dir', help='Absolute path of static directory content',required=True)
 	parser.add_argument('-l','--log_dir', help='Absolute path of logs directory',required=True)
+	parser.add_argument('--daemon', help='run as daemon', action="store_true")
 	parser.add_argument('--host', default='0.0.0.0', help='socket host (default: 0.0.0.0)',required=False)
 	parser.add_argument('--port', default='8080', help='socket port (default: 8080)',required=False)
 	parser.add_argument('--rpc_host', default='127.0.0.1', help='encoder RPC host (default: 127.0.0.1)',required=False)
@@ -189,7 +191,8 @@ if __name__ == '__main__':
 		sys.exit(1)
 	
 	# Start cherrypy
-	cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
+	if cli_args.daemon:
+		cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
 	cherrypy.config.update({
 		'server.socket_host': cli_args.host,
 		'server.socket_port': int(cli_args.port),
@@ -262,6 +265,8 @@ if __name__ == '__main__':
 					},
 		}
 	)
+	
+	cherrypy.engine.signal_handler.handlers["SIGINT"] = handle_sigint
 	
 	cherrypy.engine.start()
 	cherrypy.engine.block()

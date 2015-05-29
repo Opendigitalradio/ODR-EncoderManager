@@ -166,8 +166,8 @@ class root(object):
 if __name__ == '__main__':
 	# Get configuration file in argument
 	parser = argparse.ArgumentParser(description='ODR Encoder Manager (WebGUI)')
-	parser.add_argument('-s','--static_dir', help='path of static directory content',required=True)
-	parser.add_argument('-l','--log_dir', help='path of logs directory',required=True)
+	parser.add_argument('-s','--static_dir', help='Absolute path of static directory content',required=True)
+	parser.add_argument('-l','--log_dir', help='Absolute path of logs directory',required=True)
 	parser.add_argument('--host', default='0.0.0.0', help='socket host (default: 0.0.0.0)',required=False)
 	parser.add_argument('--port', default='8080', help='socket port (default: 8080)',required=False)
 	parser.add_argument('--rpc_host', default='127.0.0.1', help='encoder RPC host (default: 127.0.0.1)',required=False)
@@ -218,47 +218,47 @@ if __name__ == '__main__':
 			'/home':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/home.html")
+					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"home.html")
 					},
 			'/status':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/status.html")
+					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"status.html")
 					},
 			'/config':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/config.html")
+					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"config.html")
 					},
 			'/help':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/help.html")
+					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"help.html")
 					},
 			'/about':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/about.html")
+					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"about.html")
 					},
 			'/css':
 					{ 
 					'tools.staticdir.on': True,
-					'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/css/")
+					'tools.staticdir.dir': os.path.join(cli_args.static_dir, u"css/")
 					},
 			'/js':
 					{ 
 					'tools.staticdir.on': True,
-					'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/js/")
+					'tools.staticdir.dir': os.path.join(cli_args.static_dir, u"js/")
 					},
 			'/fonts':
 					{ 
 					'tools.staticdir.on': True,
-					'tools.staticdir.dir': os.path.join(os.path.abspath("."), u"static/fonts/")
+					'tools.staticdir.dir': os.path.join(cli_args.static_dir, u"fonts/")
 					},
 			'/favicon.ico':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(os.path.abspath("."), u"static/fonts/favicon.ico")
+					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"fonts/favicon.ico")
 					},
 		}
 	)

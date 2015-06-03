@@ -6,6 +6,8 @@ The second script 'api.py' provide a web server
 
 ODR-EncoderManager is currently in developpement and is not yet ready to use in production.
 
+![Screenshot] (https://raw.github.com/YoannQueret/ODR-EncoderManager/master/ODR-Encoder_Manager.png)
+
 # INSTALLATION
 
 Run install-python-dependency.sh to install all python dependency.

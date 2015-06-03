@@ -398,6 +398,8 @@ class EncoderRPC(jsonrpc.JSONRPC):
 def signal_handler(signal, frame):
 	logger.info('Ctrl+C pressed')
 	manager.autorestart = None
+	manager.stop_mot(None)
+	manager.stop_encoder(None)
 	reactor.stop()
 			
 if __name__ == '__main__':

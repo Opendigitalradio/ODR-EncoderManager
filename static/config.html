@@ -162,20 +162,16 @@
 					
 					<h4>ZMQ configuration</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_host">Host:</label>
+						<label class="control-label col-sm-2" for="output_zmq_host">Host:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_host" placeholder="Enter multiplex hostname or ip">
-						</div>
-						<label class="control-label col-sm-2" for="output_port">Port:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_port" placeholder="Enter multiplex port">
+							<input type="text" class="form-control" id="output_zmq_host" placeholder="Enter multiplex hostname and port" data-toggle="tooltip" data-placement="top" title="You can enter multiple output destination (ip:port) with comma separated (ip1:port,ip2:port).">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_key_file">Key file:</label>
+						<label class="control-label col-sm-2" for="output_zmq_key">Key:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_key_file" placeholder="Enter ZMQ key file full path if needed">
+							<input type="text" class="form-control" id="output_zmq_key" placeholder="Enter ZMQ key if needed">
 						</div>
 					</div>
 					

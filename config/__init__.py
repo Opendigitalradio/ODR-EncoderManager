@@ -17,6 +17,7 @@ class Config():
 		# Global configuration
 		self.global_encoder_path = self.ConfigSectionMap('global')['encoder_path']
 		self.global_mot_path = self.ConfigSectionMap('global')['mot_path']
+		self.global_zmq_tmp_file = self.ConfigSectionMap('global')['zmq_tmp_file']
 		
 		# Telnet configuration
 		self.telnet_port = self.ConfigSectionMap('telnet')['port']
@@ -38,9 +39,8 @@ class Config():
 			self.source_volume = self.ConfigSectionMap('source')['volume']
 		
 		# Output configuration
-		self.output_host = self.ConfigSectionMap('output')['host']
-		self.output_port = self.ConfigSectionMap('output')['port']
-		self.output_key_file = self.ConfigSectionMap('output')['key_file']
+		self.output_zmq_host = self.ConfigSectionMap('output')['zmq_host']
+		self.output_zmq_key = self.ConfigSectionMap('output')['zmq_key']
 		
 		self.output_samplerate = self.ConfigSectionMap('output')['samplerate']
 		self.output_bitrate = self.ConfigSectionMap('output')['bitrate']

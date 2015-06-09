@@ -109,12 +109,18 @@ class EncoderManager():
 				args += ' --pad=%s' % (self.config.mot_pad)
 				args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
 		
-		args += ' -f raw -o tcp://%s:%s' % (self.config.output_host, self.config.output_port)
-		if self.config.output_key_file.strip() != '':
-			if os.path.isfile(self.config.output_key_file):
-				args += ' -k %s' % (self.config.output_key_file)
+		args += ' -f raw'
+		hosts = self.config.output_zmq_host.replace(' ','').split(',')
+		for host in hosts:
+			args += ' -o tcp://%s' % (host)
+		if self.config.output_zmq_key.strip() != '':
+			if os.access(os.path.dirname(self.config.global_zmq_tmp_file), os.W_OK):
+				f = open(self.config.global_zmq_tmp_file, 'w')
+				f.write(self.config.output_zmq_key)
+				f.close()
+				args += ' -k %s' % (self.config.global_zmq_tmp_file)
 			else:
-				logger.crit('dabplus-enc ZMQ secret key file not found or not readable. Ignoring this file and secret-key parameters.')
+				logger.critical('dabplus-enc ZMQ secret key file not writeable. Try to ignoring secret-key parameters.')
 		args = args.split()
 		encoderProcessProtocol = MyEncoderProcessProtocol(self)
 		reactor.spawnProcess(encoderProcessProtocol, executable, args, {})
@@ -268,8 +274,11 @@ class EncoderTelnetProtocol(LineReceiver):
 			
 		elif line == "show_config":
 			logger.info('TELNET : Receive from %s command : %s' % (self._peer, line))
-			self.transport.write(config.DisplayConfig())
-			self.transport.write('\n')
+			c = config.getConfig()
+			for section in c:
+				for name in c[section]:
+					self.transport.write('%s_%s: %s' % (section, name, c[section][name]))
+					self.transport.write('\n')		
 			self.transport.write('Ok\n')
 		
 		elif line == "shutdown":
@@ -303,8 +312,6 @@ class EncoderTelnetProtocol(LineReceiver):
 			self.transport.write('Unknown command.\n')
 			self.transport.write('Please use help to display all available command.\n')
 			self.transport.write('Ok\n')
-
-
 
 
 class EncoderRPC(jsonrpc.JSONRPC):

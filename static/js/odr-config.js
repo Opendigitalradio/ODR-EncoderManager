@@ -36,6 +36,7 @@ function setConfiguration(callback) {
 	var param = {
 		"global" :	{	"encoder_path": $('#global_encoder_path').val(),
 					"mot_path": $('#global_mot_path').val(),
+					"zmq_tmp_file": $('#global_zmq_tmp_file').val(),
 				},
 		"telnet" :	{	"bind_ip": $('#telnet_bind_ip').val(),
 					"port": $('#telnet_port').val(),

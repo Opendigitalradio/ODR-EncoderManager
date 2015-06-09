@@ -69,6 +69,10 @@ class Config():
 				self.mot_slide_once = True
 			else:
 				self.mot_slide_once = False
+			if self.ConfigSectionMap('mot')['raw_dls'].upper() == 'TRUE':
+				self.mot_raw_dls = True
+			else:
+				self.mot_raw_dls = False
 		else:
 			self.mot = False
 		

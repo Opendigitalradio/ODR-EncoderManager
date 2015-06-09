@@ -176,6 +176,8 @@ class EncoderManager():
 			args += ' --dls=%s' % (self.config.mot_dls_fifo_file)
 			args += ' --output=%s' % (self.config.mot_pad_fifo_file)
 			
+			if self.config.mot_raw_dls == True:
+				args += ' --raw-dls'
 				
 			args = args.split()
 			motencoderProcessProtocol = MyMotEncoderProcessProtocol(self)

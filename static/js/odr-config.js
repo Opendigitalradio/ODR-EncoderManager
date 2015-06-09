@@ -63,6 +63,7 @@ function setConfiguration(callback) {
 					"slide_directory": $('#mot_slide_directory').val(),
 					"slide_sleeping": $('#mot_slide_sleeping').val(),
 					"slide_once": $('#mot_slide_once').val(),
+					"raw_dls": $('#mot_raw_dls').val(),
 				},
 	}
 	

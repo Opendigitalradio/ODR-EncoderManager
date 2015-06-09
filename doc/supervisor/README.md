@@ -20,3 +20,9 @@ To see process status :
 To start or stop a process :
 
   * supervisorcrl [start|stop] [api|encoder]
+
+To enable Web interface to manage process add to your /etc/supervisor/supervisord.conf file :
+[inet_http_server]
+port=*:9001
+;username="admin"
+;password="admin"

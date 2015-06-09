@@ -15,6 +15,10 @@ Run install-python-dependency.sh to install all python dependency.
   * ./encoder.py -c /absolute_path/config.ini -l /absolute_path/logs/
   * ./api.py -s /absolute_path/static/ -l /absolute_path/logs/
 
+# IN PRODUCTION
+
+  See doc/supervisor/README.md
+  
 # Warning
 This program has been tested only on GNU/Linux Debian Jessie (8.x)
 
@@ -22,11 +26,7 @@ No access protection has been implemented yet instead IP binding configuration. 
 
 
 # TODO LIST
-This list is without ordered !
 
-  * Add BIG warning when RPC parameters are updated with WebGUI
-  * Update ZMQ Key instead of ZMQ Key path (who need to have ssh access) : Question Upload file or post content in a textarea ?
-  * Debian startup script, to launch encoder at startup : use supervisord ?
   * Create help content on help page
   * Add documentation about API and how to update automaticly DLS from different automation software.
 

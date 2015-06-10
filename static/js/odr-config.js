@@ -6,7 +6,13 @@ function requestConfiguration(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			alert("error " + data['status'] + " : " + data['statusText']);
+			//alert("error " + data['status'] + " : " + data['statusText']);
+			$.gritter.add({
+				title: 'Load configuration : ERROR !',
+				text: data['status'] + " : " + data['statusText'],
+				image: '/fonts/warning.png',
+				sticky: true,
+			});
 		},
 		success: function(data) {
 			$.each( data, function( section_key, section_val ) {
@@ -76,10 +82,20 @@ function setConfiguration(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			alert("error");
+			$.gritter.add({
+				title: 'Write changes : ERROR !',
+				text: data['status'] + " : " + data['statusText'],
+				image: '/fonts/warning.png',
+				sticky: true,
+			});
 		},
 		success: function(data) {
-			alert(data);
+			//alert(data);
+			$.gritter.add({
+				title: 'Write changes : done !',
+				image: '/fonts/accept.png',
+				text: data,
+			});
 		}
 	});
 }
@@ -102,10 +118,21 @@ $(function(){
 			dataType: 'json',
 			
 			error: function(data) {
-				alert("error " + data['status'] + " : " + data['statusText']);
+				//alert("error " + data['status'] + " : " + data['statusText']);
+				$.gritter.add({
+					title: 'Load changes : ERROR !',
+					text: data['status'] + " : " + data['statusText'],
+					image: '/fonts/warning.png',
+					sticky: true,
+				});
 			},
 			success: function(data) {
-				alert(data);
+				//alert(data);
+				$.gritter.add({
+					title: 'Load changes : done !',
+					image: '/fonts/accept.png',
+					text: data,
+				});
 			}
 		});
 	});
@@ -120,10 +147,21 @@ $(function(){
 				dataType: 'json',
 				
 				error: function(data) {
-					alert("error " + data['status'] + " : " + data['statusText']);
+					//alert("error " + data['status'] + " : " + data['statusText']);
+					$.gritter.add({
+						title: 'Restart : ERROR !',
+						text: data['status'] + " : " + data['statusText'],
+						image: '/fonts/warning.png',
+						sticky: true,
+					});
 				},
 				success: function(data) {
-					alert(data);
+					//alert(data);
+					$.gritter.add({
+						title: 'Restart : done !',
+						image: '/fonts/accept.png',
+						text: data,
+					});
 				}
 			});
 		}

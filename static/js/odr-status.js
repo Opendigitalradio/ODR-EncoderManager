@@ -6,7 +6,13 @@ function requestStatus(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			alert("getStatus\nerror " + data['status'] + " : " + data['statusText']);
+			//alert("getStatus\nerror " + data['status'] + " : " + data['statusText']);
+			$.gritter.add({
+				title: 'Refresh services status : ERROR !',
+				text: data['status'] + " : " + data['statusText'],
+				image: '/fonts/warning.png',
+				sticky: true,
+			});
 		},
 		success: function(data) {
 			$.each( data, function( key, val ) {
@@ -45,6 +51,11 @@ function requestDLS(callback) {
 		requestDLS();},10000);
 }
 
+function sleep(delay) {
+	var start = new Date().getTime();
+	while (new Date().getTime() < start + delay);
+}
+
 $(function(){
 	requestStatus();
 	requestDLS();
@@ -64,14 +75,26 @@ $(function(){
 				dataType: 'json',
 				
 				error: function(data) {
-					alert("stop\nerror " + data['status'] + " : " + data['statusText']);
+					//alert("stop\nerror " + data['status'] + " : " + data['statusText']);
+					$.gritter.add({
+						title: 'Stop services : ERROR !',
+						text: data['status'] + " : " + data['statusText'],
+						image: '/fonts/warning.png',
+						sticky: true,
+					});
 				},
 				success: function(data) {
-					alert(data);
+					//alert(data);
+					$.gritter.add({
+						title: 'Stop services : done !',
+						image: '/fonts/accept.png',
+						text: data,
+					});
 				}
 			});
 
 			$('#status > tbody').empty();
+			sleep(1000);
 			requestStatus();
 		}
 	});
@@ -86,14 +109,26 @@ $(function(){
 				dataType: 'json',
 				
 				error: function(data) {
-					alert("start\nerror " + data['status'] + " : " + data['statusText']);
+					//alert("start\nerror " + data['status'] + " : " + data['statusText']);
+					$.gritter.add({
+						title: 'Start services : ERROR !',
+						text: data['status'] + " : " + data['statusText'],
+						image: '/fonts/warning.png',
+						sticky: true,
+					});
 				},
 				success: function(data) {
-					alert(data);
+					//alert(data);
+					$.gritter.add({
+						title: 'Start services : done !',
+						image: '/fonts/accept.png',
+						text: data,
+					});
 				}
 			});
 			
 			$('#status > tbody').empty();
+			sleep(1000);
 			requestStatus();
 		}
 	});

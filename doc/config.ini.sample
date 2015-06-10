@@ -1,7 +1,7 @@
 [global]
 encoder_path=/usr/local/bin/dabplus-enc
 mot_path=/usr/local/bin/mot-encoder
-
+zmq_tmp_file = /tmp/zmq.key
 
 [telnet]
 port=9000
@@ -28,10 +28,9 @@ driftcomp=true
 
 [output]
 ; ZeroMQ configuration, with optional key
-host=mux.opendigitalradio.org
-port=9002
-; Leave blank to not use key_file
-key_file=
+zmq_host = mux.opendigitalradio.org:9002
+; Leave blank to not use ZMQ key
+zmq_key = 
 
 ; Sound configuration
 bitrate=96
@@ -45,6 +44,7 @@ enable=true
 pad=34
 pad_fifo_file=/tmp/metadata.pad
 dls_fifo_file=/tmp/metadata.dls
+raw_dls= false
 
 ; Leave blank to not use SLS
 slide_directory=/tmp/slide/

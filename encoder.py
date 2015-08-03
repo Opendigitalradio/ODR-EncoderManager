@@ -2,6 +2,7 @@
 
 # -*- coding: utf-8 -*-
 import os
+import stat
 import sys
 import argparse
 
@@ -103,8 +104,8 @@ class EncoderManager():
 			args += ' --no-afterburner'
 			
 		if self.config.mot == True:
-			if not os.path.isfile(self.config.mot_pad_fifo_file):
-				logger.warn('dabplus-enc Pad file %s not exist. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file))
+			if not os.path.exists(self.config.mot_pad_fifo_file) or not stat.S_ISFIFO(os.stat(self.config.mot_pad_fifo_file).st_mode):
+				logger.warn('dabplus-enc Pad file %s not exist or not a fifo file. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file))
 			else:
 				args += ' --pad=%s' % (self.config.mot_pad)
 				args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
@@ -160,17 +161,16 @@ class EncoderManager():
 				f.close()
 				
 			# Check if config.mot_pad_fifo_file exist and create it if needed.
-			if not os.path.isfile(self.config.mot_pad_fifo_file):
+			if not os.path.exists(self.config.mot_pad_fifo_file):
 				try:
-					f = open(self.config.mot_pad_fifo_file, 'w')
-					f.close()
+					os.mkfifo(self.config.mot_pad_fifo_file)
 				except Exception,e:
-					logger.warn('mot-encoder Fail to create file %s, error: %s' % (self.config.mot_pad_fifo_file, e))
+					logger.warn('mot-encoder Fail to create fifo %s, error: %s' % (self.config.mot_pad_fifo_file, e))
 					return False
 			else:
-				f = open(self.config.mot_pad_fifo_file, 'w')
-				f.write('')
-				f.close()
+				if not stat.S_ISFIFO(os.stat(self.config.mot_pad_fifo_file).st_mode):
+					logger.warn('mot-encoder File %s is not a fifo file' % (self.config.mot_pad_fifo_file))
+					return False
 			
 			args += ' --pad=%s' % (self.config.mot_pad)
 			args += ' --dls=%s' % (self.config.mot_dls_fifo_file)

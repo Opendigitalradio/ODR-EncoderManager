@@ -36,7 +36,8 @@ class Config():
 		self.source_type = self.ConfigSectionMap('source')['type']
 		
 		# Global configuration
-		self.global_encoder_path = self.ConfigSectionMap('global')['encoder_path']
+		self.global_encoder_dabp_path = self.ConfigSectionMap('global')['encoder_dabp_path']
+		self.global_encoder_dab_path = self.ConfigSectionMap('global')['encoder_dab_path']
 		self.global_mot_path = self.ConfigSectionMap('global')['mot_path']
 		self.global_zmq_tmp_file = self.ConfigSectionMap('global')['zmq_tmp_file']
 		
@@ -63,21 +64,27 @@ class Config():
 		# Output configuration
 		self.output_zmq_host = self.ConfigSectionMap('output')['zmq_host']
 		self.output_zmq_key = self.ConfigSectionMap('output')['zmq_key']
+		self.output_type = self.ConfigSectionMap('output')['type']
 		
-		self.output_samplerate = self.ConfigSectionMap('output')['samplerate']
-		self.output_bitrate = self.ConfigSectionMap('output')['bitrate']
-		if self.ConfigSectionMap('output')['sbr'].upper() == 'TRUE':
-			self.output_sbr = True
+		#DAB+
+		self.output_dabp_samplerate = self.ConfigSectionMap('output')['dabp_samplerate']
+		self.output_dabp_bitrate = self.ConfigSectionMap('output')['dabp_bitrate']
+		if self.ConfigSectionMap('output')['dabp_sbr'].upper() == 'TRUE':
+			self.output_dabp_sbr = True
 		else:
-			self.output_sbr = False
-		if self.ConfigSectionMap('output')['ps'].upper() == 'TRUE':
-			self.output_ps = True
+			self.output_dabp_sbr = False
+		if self.ConfigSectionMap('output')['dabp_ps'].upper() == 'TRUE':
+			self.output_dabp_ps = True
 		else:
-			self.output_ps = False
-		if self.ConfigSectionMap('output')['afterburner'].upper() == 'TRUE':
-			self.output_afterburner = True
+			self.output_dabp_ps = False
+		if self.ConfigSectionMap('output')['dabp_afterburner'].upper() == 'TRUE':
+			self.output_dabp_afterburner = True
 		else:
-			self.output_afterburner = False
+			self.output_dabp_afterburner = False
+		
+		#dab
+		self.output_dab_samplerate = self.ConfigSectionMap('output')['dab_samplerate']
+		self.output_dab_bitrate = self.ConfigSectionMap('output')['dab_bitrate']
 		
 		# MOT configuration
 		if self.ConfigSectionMap('mot')['enable'].upper() == 'TRUE':

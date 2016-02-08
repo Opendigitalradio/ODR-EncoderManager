@@ -107,45 +107,65 @@ class EncoderManager():
 		
 	def run_encoder(self):
 		self.autorestart = True
-		executable = self.config.global_encoder_path
-		args = executable
 		
-		if self.config.source_type == 'alsa':
-			args += ' -d %s' % (self.config.source_device)
-		if self.config.source_type == 'stream':
-			args += ' --vlc-uri=%s' % (self.config.source_url)
-			logger.warn('%s' % args)
-		if self.config.source_driftcomp == True:
-			args += ' -D'
-			logger.warn('%s' % args)
-		
-		args += ' -b %s -r %s' % (self.config.output_bitrate, self.config.output_samplerate)
-		if self.config.output_sbr == True:
-			args += ' --sbr'
-		if self.config.output_ps == True:
-			args += ' --ps'
-		if self.config.output_afterburner == False:
-			args += ' --no-afterburner'
+		if self.config.output_type == 'dabp':
+			executable = self.config.global_encoder_dabp_path
+			args = executable
 			
-		if self.config.mot == True:
-			if not os.path.exists(self.config.mot_pad_fifo_file) or not stat.S_ISFIFO(os.stat(self.config.mot_pad_fifo_file).st_mode):
-				logger.warn('dabplus-enc Pad file %s not exist or not a fifo file. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file))
-			else:
-				args += ' --pad=%s' % (self.config.mot_pad)
-				args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
+			if self.config.source_type == 'alsa':
+				args += ' -d %s' % (self.config.source_device)
+			if self.config.source_type == 'stream':
+				args += ' --vlc-uri=%s' % (self.config.source_url)
+			if self.config.source_driftcomp == True:
+				args += ' -D'
+			
+			args += ' -b %s -r %s' % (self.config.output_dabp_bitrate, self.config.output_dabp_samplerate)
+			if self.config.output_dabp_sbr == True:
+				args += ' --sbr'
+			if self.config.output_dabp_ps == True:
+				args += ' --ps'
+			if self.config.output_dabp_afterburner == False:
+				args += ' --no-afterburner'
+				
+			if self.config.mot == True:
+				if not os.path.exists(self.config.mot_pad_fifo_file) or not stat.S_ISFIFO(os.stat(self.config.mot_pad_fifo_file).st_mode):
+					logger.warn('dabplus-enc Pad file %s not exist or not a fifo file. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file))
+				else:
+					args += ' --pad=%s' % (self.config.mot_pad)
+					args += ' --pad-fifo=%s' % (self.config.mot_pad_fifo_file)
+			
+			args += ' -f raw'
+			hosts = self.config.output_zmq_host.replace(' ','').split(',')
+			for host in hosts:
+				args += ' -o tcp://%s' % (host)
+			
+			if self.config.output_zmq_key.strip() != '':
+				if os.access(os.path.dirname(self.config.global_zmq_tmp_file), os.W_OK):
+					f = open(self.config.global_zmq_tmp_file, 'w')
+					f.write(self.config.output_zmq_key)
+					f.close()
+					args += ' -k %s' % (self.config.global_zmq_tmp_file)
+				else:
+					logger.critical('dabplus-enc ZMQ secret key file not writeable. Try to ignoring secret-key parameters.')
 		
-		args += ' -f raw'
-		hosts = self.config.output_zmq_host.replace(' ','').split(',')
-		for host in hosts:
-			args += ' -o tcp://%s' % (host)
-		if self.config.output_zmq_key.strip() != '':
-			if os.access(os.path.dirname(self.config.global_zmq_tmp_file), os.W_OK):
-				f = open(self.config.global_zmq_tmp_file, 'w')
-				f.write(self.config.output_zmq_key)
-				f.close()
-				args += ' -k %s' % (self.config.global_zmq_tmp_file)
-			else:
-				logger.critical('dabplus-enc ZMQ secret key file not writeable. Try to ignoring secret-key parameters.')
+		
+		if self.config.output_type == 'dab':
+			executable = self.config.global_encoder_dab_path
+			args = executable
+			
+			if self.config.source_type == 'stream':
+				args += ' -s %s' % (self.config.output_dab_samplerate)
+				args += ' -V %s' % (self.config.source_url)
+				args += ' -b %s' % (self.config.output_dab_bitrate)
+				
+				hosts = self.config.output_zmq_host.replace(' ','').split(',')
+				for host in hosts:
+					args += ' tcp://%s;' % (host)
+				# Remove the last fucking ;
+				args = args[:-1]
+				logger.warn('%s' % args)
+			
+		
 		args = args.split()
 		encoderProcessProtocol = MyEncoderProcessProtocol(self)
 		reactor.spawnProcess(encoderProcessProtocol, executable, args, {})
@@ -218,12 +238,12 @@ class MyEncoderProcessProtocol(protocol.ProcessProtocol):
 		self.manager = manager
 		
 	def connectionMade(self):
-		logger.info('dabplus-enc connection made!')
+		logger.info('encoder connection made!')
 		self.manager.encoderProcess = self
 		
 	def processEnded(self, reason):
-		logger.info('dabplus-enc process ended, status %s' % (reason.value.exitCode))
-		logger.debug('dabplus-enc autorestart value : %s' % (self.manager.autorestart))
+		logger.info('encoder process ended, status %s' % (reason.value.exitCode))
+		logger.debug('encoder autorestart value : %s' % (self.manager.autorestart))
 		self.manager.encoderProcess = None
 		# Stop mot (restart itself)
 		self.manager.stop_mot(self.manager.autorestart)

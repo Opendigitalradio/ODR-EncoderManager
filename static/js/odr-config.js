@@ -61,30 +61,40 @@ function requestConfiguration(callback) {
 
 function setConfiguration(callback) {
 	var param = {
-		"global" :	{	"encoder_path": $('#global_encoder_path').val(),
+		"global" :	{
+					"encoder_dabp_path": $('#global_encoder_dabp_path').val(),
+					"encoder_dab_path": $('#global_encoder_dab_path').val(),
 					"mot_path": $('#global_mot_path').val(),
 					"zmq_tmp_file": $('#global_zmq_tmp_file').val(),
 				},
-		"telnet" :	{	"bind_ip": $('#telnet_bind_ip').val(),
+		"telnet" :	{
+					"bind_ip": $('#telnet_bind_ip').val(),
 					"port": $('#telnet_port').val(),
 				},
-		"rpc" :		{	"bind_ip": $('#rpc_bind_ip').val(),
+		"rpc" :		{
+					"bind_ip": $('#rpc_bind_ip').val(),
 					"port": $('#rpc_port').val(),
 				},
-		"source" :	{	"type": $('#source_type').val(),
+		"source" :	{
+					"type": $('#source_type').val(),
 					"url": $('#source_url').val(),
 					"device": $('#source_device').val(),
 					"driftcomp": $('#source_driftcomp').val(),
 				},
-		"output" :	{	"zmq_host": $('#output_zmq_host').val(),
+		"output" :	{
+					"type": $('#output_type').val(),
+					"zmq_host": $('#output_zmq_host').val(),
 					"zmq_key": $('#output_zmq_key').val(),
-					"bitrate": $('#output_bitrate').val(),
-					"samplerate": $('#output_samplerate').val(),
-					"sbr": $('#output_sbr').val(),
-					"ps": $('#output_ps').val(),
-					"afterburner": $('#output_afterburner').val(),
+					"dabp_bitrate": $('#output_dabp_bitrate').val(),
+					"dabp_samplerate": $('#output_dabp_samplerate').val(),
+					"dabp_sbr": $('#output_sbr').val(),
+					"dabp_ps": $('#output_ps').val(),
+					"dabp_afterburner": $('#output_afterburner').val(),
+					"dab_bitrate": $('#output_dab_bitrate').val(),
+					"dab_samplerate": $('#output_dab_samplerate').val(),
 				},
-		"mot" :		{	"enable": $('#mot_enable').val(),
+		"mot" :		{
+					"enable": $('#mot_enable').val(),
 					"pad": $('#mot_pad').val(),
 					"pad_fifo_file": $('#mot_pad_fifo_file').val(),
 					"dls_fifo_file": $('#mot_dls_fifo_file').val(),

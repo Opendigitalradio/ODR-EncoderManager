@@ -146,31 +146,42 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 			<div id="collapseOutput" class="panel-collapse collapse">
 				<div class="panel-body">
 					
-					<h4>Audio encoding configuration</h4>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_bitrate">Bitrate:</label>
+						<label class="control-label col-sm-2" for="output_type">Output type:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_bitrate" placeholder="Enter bitrate (ex: 96)" data-toggle="tooltip" data-placement="top" title="The bitrate value need to be the same on multiplex configuration. Change it according multiplex configuration.">
+							<select type="select" class="form-control" id="output_type">
+								<option value="dabp">DAB+</option>
+								<option value="dab">DAB</option>
+							</select>
 						</div>
-						<label class="control-label col-sm-2" for="output_samplerate">Samplerate:</label>
+					</div>
+					<hr />
+					
+					<h4>DAB+ encoding configuration</h4>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="output_dabp_bitrate">Bitrate:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)">
+							<input type="text" class="form-control" id="output_dabp_bitrate" placeholder="Enter bitrate (ex: 96)" data-toggle="tooltip" data-placement="top" title="The bitrate value need to be the same on multiplex configuration. Change it according multiplex configuration.">
+						</div>
+						<label class="control-label col-sm-2" for="output_dabp_samplerate">Samplerate:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="output_dabp_samplerate" placeholder="Enter samplerate (ex: 48000)">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_sbr">SBR:</label>
+						<label class="control-label col-sm-2" for="output_dabp_sbr">SBR:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate from 96 kbps.">
+							<select type="select" class="form-control" id="output_dabp_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate from 96 kbps.">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
 						</div>
 						
 						
-						<label class="control-label col-sm-2" for="output_ps">PS:</label>
+						<label class="control-label col-sm-2" for="output_dabp_ps">PS:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrate multiple of 8kbps and under 56 kbps.">
+							<select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrate multiple of 8kbps and under 56 kbps.">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -178,14 +189,28 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_afterburner">After Burner:</label>
+						<label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_afterburner">
+							<select type="select" class="form-control" id="output_dabp_afterburner">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
 						</div>
 					</div>
+					<hr />
+					
+					<h4>DAB encoding configuration</h4>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="output_dab_bitrate">Bitrate:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="output_dab_bitrate" placeholder="Enter bitrate (ex: 96)" data-toggle="tooltip" data-placement="top" title="The bitrate value need to be the same on multiplex configuration. Change it according multiplex configuration.">
+						</div>
+						<label class="control-label col-sm-2" for="output_dab_samplerate">Samplerate:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="output_dab_samplerate" placeholder="Enter samplerate (ex: 48000)">
+						</div>
+					</div>
+					
 					<hr />
 					
 					
@@ -298,9 +323,16 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 				<div class="panel-body">
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="global_encoder_path">dabplus-enc path:</label>
+						<label class="control-label col-sm-2" for="global_encoder_dabp_path">dabplus-enc path:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="global_encoder_path" placeholder="Enter dabplus-enc full path">
+							<input type="text" class="form-control" id="global_encoder_dabp_path" placeholder="Enter dabplus-enc full path">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="global_encoder_dab_path">toolame-dab path:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="global_encoder_dab_path" placeholder="Enter toolame-dab full path">
 						</div>
 					</div>
 					

@@ -112,14 +112,12 @@ class EncoderManager():
 		
 		if self.config.source_type == 'alsa':
 			args += ' -d %s' % (self.config.source_device)
-			if self.config.source_driftcomp == True:
-				args += ' -D'
 		if self.config.source_type == 'stream':
 			args += ' --vlc-uri=%s' % (self.config.source_url)
 			logger.warn('%s' % args)
-			if self.config.source_driftcomp == True:
-				args += ' -D'
-				logger.warn('%s' % args)
+		if self.config.source_driftcomp == True:
+			args += ' -D'
+			logger.warn('%s' % args)
 		
 		args += ' -b %s -r %s' % (self.config.output_bitrate, self.config.output_samplerate)
 		if self.config.output_sbr == True:

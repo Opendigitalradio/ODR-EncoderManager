@@ -51,13 +51,14 @@ class Config():
 		# Source configuration
 		if self.source_type == 'alsa':
 			self.source_device = self.ConfigSectionMap('source')['device']
-			if self.ConfigSectionMap('source')['driftcomp'].upper() == 'TRUE':
-				self.source_driftcomp = True
-			else:
-				self.source_driftcomp = False
 		if self.source_type == 'stream':
 			self.source_url = self.ConfigSectionMap('source')['url']
 			self.source_volume = self.ConfigSectionMap('source')['volume']
+			
+		if self.ConfigSectionMap('source')['driftcomp'].upper() == 'TRUE':
+			self.source_driftcomp = True
+		else:
+			self.source_driftcomp = False
 		
 		# Output configuration
 		self.output_zmq_host = self.ConfigSectionMap('output')['zmq_host']

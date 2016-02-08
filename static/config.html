@@ -103,6 +103,13 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 								<option value="stream">stream</option>
 							</select>
 						</div>
+						<label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
+                        <div class="col-sm-3">
+                            <select type="select" class="form-control" id="source_driftcomp">
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
 					</div>
 					<hr />
 
@@ -112,13 +119,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 						<div class="col-sm-3">
 							<input type="text" class="form-control" id="source_device" placeholder="Enter audio device (ex: hw:1,0)">
 						</div>
-						<label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="source_driftcomp">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
+						
 					</div>
 					<hr />
 					

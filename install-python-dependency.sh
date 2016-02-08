@@ -34,6 +34,7 @@ python /tmp/get-pip.py
 pip install argparse
 
 # for encoder daemon
+# on ARM you needed to install debian package : python-twisted instead of twisted from pip
 pip install twisted
 pip install txJSON-RPC
 

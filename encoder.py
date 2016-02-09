@@ -157,13 +157,18 @@ class EncoderManager():
 				args += ' -s %s' % (self.config.output_dab_samplerate)
 				args += ' -V %s' % (self.config.source_url)
 				args += ' -b %s' % (self.config.output_dab_bitrate)
-				
-				hosts = self.config.output_zmq_host.replace(' ','').split(',')
-				for host in hosts:
-					args += ' tcp://%s;' % (host)
-				# Remove the last fucking ;
-				args = args[:-1]
-				logger.warn('%s' % args)
+			
+			if self.config.source_type == 'alsa':
+				args += ' -s %s' % (self.config.output_dab_samplerate)
+				args += ' -V alsa://plug%s' % (self.config.source_device)
+				args += ' -b %s' % (self.config.output_dab_bitrate)
+			
+			hosts = self.config.output_zmq_host.replace(' ','').split(',')
+			for host in hosts:
+				args += ' tcp://%s;' % (host)
+			# Remove the last fucking ;
+			args = args[:-1]
+			logger.warn('%s' % args)
 			
 		
 		args = args.split()

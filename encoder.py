@@ -157,11 +157,20 @@ class EncoderManager():
 				args += ' -s %s' % (self.config.output_dab_samplerate)
 				args += ' -V %s' % (self.config.source_url)
 				args += ' -b %s' % (self.config.output_dab_bitrate)
+				if self.config.mot == True:
+					args += ' -W %s' % (self.config.mot_dls_fifo_file)
 			
 			if self.config.source_type == 'alsa':
 				args += ' -s %s' % (self.config.output_dab_samplerate)
 				args += ' -V alsa://plug%s' % (self.config.source_device)
 				args += ' -b %s' % (self.config.output_dab_bitrate)
+			
+			if self.config.mot == True:
+				if not os.path.exists(self.config.mot_pad_fifo_file) or not stat.S_ISFIFO(os.stat(self.config.mot_pad_fifo_file).st_mode):
+					logger.warn('Pad file %s not exist or not a fifo file. Ignoring PAD parameters.' % (self.config.mot_pad_fifo_file))
+				else:
+					args += ' -p %s' % (self.config.mot_pad)
+					args += ' -P %s' % (self.config.mot_pad_fifo_file)
 			
 			hosts = self.config.output_zmq_host.replace(' ','').split(',')
 			for host in hosts:

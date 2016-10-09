@@ -65,7 +65,11 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 				</li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+				{% if is_login is sameas true %}
+					<li><a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+				{% else %}
+					<li><a href="/auth/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+				{% endif %}
 			</ul>
 			</div>
 		</div>

@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,6 +34,39 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 	<!-- Bootstrap -->
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
 	<script src="/js/bootstrap.min.js"></script>
+	
+	<style>
+		#loginbox {
+			margin-top: 30px;
+		}
+
+		#loginbox > div:first-child {        
+			padding-bottom: 10px;    
+		}
+
+		.iconmelon {
+			display: block;
+			margin: auto;
+		}
+
+		#form > div {
+			margin-bottom: 25px;
+		}
+
+		#form > div:last-child {
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+
+		.panel {    
+			background-color: transparent;
+		}
+
+		.panel-body {
+			padding-top: 30px;
+			background-color: rgba(2555,255,255,.3);
+		}
+	</style>
 </head>
 
 <body>
@@ -46,10 +78,10 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 			</div>
 			<div>
 			<ul class="nav navbar-nav">
-				<li><a href="/">Home</a></li>
+				<li class="active"><a href="/">Home</a></li>
 				<li><a href="/status">Status</a></li> 
 				<li><a href="/config">Configuration</a></li> 
-				<li class="dropdown active">
+				<li class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Help
 					<span class="caret"></span></a>
 					<ul class="dropdown-menu">
@@ -60,12 +92,9 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 						<li class="divider"></li>
 						<li class="dropdown-header">ODR Encoder Manager</li>
 						<li><a href="/help">Help</a></li>
-						<li class="active"><a href="/about">About</a></li>
+						<li><a href="/about">About</a></li>
 					</ul>
 				</li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 			</ul>
 			</div>
 		</div>
@@ -73,25 +102,38 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 	</div>
 
 	<div class="container-fluid">
-		<div class="jumbotron">
-			<h2>About</h2>
-			<h5>ODR - Encoder Manager are created by Yoann QUERET in April 2015<br />
-			<br />
-			Many many thanks to OpenDigitalRadio team especially Matthias, Mathias & Stan without this project would not exist.<br />
-			</h5>
-			
-			<hr />
-			
-			<h4>Licence</h4>
-			<h5>
-			ODR-EncoderManager is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.<br />
-			<br />
-			ODR-EncoderManager is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.<br />
-			<br />
-			You should have received a copy of the GNU General Public License along with ODR-EncoderManager.  If not, see http://www.gnu.org/licenses/<br />
-			</h5>
-		</div>
+		<div id="loginbox" class="mainbox col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3"> 
+		<div class="panel panel-default" >
+			<div class="panel-heading">
+				<div class="panel-title text-center">{{ msg }}</div>
+			</div>     
 
+			<div class="panel-body" >
+
+				<form name="form" id="form" class="form-horizontal" enctype="multipart/form-data" method="POST">
+					<input type="hidden" name="from_page" value="{{ from_page }}" />
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+						<input id="user" type="text" class="form-control" name="username" placeholder="User" value="{{ username }}">                                        
+					</div>
+
+					<div class="input-group">
+						<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+						<input id="password" type="password" class="form-control" name="password" placeholder="Password">
+					</div>                                                                  
+
+					<div class="form-group">
+						<!-- Button -->
+						<div class="col-sm-12 controls">
+							<button type="submit" href="#" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-log-in"></i> Log in</button>                          
+						</div>
+					</div>
+
+				</form>     
+
+			</div>                     
+		</div>  
+		</div>
 	</div>
 
 

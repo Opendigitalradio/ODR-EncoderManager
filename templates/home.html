@@ -29,18 +29,11 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 	<title>ODR - Encoder Manager</title>
 
 	<!-- jquery -->
-	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	
 	<!-- Bootstrap -->
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
-	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
-	
-	<!-- ODR -->
-	<script type="text/javascript" src="/js/odr-status.js"></script>
-	
-	<!-- gritter -->
-	<link rel="stylesheet" type="text/css" href="/css/jquery.gritter.css" />
-	<script type="text/javascript" src="/js/jquery.gritter.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -52,8 +45,8 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 			</div>
 			<div>
 			<ul class="nav navbar-nav">
-				<li><a href="/">Home</a></li>
-				<li class="active"><a href="/status">Status</a></li> 
+				<li class="active"><a href="/">Home</a></li>
+				<li><a href="/status">Status</a></li> 
 				<li><a href="/config">Configuration</a></li> 
 				<li class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Help
@@ -71,7 +64,11 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 				</li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+				{% if is_login is sameas true %}
+					<li><a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+				{% else %}
+					<li><a href="/auth/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+				{% endif %}
 			</ul>
 			</div>
 		</div>
@@ -79,39 +76,10 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 	</div>
 
 	<div class="container-fluid">
+		<div class="jumbotron">
+			<h1>Open Digital Radio<h2>Encoder Management Interface</h2></h1>      
+		</div>
 
-		<div class="page-header">
-			<h1>Status</h1>
-		</div>
-		
-		
-		<div class="form-group">
-			<label class="sr-only" for="dls">Dynamic Label Segment (DLS)</label>
-			<div class="input-group">
-				<div class="input-group-addon">DLS</div>
-				<input type="text" class="form-control" id="dls" placeholder="Waiting refresh ..." readonly>
-				<div class="input-group-addon">DLS</div>
-			</div>
-		</div>
-		
-		<hr />
-		
-		<table id="status" class="table table-hover">
-			<thead>
-				<tr>
-					<th>Service</th>
-					<th>Status</th>
-					<th>Pid</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
-		
-		<button type="button" class="btn btn-info" id="refresh">Refresh</button> 
-		<button type="button" class="btn btn-warning" id="start">Start</button> 
-		<button type="button" class="btn btn-danger" id="stop">Stop</button> 
-		
 	</div>
 
 

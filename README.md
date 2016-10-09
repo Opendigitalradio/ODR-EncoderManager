@@ -35,4 +35,9 @@ password = pass ; Auth password
   * If you want to change supervisor XMLRPC login/password, you need to edit /etc/supervisor/supervisord.conf and config.json files
     
 
+# ADVANCED
+  * To use the reboot api (/api/reboot), you need to allow odr user to run shutdown command by adding the line bellow at the end of /etc/sudoers file :
+```
+odr     ALL=(ALL) NOPASSWD: /sbin/shutdown
+```
 

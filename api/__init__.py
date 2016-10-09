@@ -39,6 +39,17 @@ class API():
     def index(self):
         return """This is the api area."""
     
+    @cherrypy.expose
+    @require()
+    def reboot(self):
+        command = 'sudo /sbin/shutdown -r now'
+        p_status = subprocess.call(command, shell=True)
+
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        if int(p_status) != 0:
+            return json.dumps({'status': '-299', 'statusText': 'Can not process reboot - %s ' % (int(p_status))})
+        else:
+            return json.dumps({'status': '0', 'statusText': 'Ok'})
 
     @cherrypy.expose
     @require()

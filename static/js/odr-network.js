@@ -155,8 +155,51 @@ $(function(){
     $('[data-toggle="tooltip"]').tooltip();   
 });
 
+$.fn.preload = function() {
+    this.each(function(){
+        $('<img/>')[0].src = this;
+    });
+}
+
+
 // Onload
 $(function(){
+    $('#btn_reboot').click(function() {
+        
+        $(['/fonts/ie-spacer.gif',
+          '/fonts/gritter.png',
+          '/fonts/gritter-light.png',
+          '/fonts/warning.png']).preload();
+
+        
+        $.ajax({
+            type: "GET",
+            url: "/api/reboot",
+            contentType: 'application/json',
+            dataType: 'json',
+            
+            error: function(data) {
+                $.gritter.add({
+                    title: 'Ok',
+                    text: "Reboot in progress, please wait ...",
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+                setTimeout(function (){
+                    $(location).attr('href',"/auth/login");
+                }, 30000);
+            },
+            success: function(data) {
+                $.gritter.add({
+                    title: 'Error',
+                    text: "Reboot can not be completed",
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            }
+        });
+    });
+    
    $("#btn_save").addClass('disabled');
    requestCards();
    requestDNS();

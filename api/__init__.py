@@ -243,18 +243,19 @@ class API():
         networkInterfaces += "auto lo\n"
         networkInterfaces += "iface lo inet loopback\n"
         networkInterfaces += "\n"
-        for card in self.conf.config['global']['network']['cards']:
-            if (card['ip'].strip() != "") and (card['netmask'].strip() != ""):
+        for card in self.conf.config['global']['network']['cards']:    
+            if card['dhcp'] == "true":
                 networkInterfaces += "allow-hotplug %s\n" % (card['card'])
-                if card['dhcp'] == "true":
-                    networkInterfaces += "iface %s inet %s\n" % (card['card'], 'dhcp')
-                else:
+                networkInterfaces += "iface %s inet %s\n" % (card['card'], 'dhcp')
+            else:
+                if (card['ip'].strip() != "") and (card['netmask'].strip() != ""):
+                    networkInterfaces += "allow-hotplug %s\n" % (card['card'])
                     networkInterfaces += "iface %s inet %s\n" % (card['card'], 'static')
                     networkInterfaces += "    address %s\n" % (card['ip'])
                     networkInterfaces += "    netmask %s\n" % (card['netmask'])
                     if card['gateway'].strip() != "":
                         networkInterfaces += "    gateway %s\n" % (card['gateway'])
-                networkInterfaces += "\n"
+            networkInterfaces += "\n"
             
         try:
             with open(self.conf.config['global']['networkInterfaces_file'], 'w') as supfile:

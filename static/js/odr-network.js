@@ -164,8 +164,7 @@ $.fn.preload = function() {
 
 // Onload
 $(function(){
-    $('#btn_reboot').click(function() {
-        
+    $('#btn_reboot_confirm').click(function() {
         $(['/fonts/ie-spacer.gif',
           '/fonts/gritter.png',
           '/fonts/gritter-light.png',
@@ -266,13 +265,11 @@ $(function(){
 
    
    $('#btn_dns_save').click(function() {
-        console.log('dns save');
         var param = [];
         $('#network_dns_servers > .form-group > .dns_server').each(function () {
             var $input = $(this)
             param.push($input.find('#network_dns_server').val());
         });
-        console.log(param);
         $.ajax({
             type: "POST",
             url: "/api/setNetworkDNS",

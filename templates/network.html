@@ -84,7 +84,10 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
-                                <a href="#" class="btn btn-primary" id="btn_save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
+                                <button type="button" id="btn_save" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Write network configuration in configuration file." ><span class="glyphicon glyphicon-save"></span> Write changes</button>&nbsp;
+                                <button type="button" id="btn_reboot" class="btn btn-danger" data-toggle="modal" data-target="#confirm-reboot"><span class="glyphicon glyphicon-alert"></span> Reboot</button>
+<!--                                 <a href="#" class="btn btn-primary" id="btn_save" data-toggle="tooltip" data-placement="top" title="Write network configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a> -->
+<!--                                 <a href="#" class="btn btn-danger" id="btn_reboot" data-toggle="tooltip" data-placement="top" title="Restarting Audio Companion immediatly." data-toggle="modal" data-target="#confirm-reboot"><span class="glyphicon glyphicon-alert"></span> Reboot</a> -->
                             </div>
                         </div>
                         
@@ -92,9 +95,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-8">
                                 <div class="alert alert-warning">
-                                    <a href="#" class="btn btn-danger" id="btn_reboot"><span class="glyphicon glyphicon-alert"></span> Reboot</a>
                                     <strong>Warning!</strong> You must restart Audio Companion for the changes to take effect after having Write changes.
-                                    
                                 </div>
                             </div>
                         </div>
@@ -102,6 +103,27 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </form>
+        
+         <!-- Modal -->
+        <div class="modal fade" id="confirm-reboot" role="dialog">
+            <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reboot Audio Companion.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <strong>Warning!</strong><br /><br />When you click on Confirm Reboot button the system reboot immediatly.<br /><br />You have to wait until the complete reboot is finished, and perhaps connect to the new IP address if you have change it.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger pull-left" id="btn_reboot_confirm" data-toggle="tooltip" data-placement="top" title="Restarting Audio Companion immediatly."><span class="glyphicon glyphicon-alert"></span> Confirm Reboot</button>
+                </div>
+            </div>
+            </div>
+        </div>
         
         
         <form class="form-horizontal" role="form">
@@ -134,7 +156,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
-                                <a href="#" class="btn btn-primary" id="btn_dns_save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
+                                <a href="#" class="btn btn-primary" id="btn_dns_save" data-toggle="tooltip" data-placement="top" title="Write DNS configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
                             </div>
                         </div>
                     </div>

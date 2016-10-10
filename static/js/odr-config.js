@@ -61,19 +61,11 @@ function requestConfiguration(callback) {
 
 function setConfiguration(callback) {
 	var param = {
-		"global" :	{
-					"encoder_dabp_path": $('#global_encoder_dabp_path').val(),
-					"encoder_dab_path": $('#global_encoder_dab_path').val(),
-					"mot_path": $('#global_mot_path').val(),
-					"zmq_tmp_file": $('#global_zmq_tmp_file').val(),
-				},
-		"telnet" :	{
-					"bind_ip": $('#telnet_bind_ip').val(),
-					"port": $('#telnet_port').val(),
-				},
-		"rpc" :		{
-					"bind_ip": $('#rpc_bind_ip').val(),
-					"port": $('#rpc_port').val(),
+		"path" :	{
+					"encoder_dabp_path": $('#path_encoder_dabp_path').val(),
+					"encoder_dab_path": $('#path_encoder_dab_path').val(),
+					"mot_path": $('#path_mot_path').val(),
+					"zmq_key_tmp_file": $('#path_zmq_key_tmp_file').val(),
 				},
 		"source" :	{
 					"type": $('#source_type').val(),
@@ -139,33 +131,6 @@ $(function(){
 	
 	$('#save').click(function() {
 		setConfiguration();
-	});
-	
-	$('#apply').click(function() {
-		$.ajax({
-			type: "GET",
-			url: "/api/reloadConfig",
-			contentType: 'application/json',
-			dataType: 'json',
-			
-			error: function(data) {
-				//alert("error " + data['status'] + " : " + data['statusText']);
-				$.gritter.add({
-					title: 'Load changes : ERROR !',
-					text: data['status'] + " : " + data['statusText'],
-					image: '/fonts/warning.png',
-					sticky: true,
-				});
-			},
-			success: function(data) {
-				//alert(data);
-				$.gritter.add({
-					title: 'Load changes : done !',
-					image: '/fonts/accept.png',
-					text: data,
-				});
-			}
-		});
 	});
 	
 	$('#restart').click(function() {

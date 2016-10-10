@@ -4,8 +4,12 @@
 # Session tool to be loaded.
 #
 
+import json
 import cherrypy
 import urllib
+
+from config import Config
+
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
 
@@ -104,8 +108,8 @@ def all_of(*conditions):
 # Controller to provide login and logout actions
 
 class AuthController(object):
-	def __init__(self, config_auth):
-		self.config_auth = config_auth
+	def __init__(self, config_file):
+		self.config_file = config_file
 	
 	def on_login(self, username):
 		"""Called on successful login"""
@@ -130,7 +134,8 @@ class AuthController(object):
 			return tmpl.render(username="", msg="Enter login information", from_page=from_page)
 			#return self.get_loginform("", from_page=from_page)
 		
-		error_msg = check_credentials(self.config_auth, username, password)
+		conf = Config(self.config_file)
+		error_msg = check_credentials(conf.config['auth'], username, password)
 		if error_msg:
 			tmpl = env.get_template("login.html")
 			return tmpl.render(username=username, msg=error_msg, from_page=from_page)

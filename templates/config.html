@@ -272,59 +272,32 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 				<div class="panel-body">
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="global_encoder_dabp_path">dabplus-enc path:</label>
+						<label class="control-label col-sm-2" for="path_encoder_dabp_path">dabplus-enc path:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="global_encoder_dabp_path" placeholder="Enter dabplus-enc full path">
+							<input type="text" class="form-control" id="path_encoder_dabp_path" placeholder="Enter dabplus-enc full path">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="global_encoder_dab_path">toolame-dab path:</label>
+						<label class="control-label col-sm-2" for="path_encoder_dab_path">toolame-dab path:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="global_encoder_dab_path" placeholder="Enter toolame-dab full path">
+							<input type="text" class="form-control" id="path_encoder_dab_path" placeholder="Enter toolame-dab full path">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="global_mot_path">mot-encoder path:</label>
+						<label class="control-label col-sm-2" for="path_mot_path">mot-encoder path:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="global_mot_path" placeholder="Enter mot-encoder full path">
+							<input type="text" class="form-control" id="path_mot_path" placeholder="Enter mot-encoder full path">
 						</div>
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="global_zmq_tmp_file">zmq tmp file:</label>
+						<label class="control-label col-sm-2" for="path_zmq_key_tmp_file">zmq tmp file:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="global_zmq_tmp_file" placeholder="Enter mot-encoder full path">
+							<input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter mot-encoder full path">
 						</div>
 					</div>
-					<hr />
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="telnet_bind_ip">Telnet Bind IP:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="telnet_bind_ip" placeholder="Enter telnet bind IP (blank to bind all IP)">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="telnet_port">Telnet port:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="telnet_port" placeholder="Enter telnet port (default 9000)">
-						</div>
-					</div>
-					<hr />
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="rpc_bind_ip">RPC Bind IP:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="rpc_bind_ip" placeholder="Enter RPC bind IP (blank to bind all IP)">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="rpc_port">RPC port:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="rpc_port" placeholder="Enter RPC port (default 7080)">
-						</div>
-					</div>
-					
 				</div>
 			</div>
 		</div>
@@ -333,8 +306,8 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 			<a href="#" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Reload configuration from loaded configuration."><span class="glyphicon glyphicon-refresh"></span> Reload configuration</a>
 			
 			<a href="#" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="badge">1</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-save"></span> Write changes</a>
-			<a href="#" class="btn btn-primary" id="apply" data-toggle="tooltip" data-placement="top" title="Load configuration from configuration file to Encoder Manager."><span class="badge">2</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-certificate"></span> Load changes</a>
-			<a href="#" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc + mot-encoder with loaded configuration."><span class="badge">3</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-off"></span> Restart</a>
+		
+			<a href="#" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc + mot-encoder with loaded configuration."><span class="badge">2</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-off"></span> Restart</a>
 		</div>
 
 		</form>

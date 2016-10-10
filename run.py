@@ -15,10 +15,12 @@ env = Environment(loader=FileSystemLoader('templates'))
 
 
 class Root():
-	def __init__(self, config):
-		self.conf = config
-		self.auth = AuthController(self.conf.config['auth'])
-		self.api = API()
+	def __init__(self, config_file):
+		self.config_file = config_file
+		
+		self.conf = Config(self.config_file)
+		self.auth = AuthController(self.config_file)
+		self.api = API(self.config_file)
 	
 	_cp_config = {
 		'tools.sessions.on': True,
@@ -98,7 +100,7 @@ if __name__ == '__main__':
 		})
 	
 	cherrypy.tree.mount(
-		Root(config), config={
+		Root(cli_args.config), config={
 			'/':
 					{ 
 					},

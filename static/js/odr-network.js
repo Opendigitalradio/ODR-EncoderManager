@@ -165,6 +165,8 @@ $.fn.preload = function() {
 // Onload
 $(function(){
     $('#btn_reboot_confirm').click(function() {
+        $('#confirm-reboot').modal('hide');
+        
         $(['/fonts/ie-spacer.gif',
           '/fonts/gritter.png',
           '/fonts/gritter-light.png',

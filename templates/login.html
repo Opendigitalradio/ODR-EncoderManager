@@ -70,36 +70,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 </head>
 
 <body>
-	<div class="container-fluid">
-	<nav class="navbar navbar-inverse">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="/">ODR - Encoder Manager</a>
-			</div>
-			<div>
-			<ul class="nav navbar-nav">
-				<li class="active"><a href="/">Home</a></li>
-				<li><a href="/status">Status</a></li> 
-				<li><a href="/config">Configuration</a></li> 
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Help
-					<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li class="dropdown-header">Open Digital Radio</li>
-						<li><a href="http://www.opendigitalradio.org/">Website</a></li>
-						<li><a href="http://wiki.opendigitalradio.org/">Documentation</a></li>
-						<li><a href="https://github.com/Opendigitalradio/">GitHub</a></li>
-						<li class="divider"></li>
-						<li class="dropdown-header">ODR Encoder Manager</li>
-						<li><a href="/help">Help</a></li>
-						<li><a href="/about">About</a></li>
-					</ul>
-				</li>
-			</ul>
-			</div>
-		</div>
-	</nav>
-	</div>
+	{% include 'body-nav.html' %}
 
 	<div class="container-fluid">
 		<div id="loginbox" class="mainbox col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3"> 

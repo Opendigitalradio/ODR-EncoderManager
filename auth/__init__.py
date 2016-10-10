@@ -11,21 +11,14 @@ env = Environment(loader=FileSystemLoader('templates'))
 
 SESSION_KEY = '_cp_username'
 
-def check_credentials(username, password):
-    """Verifies credentials for username and password.
-    Returns None on success or a string describing the error on failure"""
-    # Adapt to your needs
-    if username in ('joe', 'steve') and password == 'secret':
-        return None
-    else:
-        return u"Incorrect username or password."
-    
-    # An example implementation which uses an ORM could be:
-    # u = User.get(username)
-    # if u is None:
-    #     return u"Username %s is unknown to me." % username
-    # if u.password != md5.new(password).hexdigest():
-    #     return u"Incorrect password"
+def check_credentials(config_auth, username, password):
+	"""Verifies credentials for username and password.
+	Returns None on success or a string describing the error on failure"""
+	
+	for up in config_auth['users']:
+		if up['username'] == username and up['password'] == password:
+			return None
+	return u"Incorrect username or password."
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
@@ -111,6 +104,8 @@ def all_of(*conditions):
 # Controller to provide login and logout actions
 
 class AuthController(object):
+	def __init__(self, config_auth):
+		self.config_auth = config_auth
 	
 	def on_login(self, username):
 		"""Called on successful login"""
@@ -135,7 +130,7 @@ class AuthController(object):
 			return tmpl.render(username="", msg="Enter login information", from_page=from_page)
 			#return self.get_loginform("", from_page=from_page)
 		
-		error_msg = check_credentials(username, password)
+		error_msg = check_credentials(self.config_auth, username, password)
 		if error_msg:
 			tmpl = env.get_template("login.html")
 			return tmpl.render(username=username, msg=error_msg, from_page=from_page)

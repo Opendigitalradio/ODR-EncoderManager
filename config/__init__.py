@@ -28,7 +28,7 @@ import sys
 import json
 
 class Config():
-	def __init__(self,config_file):
+	def __init__(self, config_file):
 		self.config_file = config_file
 		
 		self.load(config_file)

@@ -4,7 +4,7 @@ import os
 import sys
 
 from config import Config
-from auth import AuthController, require, member_of, name_is, is_login
+from auth import AuthController, require, is_login
 from api import API
 
 #import signal
@@ -14,15 +14,16 @@ from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
 
 
-class Root:
+class Root():
+	def __init__(self, config):
+		self.conf = config
+		self.auth = AuthController(self.conf.config['auth'])
+		self.api = API()
 	
 	_cp_config = {
 		'tools.sessions.on': True,
 		'tools.auth.on': True
 	}
-	
-	auth = AuthController()
-	api = API()
 	
 	# This is available for all authenticated or not user
 	@cherrypy.expose
@@ -32,31 +33,35 @@ class Root:
 	@cherrypy.expose
 	def home(self):
 		tmpl = env.get_template("home.html")
-		return tmpl.render(is_login=is_login())
+		js = []
+		return tmpl.render(tab='home', js=js, is_login=is_login())
 	
 	@cherrypy.expose
 	def help(self):
 		tmpl = env.get_template("help.html")
-		return tmpl.render(is_login=is_login())
+		js = []
+		return tmpl.render(tab='help', js=js, is_login=is_login())
 	
 	@cherrypy.expose
 	def about(self):
 		tmpl = env.get_template("about.html")
-		return tmpl.render(is_login=is_login())
+		js = []
+		return tmpl.render(tab='about', js=js, is_login=is_login())
 	
 	# This is only available for authenticated user
 	@cherrypy.expose
 	@require()
 	def status(self):
 		tmpl = env.get_template("status.html")
-		return tmpl.render(is_login=is_login())
+		js = ['/js/odr-status.js']
+		return tmpl.render(tab='status', js=js, is_login=is_login())
 	
-	# This is only available for user in group admin
 	@cherrypy.expose
-	@require(member_of("admin"))
+	@require()
 	def config(self):
 		tmpl = env.get_template("config.html")
-		return tmpl.render(is_login=is_login())
+		js = ['/js/odr-config.js']
+		return tmpl.render(tab='config', js=js, is_login=is_login())
 
 
 if __name__ == '__main__':
@@ -93,7 +98,7 @@ if __name__ == '__main__':
 		})
 	
 	cherrypy.tree.mount(
-		Root(), config={
+		Root(config), config={
 			'/':
 					{ 
 					},

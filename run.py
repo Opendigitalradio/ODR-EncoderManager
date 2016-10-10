@@ -3,24 +3,15 @@ import argparse
 import os
 import sys
 
+from config import Config
 from auth import AuthController, require, member_of, name_is, is_login
 from api import API
 
+#import signal
+#from signal import SIGKILL
+
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
-
-class RestrictedArea:
-	
-	# all methods in this controller (and subcontrollers) is
-	# open only to members of the admin group
-	
-	_cp_config = {
-		'auth.require': [member_of('admin')]
-	}
-	
-	@cherrypy.expose
-	def index(self):
-		return """This is the admin only area."""
 
 
 class Root:
@@ -31,8 +22,6 @@ class Root:
 	}
 	
 	auth = AuthController()
-	
-	restricted = RestrictedArea()
 	api = API()
 	
 	# This is available for all authenticated or not user
@@ -73,41 +62,33 @@ class Root:
 if __name__ == '__main__':
 	# Get configuration file in argument
 	parser = argparse.ArgumentParser(description='ODR Encoder Manager (WebGUI)')
-	parser.add_argument('-s','--static_dir', help='Absolute path of static directory content',required=True)
-	parser.add_argument('-l','--log_dir', help='Absolute path of logs directory',required=True)
-	parser.add_argument('--daemon', help='run as daemon', action="store_true")
-	parser.add_argument('--host', default='0.0.0.0', help='socket host (default: 0.0.0.0)',required=False)
-	parser.add_argument('--port', default='8080', help='socket port (default: 8080)',required=False)
+	parser.add_argument('-c','--config', help='configuration filename',required=True)
 	cli_args = parser.parse_args()
 	
-	# Check if log_dir exist and is writeable
-	if os.path.isdir(cli_args.log_dir) and os.access(cli_args.log_dir, os.W_OK):
-		print "Use logging directory %s" % (cli_args.log_dir)
+	# Check if configuration exist and is readable
+	if os.path.isfile(cli_args.config) and os.access(cli_args.config, os.R_OK):
+		print "Use configuration file %s" % (cli_args.config)
 	else:
-		print "Log directory not exist or is not writeable - %s" % (cli_args.log_dir)
+		print "Configuration file is missing or is not readable - %s" % (cli_args.config)
 		sys.exit(1)
-	
-	# Check if static_dir exist and is readeable
-	if os.path.isdir(cli_args.static_dir) and os.access(cli_args.static_dir, os.R_OK):
-		print "Use static directory %s" % (cli_args.static_dir)
-	else:
-		print "Static directory not exist or is not readeable - %s" % (cli_args.static_dir)
-		sys.exit(1)
-	
+		
+	# Load configuration
+	config = Config(cli_args.config)
+
 	# Start cherrypy
-	if cli_args.daemon:
+	if config.config['global']['daemon']:
 		cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
 	
 	cherrypy.config.update({
-		'server.socket_host': cli_args.host,
-		'server.socket_port': int(cli_args.port),
+		'server.socket_host': config.config['global']['host'],
+		'server.socket_port': int(config.config['global']['port']),
 		'request.show_tracebacks' : True,
 		'environment': 'production',
 		'tools.sessions.on': True,
 		#'tools.encode.on': True,
 		#'tools.encode.encoding': "utf-8",
-		'log.access_file' : os.path.join(cli_args.log_dir, 'access.log'),
-		'log.error_file' : os.path.join(cli_args.log_dir, 'error.log'),
+		'log.access_file' : os.path.join(config.config['global']['logs_directory'], 'access.log'),
+		'log.error_file' : os.path.join(config.config['global']['logs_directory'], 'error.log'),
 		'log.screen': False,
 		})
 	
@@ -119,22 +100,22 @@ if __name__ == '__main__':
 			'/css':
 					{ 
 					'tools.staticdir.on': True,
-					'tools.staticdir.dir': os.path.join(cli_args.static_dir, u"css/")
+					'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"css/")
 					},
 			'/js':
 					{ 
 					'tools.staticdir.on': True,
-					'tools.staticdir.dir': os.path.join(cli_args.static_dir, u"js/")
+					'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"js/")
 					},
 			'/fonts':
 					{ 
 					'tools.staticdir.on': True,
-					'tools.staticdir.dir': os.path.join(cli_args.static_dir, u"fonts/")
+					'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"fonts/")
 					},
 			'/favicon.ico':
 					{ 
 					'tools.staticfile.on': True,
-					'tools.staticfile.filename': os.path.join(cli_args.static_dir, u"fonts/favicon.ico")
+					'tools.staticfile.filename': os.path.join(config.config['global']['static_directory'], u"fonts/favicon.ico")
 					},
 		}
 	)

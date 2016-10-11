@@ -1,13 +1,13 @@
 {
     "odr": {
         "path": {
+            "padenc_path": "/usr/local/bin/ODR-padenc",
             "zmq_key_tmp_file": "/tmp/zmq.key",
-            "mot_path": "/usr/local/bin/mot-encoder",
             "encoder_dab_path": "/usr/local/bin/toolame-dab",
             "encoder_dabp_path": "/usr/local/bin/dabplus-enc"
         },
-        "mot": {
-            "enable": "false",
+        "padenc": {
+            "enable": "true",
             "raw_dls": "false",
             "slide_directory": "/tmp/slide/",
             "slide_once": "true",
@@ -18,15 +18,18 @@
         },
         "output": {
             "dab_bitrate": "128",
-            "dabp_samplerate": "48000",
-            "dab_samplerate": "48",
+            "dabp_afterburner": "true",
             "dabp_bitrate": "96",
+            "dabp_sbr": "true",
+            "dab_samplerate": "48",
+            "dabp_samplerate": "48000",
             "zmq_key": "",
+            "dabp_ps": "false",
             "type": "dabp",
             "zmq_host": "192.168.40.115:9005"
         },
         "source": {
-            "url": "http://ice.stream.frequence3.net/frequence3-128.mp3",
+            "url": "http://ice.stream.frequence3.net/frequence3-320.mp3",
             "device": "hw:1,0",
             "type": "stream",
             "driftcomp": "true"

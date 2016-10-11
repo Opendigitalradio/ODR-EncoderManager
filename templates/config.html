@@ -186,24 +186,24 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h4 class="panel-title">
-				<span class="glyphicon glyphicon-eye-open"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseMOT">MOT</a>
+				<span class="glyphicon glyphicon-eye-open"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapsePAD">PAD Encoder</a>
 				</h4>
 			</div>
-			<div id="collapseMOT" class="panel-collapse collapse">
+			<div id="collapsePAD" class="panel-collapse collapse">
 				<div class="panel-body">
 					
 					<div class="form-group">
-					<label class="control-label col-sm-2" for="mot_enable">Enable:</label>
+					<label class="control-label col-sm-2" for="padenc_enable">Enable:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="mot_enable">
+							<select type="select" class="form-control" id="padenc_enable">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
 						</div>
 
-						<label class="control-label col-sm-2" for="mot_pad">pad:</label>
+						<label class="control-label col-sm-2" for="padenc_pad">pad:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="mot_pad">
+							<select type="select" class="form-control" id="padenc_pad">
 								<option value="23">23</option>
 								<option value="26">26</option>
 								<option value="34">34</option>
@@ -215,14 +215,14 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="mot_slide_sleeping">Slide sleeping (seconds):</label>
+						<label class="control-label col-sm-2" for="padenc_slide_sleeping">Slide sleeping (seconds):</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="mot_slide_sleeping" placeholder="Enter delay in seconds">
+							<input type="text" class="form-control" id="padenc_slide_sleeping" placeholder="Enter delay in seconds">
 						</div>
 						
-						<label class="control-label col-sm-2" for="mot_slide_once">Remove slide</label>
+						<label class="control-label col-sm-2" for="padenc_slide_once">Remove slide</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="mot_slide_once">
+							<select type="select" class="form-control" id="padenc_slide_once">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -231,14 +231,14 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="mot_slide_directory">Slide directory:</label>
+						<label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="mot_slide_directory" placeholder="Enter slide directory">
+							<input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
 						</div>
 						
-						<label class="control-label col-sm-2" for="mot_raw_dls">Raw DLS:</label>
+						<label class="control-label col-sm-2" for="padenc_raw_dls">Raw DLS:</label>
 						<div class="col-sm-3">
-							<select type="select" class="form-control" id="mot_raw_dls">
+							<select type="select" class="form-control" id="padenc_raw_dls">
 								<option value="true">true</option>
 								<option value="false">false</option>
 							</select>
@@ -246,15 +246,15 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="mot_pad_fifo_file">PAD fifo file:</label>
+						<label class="control-label col-sm-2" for="padenc_pad_fifo_file">PAD fifo file:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="mot_pad_fifo_file" placeholder="Enter pad fifo file">
+							<input type="text" class="form-control" id="padenc_pad_fifo_file" placeholder="Enter pad fifo file">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="mot_dls_fifo_file">DLS fifo file:</label>
+						<label class="control-label col-sm-2" for="padenc_dls_fifo_file">DLS fifo file:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="mot_dls_fifo_file" placeholder="Enter dls fifo file">
+							<input type="text" class="form-control" id="padenc_dls_fifo_file" placeholder="Enter dls fifo file">
 						</div>
 					</div>
 					
@@ -286,16 +286,16 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 					</div>
 					
 					<div class="form-group">
-						<label class="control-label col-sm-2" for="path_mot_path">mot-encoder path:</label>
+						<label class="control-label col-sm-2" for="path_padenc_path">ODR-PadEnc path:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="path_mot_path" placeholder="Enter mot-encoder full path">
+							<input type="text" class="form-control" id="path_padenc_path" placeholder="Enter ODR-PadEnc full path">
 						</div>
 					</div>
 					
 					<div class="form-group">
 						<label class="control-label col-sm-2" for="path_zmq_key_tmp_file">zmq tmp file:</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter mot-encoder full path">
+							<input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter zmq tmp file path">
 						</div>
 					</div>
 				</div>
@@ -307,7 +307,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 			
 			<a href="#" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="badge">1</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-save"></span> Write changes</a>
 		
-			<a href="#" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc + mot-encoder with loaded configuration."><span class="badge">2</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-off"></span> Restart</a>
+			<a href="#" class="btn btn-danger" id="restart" data-toggle="tooltip" data-placement="top" title="Restart dabplus-enc + ODR-PadEnc with loaded configuration."><span class="badge">2</span>&nbsp;&nbsp;<span class="glyphicon glyphicon-off"></span> Restart</a>
 		</div>
 
 		</form>

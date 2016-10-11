@@ -64,7 +64,7 @@ function setConfiguration(callback) {
 		"path" :	{
 					"encoder_dabp_path": $('#path_encoder_dabp_path').val(),
 					"encoder_dab_path": $('#path_encoder_dab_path').val(),
-					"mot_path": $('#path_mot_path').val(),
+					"padenc_path": $('#path_padenc_path').val(),
 					"zmq_key_tmp_file": $('#path_zmq_key_tmp_file').val(),
 				},
 		"source" :	{
@@ -79,21 +79,21 @@ function setConfiguration(callback) {
 					"zmq_key": $('#output_zmq_key').val(),
 					"dabp_bitrate": $('#output_dabp_bitrate').val(),
 					"dabp_samplerate": $('#output_dabp_samplerate').val(),
-					"dabp_sbr": $('#output_sbr').val(),
-					"dabp_ps": $('#output_ps').val(),
-					"dabp_afterburner": $('#output_afterburner').val(),
+					"dabp_sbr": $('#output_dabp_sbr').val(),
+					"dabp_ps": $('#output_dabp_ps').val(),
+					"dabp_afterburner": $('#output_dabp_afterburner').val(),
 					"dab_bitrate": $('#output_dab_bitrate').val(),
 					"dab_samplerate": $('#output_dab_samplerate').val(),
 				},
-		"mot" :		{
-					"enable": $('#mot_enable').val(),
-					"pad": $('#mot_pad').val(),
-					"pad_fifo_file": $('#mot_pad_fifo_file').val(),
-					"dls_fifo_file": $('#mot_dls_fifo_file').val(),
-					"slide_directory": $('#mot_slide_directory').val(),
-					"slide_sleeping": $('#mot_slide_sleeping').val(),
-					"slide_once": $('#mot_slide_once').val(),
-					"raw_dls": $('#mot_raw_dls').val(),
+		"padenc" :		{
+					"enable": $('#padenc_enable').val(),
+					"pad": $('#padenc_pad').val(),
+					"pad_fifo_file": $('#padenc_pad_fifo_file').val(),
+					"dls_fifo_file": $('#padenc_dls_fifo_file').val(),
+					"slide_directory": $('#padenc_slide_directory').val(),
+					"slide_sleeping": $('#padenc_slide_sleeping').val(),
+					"slide_once": $('#padenc_slide_once').val(),
+					"raw_dls": $('#padenc_raw_dls').val(),
 				},
 	}
 	
@@ -105,6 +105,7 @@ function setConfiguration(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
+			//console.log(data);
 			$.gritter.add({
 				title: 'Write changes : ERROR !',
 				text: data['status'] + " : " + data['statusText'],
@@ -113,7 +114,7 @@ function setConfiguration(callback) {
 			});
 		},
 		success: function(data) {
-			//alert(data);
+			//console.log(data);
 			$.gritter.add({
 				title: 'Write changes : done !',
 				image: '/fonts/accept.png',

@@ -38,7 +38,7 @@
     "global": {
         "daemon": false,
         "logs_directory": "/home/yoann/Dropbox/dev/ODR-EncoderManager/logs/",
-        "supervisor_xmlrpc": "http://127.0.0.1:9001/RPC2",
+        "supervisor_xmlrpc": "http://user:pass@127.0.0.1:9001/RPC2",
         "static_directory": "/home/yoann/Dropbox/dev/ODR-EncoderManager/static/",
         "host": "127.0.0.1",
         "supervisor_file": "/home/yoann/Dropbox/dev/ODR-EncoderManager/supervisor.conf",

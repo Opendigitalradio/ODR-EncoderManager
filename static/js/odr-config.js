@@ -102,32 +102,40 @@ function setConfiguration(callback) {
 		url: "/api/setConfig",
 		data: JSON.stringify(param),
 		contentType: 'application/json',
-		dataType: 'json',
+		dataType: 'text',
 		
 		error: function(data) {
-			//console.log(data);
+			console.log(data);
+			console.log(status);
 			$.gritter.add({
-				title: 'Write changes : ERROR !',
-				text: data['status'] + " : " + data['statusText'],
+				title: 'Write changes',
+				text: "ERROR = " + data['status'] + " : " + data['statusText'],
 				image: '/fonts/warning.png',
 				sticky: true,
 			});
 		},
 		success: function(data) {
-			//console.log(data);
 			$.gritter.add({
-				title: 'Write changes : done !',
+				title: 'Write changes',
 				image: '/fonts/accept.png',
-				text: data,
+				text: 'Ok',
 			});
 		}
 	});
+	
+	
+	
 }
 
 // Button handler
 $(function(){
 	$('#reload').click(function() {
 		requestConfiguration();
+		$.gritter.add({
+					title: 'Reload configuration',
+					image: '/fonts/accept.png',
+					text: 'Ok',
+				});
 	});
 	
 	$('#save').click(function() {

@@ -29,18 +29,18 @@ function requestStatus(callback) {
 		error: function(data) {
 			//alert("getStatus\nerror " + data['status'] + " : " + data['statusText']);
 			$.gritter.add({
-				title: 'Refresh services status : ERROR !',
-				text: data['status'] + " : " + data['statusText'],
+				title: 'Services status',
+				text: "ERROR: " + data['status'] + " : " + data['statusText'],
 				image: '/fonts/warning.png',
 				sticky: true,
 			});
 		},
 		success: function(data) {
 			$.each( data, function( key, val ) {
-				if (val['status'] == 'running') {
-					$('#status > tbody:last').append('<tr><td>'+key+'</td><td><span class="label label-success">Success</span></td><td>'+val['pid']+'</td></tr>');
+				if (val['state'] == '0') {
+					$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-warning">'+val['statename']+'</span></td><td>'+val['description']+'</td></tr>');
 				} else {
-					$('#status > tbody:last').append('<tr><td>'+key+'</td><td><span class="label label-warning">Warning</span></td><td>'+val['pid']+'</td></tr>');
+					$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-success">'+val['statename']+'</span></td><td>'+val['description']+'</td></tr>');
 				}
 
 			});
@@ -84,6 +84,11 @@ $(function(){
 	$('#refresh').click(function() {
 		$('#status > tbody').empty();
 		requestStatus();
+		$.gritter.add({
+					title: 'Services status refresh',
+					image: '/fonts/accept.png',
+					text: 'Ok',
+				});
 	});
 	
 	$('#stop').click(function() {

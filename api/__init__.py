@@ -179,6 +179,23 @@ class API():
 	
 	@cherrypy.expose
 	@require()
+	def getDLS(self):
+		self.conf = Config(self.config_file)
+		cherrypy.response.headers["Content-Type"] = "application/json"
+		if self.conf.config['odr']['padenc']['enable'] == 'true':
+			try:
+				f = open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'r')
+				dls = f.read()
+				f.close()
+			except Exception,e:
+				return json.dumps({'dls': 'Fail to read dls data'})
+			else:
+				return json.dumps({'dls': str(dls)})
+		else:
+			return json.dumps({'dls': 'DLS is disable ...'})
+	
+	@cherrypy.expose
+	@require()
 	def getStatus(self):
 		self.conf = Config(self.config_file)
 		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])

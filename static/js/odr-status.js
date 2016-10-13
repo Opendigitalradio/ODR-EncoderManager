@@ -37,11 +37,39 @@ function requestStatus(callback) {
 		},
 		success: function(data) {
 			$.each( data, function( key, val ) {
-				if (val['state'] == '0') {
-					$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-warning">'+val['statename']+'</span></td><td>'+val['description']+'</td></tr>');
-				} else {
-					$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-success">'+val['statename']+'</span></td><td>'+val['description']+'</td></tr>');
+				// 0   - STOPPED
+				// 10  - STARTING
+				// 20  - RUNNING
+				// 30  - BACKOFF
+				// 40  - STOPPING
+				// 100 - EXITED
+				// 200 - FATAL
+				// 1000 - UNKNOWN
+				
+				if ( (val['state'] == '0') || (val['state'] == '40') ) {
+					action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
+					class_label = 'warning'
 				}
+				else if ( (val['state'] == '100') || (val['state'] == '200') ) {
+					action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
+					class_label = 'danger'
+				}
+				else if ( (val['state'] == '10') || (val['state'] == '20') ) {
+					action = '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
+					action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart">Restart</button> '
+					class_label = 'success'
+				}
+				else if ( (val['state'] == '30') ) {
+					action = '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
+					class_label = 'warning'
+				}
+				else {
+					class_label = 'default'
+					action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
+					action = action + '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
+					action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart">Restart</button> '
+				}
+				$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+action+'</td></tr>');
 
 			});
 		}
@@ -91,33 +119,52 @@ $(function(){
 				});
 	});
 	
-	$('#stop').click(function() {
+	$('#status tbody').on( 'click', '#service_start', function () {
+		service = $(this).parents('tr').find("td:first").html();
+		console.log('start ' + service);
+	});
+	
+	$('#status tbody').on( 'click', '#service_restart', function () {
+		service = $(this).parents('tr').find("td:first").html();
+		console.log('restart ' + service);
+	});
+	
+	$('#status tbody').on( 'click', '#service_stop', function () {
+		service = $(this).parents('tr').find("td:first").html();
+		console.log('stop ' + service);
+	});
+	
+	$('#service_stop_all').click(function() {
 		var r = confirm("Stop all services. Are you really sure ?");
 		if (r == true) {
-			$.ajax({
-				type: "GET",
-				url: "/api/stop",
-				contentType: 'application/json',
-				dataType: 'json',
-				
-				error: function(data) {
-					//alert("stop\nerror " + data['status'] + " : " + data['statusText']);
-					$.gritter.add({
-						title: 'Stop services : ERROR !',
-						text: data['status'] + " : " + data['statusText'],
-						image: '/fonts/warning.png',
-						sticky: true,
-					});
-				},
-				success: function(data) {
-					//alert(data);
-					$.gritter.add({
-						title: 'Stop services : done !',
-						image: '/fonts/accept.png',
-						text: data,
-					});
-				}
+			$('#status tbody tr').each(function() {
+				service = $(this).find("td:first").html();
+				console.log('stop ' + service);
 			});
+// 			$.ajax({
+// 				type: "GET",
+// 				url: "/api/stop",
+// 				contentType: 'application/json',
+// 				dataType: 'json',
+// 				
+// 				error: function(data) {
+// 					//alert("stop\nerror " + data['status'] + " : " + data['statusText']);
+// 					$.gritter.add({
+// 						title: 'Stop services : ERROR !',
+// 						text: data['status'] + " : " + data['statusText'],
+// 						image: '/fonts/warning.png',
+// 						sticky: true,
+// 					});
+// 				},
+// 				success: function(data) {
+// 					//alert(data);
+// 					$.gritter.add({
+// 						title: 'Stop services : done !',
+// 						image: '/fonts/accept.png',
+// 						text: data,
+// 					});
+// 				}
+// 			});
 
 			$('#status > tbody').empty();
 			sleep(1000);
@@ -125,39 +172,55 @@ $(function(){
 		}
 	});
 	
-	$('#start').click(function() {
+	$('#service_start_all').click(function() {
 		var r = confirm("Start all services. Are you really sure ?");
 		if (r == true) {
-			$.ajax({
-				type: "GET",
-				url: "/api/start",
-				contentType: 'application/json',
-				dataType: 'json',
-				
-				error: function(data) {
-					//alert("start\nerror " + data['status'] + " : " + data['statusText']);
-					$.gritter.add({
-						title: 'Start services : ERROR !',
-						text: data['status'] + " : " + data['statusText'],
-						image: '/fonts/warning.png',
-						sticky: true,
-					});
-				},
-				success: function(data) {
-					//alert(data);
-					$.gritter.add({
-						title: 'Start services : done !',
-						image: '/fonts/accept.png',
-						text: data,
-					});
-				}
+			$('#status tbody tr').each(function() {
+				service = $(this).find("td:first").html();
+				console.log('start ' + service);
 			});
+// 			$.ajax({
+// 				type: "GET",
+// 				url: "/api/start",
+// 				contentType: 'application/json',
+// 				dataType: 'json',
+// 				
+// 				error: function(data) {
+// 					//alert("start\nerror " + data['status'] + " : " + data['statusText']);
+// 					$.gritter.add({
+// 						title: 'Start services : ERROR !',
+// 						text: data['status'] + " : " + data['statusText'],
+// 						image: '/fonts/warning.png',
+// 						sticky: true,
+// 					});
+// 				},
+// 				success: function(data) {
+// 					//alert(data);
+// 					$.gritter.add({
+// 						title: 'Start services : done !',
+// 						image: '/fonts/accept.png',
+// 						text: data,
+// 					});
+// 				}
+// 			});
 			
 			$('#status > tbody').empty();
 			sleep(1000);
 			requestStatus();
 		}
 	});
+	
+	$('#service_restart_all').click(function() {
+		var r = confirm("Restart all services. Are you really sure ?");
+		if (r == true) {
+			$('#status tbody tr').each(function() {
+				service = $(this).find("td:first").html();
+				console.log('stop ' + service);
+				console.log('start ' + service);
+			});
+		}
+	});
+	
 });
 
 

@@ -105,6 +105,82 @@ function sleep(delay) {
 	while (new Date().getTime() < start + delay);
 }
 
+function start(service) {
+	var param = {
+		'service': service
+	}
+	$.ajax({
+		type: "POST",
+		url: "/api/start",
+		data: JSON.stringify(param),
+		contentType: 'application/json',
+		dataType: 'json',
+		
+		error: function(data) {
+			$.gritter.add({
+				title: 'Start '+service,
+				text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
+				image: '/fonts/warning.png',
+				sticky: true,
+			});
+		},
+		success: function(data) {
+			if (data['statusText'] != 'Ok') {
+				$.gritter.add({
+					title: 'Start '+service,
+					text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
+					image: '/fonts/warning.png',
+					sticky: true,
+				});
+			} else {
+				$.gritter.add({
+					title: 'Start '+service,
+					image: '/fonts/accept.png',
+					text: 'Ok',
+				});
+			}
+		}
+	});
+}
+
+function stop(service) {
+	var param = {
+		'service': service
+	}
+	$.ajax({
+		type: "POST",
+		url: "/api/stop",
+		data: JSON.stringify(param),
+		contentType: 'application/json',
+		dataType: 'json',
+		
+		error: function(data) {
+			$.gritter.add({
+				title: 'Stop '+service,
+				text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
+				image: '/fonts/warning.png',
+				sticky: true,
+			});
+		},
+		success: function(data) {
+			if (data['statusText'] != 'Ok') {
+				$.gritter.add({
+					title: 'Stop '+service,
+					text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
+					image: '/fonts/warning.png',
+					sticky: true,
+				});
+			} else {
+				$.gritter.add({
+					title: 'Stop '+service,
+					image: '/fonts/accept.png',
+					text: 'Ok',
+				});
+			}
+		}
+	});
+}
+
 $(function(){
 	requestStatus();
 	requestDLS();
@@ -122,16 +198,21 @@ $(function(){
 	$('#status tbody').on( 'click', '#service_start', function () {
 		service = $(this).parents('tr').find("td:first").html();
 		console.log('start ' + service);
+		start(service);
 	});
 	
 	$('#status tbody').on( 'click', '#service_restart', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		console.log('restart ' + service);
+		console.log('stop ' + service);
+		stop(service);
+		console.log('start ' + service);
+		start(service);
 	});
 	
 	$('#status tbody').on( 'click', '#service_stop', function () {
 		service = $(this).parents('tr').find("td:first").html();
 		console.log('stop ' + service);
+		stop(service);
 	});
 	
 	$('#service_stop_all').click(function() {
@@ -140,31 +221,8 @@ $(function(){
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
 				console.log('stop ' + service);
+				stop(service);
 			});
-// 			$.ajax({
-// 				type: "GET",
-// 				url: "/api/stop",
-// 				contentType: 'application/json',
-// 				dataType: 'json',
-// 				
-// 				error: function(data) {
-// 					//alert("stop\nerror " + data['status'] + " : " + data['statusText']);
-// 					$.gritter.add({
-// 						title: 'Stop services : ERROR !',
-// 						text: data['status'] + " : " + data['statusText'],
-// 						image: '/fonts/warning.png',
-// 						sticky: true,
-// 					});
-// 				},
-// 				success: function(data) {
-// 					//alert(data);
-// 					$.gritter.add({
-// 						title: 'Stop services : done !',
-// 						image: '/fonts/accept.png',
-// 						text: data,
-// 					});
-// 				}
-// 			});
 
 			$('#status > tbody').empty();
 			sleep(1000);
@@ -178,31 +236,8 @@ $(function(){
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
 				console.log('start ' + service);
+				start(service);
 			});
-// 			$.ajax({
-// 				type: "GET",
-// 				url: "/api/start",
-// 				contentType: 'application/json',
-// 				dataType: 'json',
-// 				
-// 				error: function(data) {
-// 					//alert("start\nerror " + data['status'] + " : " + data['statusText']);
-// 					$.gritter.add({
-// 						title: 'Start services : ERROR !',
-// 						text: data['status'] + " : " + data['statusText'],
-// 						image: '/fonts/warning.png',
-// 						sticky: true,
-// 					});
-// 				},
-// 				success: function(data) {
-// 					//alert(data);
-// 					$.gritter.add({
-// 						title: 'Start services : done !',
-// 						image: '/fonts/accept.png',
-// 						text: data,
-// 					});
-// 				}
-// 			});
 			
 			$('#status > tbody').empty();
 			sleep(1000);
@@ -216,7 +251,9 @@ $(function(){
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
 				console.log('stop ' + service);
+				stop(service);
 				console.log('start ' + service);
+				start(service);
 			});
 		}
 	});

@@ -182,6 +182,7 @@ class API():
 	def getDLS(self):
 		self.conf = Config(self.config_file)
 		cherrypy.response.headers["Content-Type"] = "application/json"
+		
 		if self.conf.config['odr']['padenc']['enable'] == 'true':
 			try:
 				f = open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'r')
@@ -206,3 +207,44 @@ class API():
 		
 		cherrypy.response.headers["Content-Type"] = "application/json"
 		return json.dumps(output)
+	
+	@cherrypy.expose
+	@require()
+	def start(self):
+		self.conf = Config(self.config_file)
+		cherrypy.response.headers["Content-Type"] = "application/json"
+		
+		cl = cherrypy.request.headers['Content-Length']
+		rawbody = cherrypy.request.body.read(int(cl))
+		data = odr = json.loads(rawbody)
+		
+		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+		
+		try:
+			server.supervisor.startProcess(data['service'])
+		except Exception,e:
+			print e
+			return json.dumps({ 'statusText': str(e) })
+		else:
+			return json.dumps({ 'statusText': 'Ok' })
+		
+	@cherrypy.expose
+	@require()
+	def stop(self):
+		self.conf = Config(self.config_file)
+		cherrypy.response.headers["Content-Type"] = "application/json"
+		
+		cl = cherrypy.request.headers['Content-Length']
+		rawbody = cherrypy.request.body.read(int(cl))
+		data = odr = json.loads(rawbody)
+		
+		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+		
+		try:
+			server.supervisor.stopProcess(data['service'])
+		except Exception,e:
+			print e
+			return json.dumps({ 'statusText': str(e) })
+		else:
+			return json.dumps({ 'statusText': 'Ok' })
+		

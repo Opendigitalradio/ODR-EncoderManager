@@ -214,22 +214,6 @@ class API():
 		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
 		output = []
 		
-		# Check if ODR program availaible in supervisor ProcessInfo
-		programs = server.supervisor.getAllProcessInfo()
-		if not self.is_program_exist(programs, 'ODR-audioencoder'):
-			try:
-				server.supervisor.reloadConfig()
-				server.supervisor.addProcessGroup('ODR-audioencoder')
-			except:
-				pass
-					
-		if not self.is_program_exist(programs, 'ODR-padencoder'):
-			try:
-				server.supervisor.reloadConfig()
-				server.supervisor.addProcessGroup('ODR-padencoder')
-			except:
-				pass
-		
 		try:
 			output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
 			output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
@@ -250,7 +234,7 @@ class API():
 				server.supervisor.reloadConfig()
 				server.supervisor.addProcessGroup(service)
 				server.supervisor.reloadConfig()
-				server.supervisor.startProcess(service)
+				#server.supervisor.startProcess(service)
 			elif action == 'stop':
 				server.supervisor.stopProcess(service)
 			elif action == 'restart':
@@ -261,7 +245,7 @@ class API():
 				server.supervisor.reloadConfig()
 				server.supervisor.addProcessGroup(service)
 				server.supervisor.reloadConfig()
-				server.supervisor.startProcess(service)
+				#server.supervisor.startProcess(service)
 		except Exception,e:
 			return { 'status': '-100', 'statusText': str(e), 'data': [] }
 		else:

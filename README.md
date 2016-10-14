@@ -29,6 +29,7 @@ password = pass ; Auth password
   * You can edit global configuration, in particular path in this files :
     * config.json
     * supervisor-gui.conf
+  * If you want to change supervisor XMLRPC login/password, you need to edit /etc/supervisor/supervisord.conf and config.json files
     
 
 

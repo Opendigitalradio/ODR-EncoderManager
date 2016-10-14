@@ -96,7 +96,7 @@ if __name__ == '__main__':
 		#'tools.encode.encoding': "utf-8",
 		'log.access_file' : os.path.join(config.config['global']['logs_directory'], 'access.log'),
 		'log.error_file' : os.path.join(config.config['global']['logs_directory'], 'error.log'),
-		'log.screen': True,
+		'log.screen': False,
 		})
 	
 	cherrypy.tree.mount(

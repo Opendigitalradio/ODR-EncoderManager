@@ -40,7 +40,7 @@
         "logs_directory": "/home/odr/ODR-EncoderManager/logs/",
         "supervisor_xmlrpc": "http://user:pass@127.0.0.1:9001/RPC2",
         "static_directory": "/home/odr/ODR-EncoderManager/static/",
-        "host": "127.0.0.1",
+        "host": "0.0.0.0",
         "supervisor_file": "/home/odr/ODR-EncoderManager/supervisor-encoder.conf",
         "port": 8080
     },

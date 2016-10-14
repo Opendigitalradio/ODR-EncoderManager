@@ -1,0 +1,8 @@
+# Auto generated files
+supervisor.conf
+
+# logs file
+logs/*
+
+# Compiled source
+*.pyc

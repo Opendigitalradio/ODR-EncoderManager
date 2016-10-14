@@ -105,74 +105,36 @@ function sleep(delay) {
 	while (new Date().getTime() < start + delay);
 }
 
-function start(service) {
+function serviceAction(action, service) {
 	var param = {
 		'service': service
 	}
 	$.ajax({
 		type: "POST",
-		url: "/api/start",
+		url: "/api/"+action,
 		data: JSON.stringify(param),
 		contentType: 'application/json',
 		dataType: 'json',
 		
 		error: function(data) {
 			$.gritter.add({
-				title: 'Start '+service,
+				title: action+' '+service,
 				text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
 				image: '/fonts/warning.png',
 				sticky: true,
 			});
 		},
 		success: function(data) {
-			if (data['statusText'] != 'Ok') {
+			if (data['status'] != '0') {
 				$.gritter.add({
-					title: 'Start '+service,
+					title: action+' '+service,
 					text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
 					image: '/fonts/warning.png',
 					sticky: true,
 				});
 			} else {
 				$.gritter.add({
-					title: 'Start '+service,
-					image: '/fonts/accept.png',
-					text: 'Ok',
-				});
-			}
-		}
-	});
-}
-
-function stop(service) {
-	var param = {
-		'service': service
-	}
-	$.ajax({
-		type: "POST",
-		url: "/api/stop",
-		data: JSON.stringify(param),
-		contentType: 'application/json',
-		dataType: 'json',
-		
-		error: function(data) {
-			$.gritter.add({
-				title: 'Stop '+service,
-				text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
-				image: '/fonts/warning.png',
-				sticky: true,
-			});
-		},
-		success: function(data) {
-			if (data['statusText'] != 'Ok') {
-				$.gritter.add({
-					title: 'Stop '+service,
-					text: "ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
-					image: '/fonts/warning.png',
-					sticky: true,
-				});
-			} else {
-				$.gritter.add({
-					title: 'Stop '+service,
+					title: action+' '+service,
 					image: '/fonts/accept.png',
 					text: 'Ok',
 				});
@@ -196,22 +158,24 @@ $(function(){
 	
 	$('#status tbody').on( 'click', '#service_start', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		start(service);
+		serviceAction('start', service);
+		
 		sleep(1000);
 		requestStatus();
 	});
 	
 	$('#status tbody').on( 'click', '#service_restart', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		stop(service);
-		start(service);
+		serviceAction('restart', service);
+		
 		sleep(1000);
 		requestStatus();
 	});
 	
 	$('#status tbody').on( 'click', '#service_stop', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		stop(service);
+		serviceAction('stop', service);
+		
 		sleep(1000);
 		requestStatus();
 	});
@@ -221,7 +185,7 @@ $(function(){
 		if (r == true) {
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
-				stop(service);
+				serviceAction('stop', service);
 			});
 
 			sleep(1000);
@@ -234,7 +198,7 @@ $(function(){
 		if (r == true) {
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
-				start(service);
+				serviceAction('start', service);
 			});
 			
 			sleep(1000);
@@ -247,9 +211,7 @@ $(function(){
 		if (r == true) {
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
-				stop(service);
-				sleep(1000);
-				start(service);
+				serviceAction('restart', service);
 			});
 			
 			sleep(1000);

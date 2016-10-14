@@ -238,42 +238,64 @@ class API():
 		
 		return json.dumps(output)
 	
+	
+	def serviceAction(self, action, service):
+		self.conf = Config(self.config_file)
+		
+		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+		try:
+			if action == 'start':
+				server.supervisor.reloadConfig()
+				server.supervisor.removeProcessGroup(service)
+				server.supervisor.reloadConfig()
+				server.supervisor.addProcessGroup(service)
+				server.supervisor.reloadConfig()
+				server.supervisor.startProcess(service)
+			elif action == 'stop':
+				server.supervisor.stopProcess(service)
+			elif action == 'restart':
+				server.supervisor.stopProcess(service)
+				
+				server.supervisor.reloadConfig()
+				server.supervisor.removeProcessGroup(service)
+				server.supervisor.reloadConfig()
+				server.supervisor.addProcessGroup(service)
+				server.supervisor.reloadConfig()
+				server.supervisor.startProcess(service)
+		except Exception,e:
+			return { 'status': '-100', 'statusText': str(e), 'data': [] }
+		else:
+			return { 'status': '0', 'statusText': 'Ok', 'data': [] }
+	
 	@cherrypy.expose
 	@require()
 	def start(self):
-		self.conf = Config(self.config_file)
 		cherrypy.response.headers["Content-Type"] = "application/json"
 		
 		cl = cherrypy.request.headers['Content-Length']
 		rawbody = cherrypy.request.body.read(int(cl))
 		data = odr = json.loads(rawbody)
 		
-		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
-		
-		try:
-			server.supervisor.startProcess(data['service'])
-		except Exception,e:
-			return json.dumps({ 'statusText': str(e) })
-		else:
-			return json.dumps({ 'statusText': 'Ok' })
+		return json.dumps(self.serviceAction('start', data['service']))
 		
 	@cherrypy.expose
 	@require()
 	def stop(self):
-		self.conf = Config(self.config_file)
 		cherrypy.response.headers["Content-Type"] = "application/json"
 		
 		cl = cherrypy.request.headers['Content-Length']
 		rawbody = cherrypy.request.body.read(int(cl))
 		data = odr = json.loads(rawbody)
 		
-		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+		return json.dumps(self.serviceAction('stop', data['service']))
+	
+	@cherrypy.expose
+	@require()
+	def restart(self):
+		cherrypy.response.headers["Content-Type"] = "application/json"
 		
-		try:
-			server.supervisor.stopProcess(data['service'])
-		except Exception,e:
-			print e
-			return json.dumps({ 'statusText': str(e) })
-		else:
-			return json.dumps({ 'statusText': 'Ok' })
+		cl = cherrypy.request.headers['Content-Length']
+		rawbody = cherrypy.request.body.read(int(cl))
+		data = odr = json.loads(rawbody)
 		
+		return json.dumps(self.serviceAction('restart', data['service']))

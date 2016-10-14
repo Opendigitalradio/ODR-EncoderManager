@@ -95,13 +95,13 @@ class API():
 				command += ' --raw-dls'
 				
 			supervisorPadEncConfig = ""
-			supervisorPadEncConfig += "[program:ODR-PadEnc]\n"
+			supervisorPadEncConfig += "[program:ODR-padencoder]\n"
 			supervisorPadEncConfig += "command=%s\n" % (command)
 			supervisorPadEncConfig += "autostart=true\n"
 			supervisorPadEncConfig += "autorestart=true\n"
 			supervisorPadEncConfig += "priority=10\n"
-			supervisorPadEncConfig += "stderr_logfile=/var/log/supervisor/ODR-PadEnc.err.log\n"
-			supervisorPadEncConfig += "stdout_logfile=/var/log/supervisor/ODR-PadEnc.log\n"
+			supervisorPadEncConfig += "stderr_logfile=/var/log/supervisor/ODR-padencoder.err.log\n"
+			supervisorPadEncConfig += "stdout_logfile=/var/log/supervisor/ODR-padencoder.log\n"
 			
 		# Write supervisor audioencoder section
 		# Encoder path
@@ -162,6 +162,23 @@ class API():
 			 supfile.write('\n')
 			 supfile.write(supervisorPadEncConfig)
 		
+		# Check if ODR program availaible in supervisor ProcessInfo and try to add it
+		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+		programs = server.supervisor.getAllProcessInfo()
+		if not self.is_program_exist(programs, 'ODR-audioencoder'):
+			try:
+				server.supervisor.reloadConfig()
+				server.supervisor.addProcessGroup('ODR-audioencoder')
+			except:
+				pass
+					
+		if not self.is_program_exist(programs, 'ODR-padencoder'):
+			try:
+				server.supervisor.reloadConfig()
+				server.supervisor.addProcessGroup('ODR-padencoder')
+			except:
+				pass
+		
 		return 'Ok'
 	
 	@cherrypy.expose
@@ -182,20 +199,43 @@ class API():
 		else:
 			return json.dumps({'dls': 'DLS is disable ...'})
 	
+	def is_program_exist(self, json, program):
+		ex = False
+		for p in json:
+			if p['name'] == program :
+				ex = True
+		return ex
+		
 	@cherrypy.expose
 	@require()
 	def getStatus(self):
 		self.conf = Config(self.config_file)
+		cherrypy.response.headers["Content-Type"] = "application/json"
 		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
 		output = []
 		
+		# Check if ODR program availaible in supervisor ProcessInfo
+		programs = server.supervisor.getAllProcessInfo()
+		if not self.is_program_exist(programs, 'ODR-audioencoder'):
+			try:
+				server.supervisor.reloadConfig()
+				server.supervisor.addProcessGroup('ODR-audioencoder')
+			except:
+				pass
+					
+		if not self.is_program_exist(programs, 'ODR-padencoder'):
+			try:
+				server.supervisor.reloadConfig()
+				server.supervisor.addProcessGroup('ODR-padencoder')
+			except:
+				pass
+		
 		try:
 			output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
-			output.append( server.supervisor.getProcessInfo('ODR-PadEnc') )
+			output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
 		except Exception,e:
 			return json.dumps({ })
 		
-		cherrypy.response.headers["Content-Type"] = "application/json"
 		return json.dumps(output)
 	
 	@cherrypy.expose

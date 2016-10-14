@@ -248,6 +248,7 @@ $(function(){
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
 				stop(service);
+				sleep(1000);
 				start(service);
 			});
 			

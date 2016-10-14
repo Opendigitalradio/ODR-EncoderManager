@@ -20,6 +20,8 @@
 // 
 
 function requestStatus(callback) {
+	$('#status > tbody').empty();
+	
 	$.ajax({
 		type: "GET",
 		url: "/api/getStatus",
@@ -77,7 +79,6 @@ function requestStatus(callback) {
 }
 
 function requestDLS(callback) {
-	//$("#dls").prop('disabled', true);
 	$.ajax({
 		type: "GET",
 		url: "/api/getDLS",
@@ -85,7 +86,6 @@ function requestDLS(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			//alert("getDLS\nerror " + data['status'] + " : " + data['statusText']);
 			$('#dls').val("error " + data['status'] + " : " + data['statusText']);
 		},
 		success: function(data) {
@@ -186,7 +186,6 @@ $(function(){
 	requestDLS();
 	
 	$('#refresh').click(function() {
-		$('#status > tbody').empty();
 		requestStatus();
 		$.gritter.add({
 					title: 'Services status refresh',
@@ -197,22 +196,24 @@ $(function(){
 	
 	$('#status tbody').on( 'click', '#service_start', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		console.log('start ' + service);
 		start(service);
+		sleep(1000);
+		requestStatus();
 	});
 	
 	$('#status tbody').on( 'click', '#service_restart', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		console.log('stop ' + service);
 		stop(service);
-		console.log('start ' + service);
 		start(service);
+		sleep(1000);
+		requestStatus();
 	});
 	
 	$('#status tbody').on( 'click', '#service_stop', function () {
 		service = $(this).parents('tr').find("td:first").html();
-		console.log('stop ' + service);
 		stop(service);
+		sleep(1000);
+		requestStatus();
 	});
 	
 	$('#service_stop_all').click(function() {
@@ -220,11 +221,9 @@ $(function(){
 		if (r == true) {
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
-				console.log('stop ' + service);
 				stop(service);
 			});
 
-			$('#status > tbody').empty();
 			sleep(1000);
 			requestStatus();
 		}
@@ -235,11 +234,9 @@ $(function(){
 		if (r == true) {
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
-				console.log('start ' + service);
 				start(service);
 			});
 			
-			$('#status > tbody').empty();
 			sleep(1000);
 			requestStatus();
 		}
@@ -250,11 +247,12 @@ $(function(){
 		if (r == true) {
 			$('#status tbody tr').each(function() {
 				service = $(this).find("td:first").html();
-				console.log('stop ' + service);
 				stop(service);
-				console.log('start ' + service);
 				start(service);
 			});
+			
+			sleep(1000);
+			requestStatus();
 		}
 	});
 	

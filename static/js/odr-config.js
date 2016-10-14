@@ -62,8 +62,7 @@ function requestConfiguration(callback) {
 function setConfiguration(callback) {
 	var param = {
 		"path" :	{
-					"encoder_dabp_path": $('#path_encoder_dabp_path').val(),
-					"encoder_dab_path": $('#path_encoder_dab_path').val(),
+					"encoder_path": $('#path_encoder_path').val(),
 					"padenc_path": $('#path_padenc_path').val(),
 					"zmq_key_tmp_file": $('#path_zmq_key_tmp_file').val(),
 				},
@@ -77,13 +76,14 @@ function setConfiguration(callback) {
 					"type": $('#output_type').val(),
 					"zmq_host": $('#output_zmq_host').val(),
 					"zmq_key": $('#output_zmq_key').val(),
-					"dabp_bitrate": $('#output_dabp_bitrate').val(),
-					"dabp_samplerate": $('#output_dabp_samplerate').val(),
+					"bitrate": $('#output_bitrate').val(),
+					"samplerate": $('#output_samplerate').val(),
+					"channels": $('#output_channels').val(),
 					"dabp_sbr": $('#output_dabp_sbr').val(),
 					"dabp_ps": $('#output_dabp_ps').val(),
 					"dabp_afterburner": $('#output_dabp_afterburner').val(),
-					"dab_bitrate": $('#output_dab_bitrate').val(),
-					"dab_samplerate": $('#output_dab_samplerate').val(),
+					"dab_dabmode": $('#output_dab_dabmode').val(),
+					"dab_dabpsy": $('#output_dab_dabpsy').val()
 				},
 		"padenc" :		{
 					"enable": $('#padenc_enable').val(),

@@ -60,7 +60,6 @@ class API():
 				# Check if config.mot_slide_directory exist
 				if os.path.exists(output['odr']['padenc']['slide_directory']):
 					command += ' --dir=%s' % (output['odr']['padenc']['slide_directory'])
-					command += ' --sleep=%s' % (output['odr']['padenc']['slide_sleeping'])
 					if output['odr']['padenc']['slide_once'] == 'true':
 						command += ' --erase'
 						
@@ -87,6 +86,7 @@ class API():
 					#File %s is not a fifo file
 					pass
 			
+			command += ' --sleep=%s' % (output['odr']['padenc']['slide_sleeping'])
 			command += ' --pad=%s' % (output['odr']['padenc']['pad'])
 			command += ' --dls=%s' % (output['odr']['padenc']['dls_fifo_file'])
 			command += ' --output=%s' % (output['odr']['padenc']['pad_fifo_file'])
@@ -100,73 +100,60 @@ class API():
 			supervisorPadEncConfig += "autostart=true\n"
 			supervisorPadEncConfig += "autorestart=true\n"
 			supervisorPadEncConfig += "priority=10\n"
-			#supervisorPadEncConfig += "user=odr\n"
-			#supervisorPadEncConfig += "group=odr\n"
 			supervisorPadEncConfig += "stderr_logfile=/var/log/supervisor/ODR-PadEnc.err.log\n"
 			supervisorPadEncConfig += "stdout_logfile=/var/log/supervisor/ODR-PadEnc.log\n"
 			
-			
-				
-		# Write supervisor audio-encoder section
+		# Write supervisor audioencoder section
+		# Encoder path
+		command = output['odr']['path']['encoder_path']
+		
+		# Input stream
+		if output['odr']['source']['type'] == 'alsa':
+			command += ' -d %s' % (output['odr']['source']['device'])
+		if output['odr']['source']['type'] == 'stream':
+			command += ' --vlc-uri=%s' % (output['odr']['source']['url'])
+		if output['odr']['source']['driftcomp'] == 'true':
+			command += ' -D'
+		command += ' -b %s' % (output['odr']['output']['bitrate'])
+		command += ' -r %s' % (output['odr']['output']['samplerate'])
+		command += ' -c %s' % (output['odr']['output']['channels'])
+		
+		# DAB specific option
 		if output['odr']['output']['type'] == 'dab':
-			command = output['odr']['path']['encoder_dab_path']
-			if output['odr']['source']['type'] == 'stream':
-				command += ' -s %s' % (output['odr']['output']['dab_samplerate'])
-				command += ' -V %s' % (output['odr']['source']['url'])
-				command += ' -b %s' % (output['odr']['output']['dab_bitrate'])
-				if output['odr']['padenc']['enable'] == 'true':
-					command += ' -W %s' % (output['odr']['padenc']['dls_fifo_file'])
-			
-			if output['odr']['source']['type'] == 'alsa':
-				command += ' -s %s' % (output['odr']['output']['dab_samplerate'])
-				command += ' -V alsa://plug%s' % (output['odr']['source']['device'])
-				command += ' -b %s' % (output['odr']['output']['dab_bitrate'])
-			
-			if output['odr']['padenc']['enable'] == 'true':
-				if os.path.exists(output['odr']['padenc']['pad_fifo_file']) and stat.S_ISFIFO(os.stat(output['odr']['padenc']['pad_fifo_file']).st_mode):
-					command += ' -p %s' % (output['odr']['padenc']['pad'])
-					command += ' -P %s' % (output['odr']['padenc']['pad_fifo_file'])
-			
-			hosts = output['odr']['output']['zmq_host'].replace(' ','').split(',')
-			for host in hosts:
-				command += ' tcp://%s;' % (host)
-			# Remove the last fucking ;
-			command = command[:-1]
-			
-		elif output['odr']['output']['type'] == 'dabp':
-			command = output['odr']['path']['encoder_dabp_path']
-			if output['odr']['source']['type'] == 'alsa':
-				command += ' -d %s' % (output['odr']['source']['device'])
-			if output['odr']['source']['type'] == 'stream':
-				command += ' --vlc-uri=%s' % (output['odr']['source']['url'])
-			if output['odr']['source']['driftcomp'] == 'true':
-				command += ' -D'
-			command += ' -b %s -r %s' % (output['odr']['output']['dabp_bitrate'], output['odr']['output']['dabp_samplerate'])
+			command += ' --dab'
+			command += ' --dabmode=%s' % (output['odr']['output']['dab_dabmode'])
+			command += ' --dabpsy=%s' % (output['odr']['output']['dab_dabpsy'])
+		
+		
+		# DAB+ specific option
+		if output['odr']['output']['type'] == 'dabp':
 			if output['odr']['output']['dabp_sbr'] == 'true':
 				command += ' --sbr'
 			if output['odr']['output']['dabp_ps'] == 'true':
 				command += ' --ps'
+			if output['odr']['output']['dabp_sbr'] == 'false' and output['odr']['output']['dabp_ps'] == 'false':
+				command += ' --aaclc'
 			if output['odr']['output']['dabp_afterburner'] == 'false':
 				command += ' --no-afterburner'
-			
-			if output['odr']['padenc']['enable'] == 'true':
-				if os.path.exists(output['odr']['padenc']['pad_fifo_file']) and stat.S_ISFIFO(os.stat(output['odr']['padenc']['pad_fifo_file']).st_mode):
-					command += ' --pad=%s' % (output['odr']['padenc']['pad'])
-					command += ' --pad-fifo=%s' % (output['odr']['padenc']['pad_fifo_file'])
-			
-			command += ' -f raw'
-			hosts = output['odr']['output']['zmq_host'].replace(' ','').split(',')
-			for host in hosts:
-				command += ' -o tcp://%s' % (host)
 		
+		# PAD encoder
+		if output['odr']['padenc']['enable'] == 'true':
+			if os.path.exists(output['odr']['padenc']['pad_fifo_file']) and stat.S_ISFIFO(os.stat(output['odr']['padenc']['pad_fifo_file']).st_mode):
+				command += ' --pad=%s' % (output['odr']['padenc']['pad'])
+				command += ' --pad-fifo=%s' % (output['odr']['padenc']['pad_fifo_file'])
+				command += ' --write-icy-text=%s' % (output['odr']['padenc']['dls_fifo_file'])
+		
+		# Output
+		hosts = output['odr']['output']['zmq_host'].replace(' ','').split(',')
+		for host in hosts:
+			command += ' -o tcp://%s' % (host)
+				
 		supervisorConfig = ""
 		supervisorConfig += "[program:ODR-audioencoder]\n"
 		supervisorConfig += "command=%s\n" % (command)
 		supervisorConfig += "autostart=true\n"
 		supervisorConfig += "autorestart=true\n"
 		supervisorConfig += "priority=10\n"
-		#supervisorConfig += "user=odr\n"
-		#supervisorConfig += "group=odr\n"
 		supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-audioencoder.err.log\n"
 		supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-audioencoder.log\n"
 		
@@ -202,8 +189,11 @@ class API():
 		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
 		output = []
 		
-		output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
-		output.append( server.supervisor.getProcessInfo('ODR-PadEnc') )
+		try:
+			output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
+			output.append( server.supervisor.getProcessInfo('ODR-PadEnc') )
+		except Exception,e:
+			return json.dumps({ })
 		
 		cherrypy.response.headers["Content-Type"] = "application/json"
 		return json.dumps(output)
@@ -223,7 +213,6 @@ class API():
 		try:
 			server.supervisor.startProcess(data['service'])
 		except Exception,e:
-			print e
 			return json.dumps({ 'statusText': str(e) })
 		else:
 			return json.dumps({ 'statusText': 'Ok' })

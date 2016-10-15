@@ -141,36 +141,6 @@ $(function(){
 	$('#save').click(function() {
 		setConfiguration();
 	});
-	
-	$('#restart').click(function() {
-		var r = confirm("Restart encoder. Are you really sure ?");
-		if (r == true) {
-			$.ajax({
-				type: "GET",
-				url: "/api/restart",
-				contentType: 'application/json',
-				dataType: 'json',
-				
-				error: function(data) {
-					//alert("error " + data['status'] + " : " + data['statusText']);
-					$.gritter.add({
-						title: 'Restart : ERROR !',
-						text: data['status'] + " : " + data['statusText'],
-						image: '/fonts/warning.png',
-						sticky: true,
-					});
-				},
-				success: function(data) {
-					//alert(data);
-					$.gritter.add({
-						title: 'Restart : done !',
-						image: '/fonts/accept.png',
-						text: data,
-					});
-				}
-			});
-		}
-	});
 });
 
 

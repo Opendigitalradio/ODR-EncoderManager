@@ -29,7 +29,6 @@ function requestStatus(callback) {
 		dataType: 'json',
 		
 		error: function(data) {
-			//alert("getStatus\nerror " + data['status'] + " : " + data['statusText']);
 			$.gritter.add({
 				title: 'Services status',
 				text: "ERROR: " + data['status'] + " : " + data['statusText'],
@@ -38,42 +37,51 @@ function requestStatus(callback) {
 			});
 		},
 		success: function(data) {
-			$.each( data, function( key, val ) {
-				// 0   - STOPPED
-				// 10  - STARTING
-				// 20  - RUNNING
-				// 30  - BACKOFF
-				// 40  - STOPPING
-				// 100 - EXITED
-				// 200 - FATAL
-				// 1000 - UNKNOWN
-				
-				if ( (val['state'] == '0') || (val['state'] == '40') ) {
-					action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
-					class_label = 'warning'
-				}
-				else if ( (val['state'] == '100') || (val['state'] == '200') ) {
-					action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
-					class_label = 'danger'
-				}
-				else if ( (val['state'] == '10') || (val['state'] == '20') ) {
-					action = '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
-					action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart">Restart</button> '
-					class_label = 'success'
-				}
-				else if ( (val['state'] == '30') ) {
-					action = '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
-					class_label = 'warning'
-				}
-				else {
-					class_label = 'default'
-					action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
-					action = action + '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
-					action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart">Restart</button> '
-				}
-				$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+action+'</td></tr>');
+			if ( data['status'] == '0' ) {
+				$.each( data['data'], function( key, val ) {
+					// 0   - STOPPED
+					// 10  - STARTING
+					// 20  - RUNNING
+					// 30  - BACKOFF
+					// 40  - STOPPING
+					// 100 - EXITED
+					// 200 - FATAL
+					// 1000 - UNKNOWN
+					
+					if ( (val['state'] == '0') || (val['state'] == '40') ) {
+						action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
+						class_label = 'warning'
+					}
+					else if ( (val['state'] == '100') || (val['state'] == '200') ) {
+						action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
+						class_label = 'danger'
+					}
+					else if ( (val['state'] == '10') || (val['state'] == '20') ) {
+						action = '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
+						action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart">Restart</button> '
+						class_label = 'success'
+					}
+					else if ( (val['state'] == '30') ) {
+						action = '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
+						class_label = 'warning'
+					}
+					else {
+						class_label = 'default'
+						action = '<button type="button" class="btn btn-xs btn-success" id="service_start">Start</button> '
+						action = action + '<button type="button" class="btn btn-xs btn-danger" id="service_stop">Stop</button> '
+						action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart">Restart</button> '
+					}
+					$('#status > tbody:last').append('<tr><td>'+val['name']+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+action+'</td></tr>');
 
-			});
+				});
+			} else {
+				$.gritter.add({
+					title: 'Load status',
+					text: "ERROR = " + data['status'] + " : " + data['statusText'],
+					image: '/fonts/warning.png',
+					sticky: true,
+				});
+			}
 		}
 	});
 }

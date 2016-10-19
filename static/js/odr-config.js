@@ -36,25 +36,34 @@ function requestConfiguration(callback) {
 			});
 		},
 		success: function(data) {
-			$.each( data, function( section_key, section_val ) {
-				if ( typeof section_val === 'object') {
-					$.each( section_val, function( param_key, param_val ) {
-						form_key = section_key + '_' + param_key
+			if ( data['status'] == '0' ) {
+				$.each( data['data'], function( section_key, section_val ) {
+					if ( typeof section_val === 'object') {
+						$.each( section_val, function( param_key, param_val ) {
+							form_key = section_key + '_' + param_key
+							
+							if ( $('#'+form_key).attr('type') == 'text' ) {
+								$('#'+form_key).val(param_val);
+							}
+							else if ( $('#'+form_key).attr('type') == 'select' ) {
+								$('#'+form_key+' option[value="'+param_val+'"]').prop('selected', true);
+							}
+							else {
+								debug = section_key + '_' + param_key + ':' + param_val;
+								console.log('Not found in form: '+debug);
+							}
+						});
 						
-						if ( $('#'+form_key).attr('type') == 'text' ) {
-							$('#'+form_key).val(param_val);
-						}
-						else if ( $('#'+form_key).attr('type') == 'select' ) {
-							$('#'+form_key+' option[value="'+param_val+'"]').prop('selected', true);
-						}
-						else {
-							debug = section_key + '_' + param_key + ':' + param_val;
-							console.log('Not found in form: '+debug);
-						}
-					});
-					
-				}
-			});
+					}
+				});
+			} else {
+				$.gritter.add({
+					title: 'Load configuration',
+					text: "ERROR = " + data['status'] + " : " + data['statusText'],
+					image: '/fonts/warning.png',
+					sticky: true,
+				});
+			}
 		}
 	});
 }
@@ -106,7 +115,6 @@ function setConfiguration(callback) {
 		
 		error: function(data) {
 			console.log(data);
-			console.log(status);
 			$.gritter.add({
 				title: 'Write changes',
 				text: "ERROR = " + data['status'] + " : " + data['statusText'],
@@ -115,11 +123,21 @@ function setConfiguration(callback) {
 			});
 		},
 		success: function(data) {
-			$.gritter.add({
-				title: 'Write changes',
-				image: '/fonts/accept.png',
-				text: 'Ok',
-			});
+			data = jQuery.parseJSON(data)
+			if ( data['status'] == '0' ) {
+				$.gritter.add({
+					title: 'Write changes',
+					image: '/fonts/accept.png',
+					text: 'Ok',
+				});
+			} else {
+				$.gritter.add({
+					title: 'Write changes',
+					text: "ERROR = " + data['status'] + " : " + data['statusText'],
+					image: '/fonts/warning.png',
+					sticky: true,
+				});
+			}
 		}
 	});
 	

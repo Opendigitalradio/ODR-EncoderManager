@@ -35,7 +35,7 @@ class API():
 	def getConfig(self):
 		self.conf = Config(self.config_file)
 		cherrypy.response.headers["Content-Type"] = "application/json"
-		return json.dumps(self.conf.config['odr'])
+		return json.dumps({'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr']})
 	
 	@cherrypy.expose
 	@require()
@@ -48,9 +48,13 @@ class API():
 		
 		output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
         
-		with open(self.config_file, 'w') as outfile:
-			data = json.dumps(output, indent=4, separators=(',', ': '))
-			outfile.write(data)
+		try:
+			with open(self.config_file, 'w') as outfile:
+				data = json.dumps(output, indent=4, separators=(',', ': '))
+				outfile.write(data)
+		except Exception,e:
+			cherrypy.response.headers["Content-Type"] = "application/json"
+			return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
 		
 		supervisorConfig = ""
 		# Write supervisor pad-encoder section
@@ -69,18 +73,24 @@ class API():
 					f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
 					f.close()
 				except Exception,e:
-					pass
+					cherrypy.response.headers["Content-Type"] = "application/json"
+					return json.dumps({'status': '-202', 'statusText': 'Error when create DLS fifo file' + str(e)})
 			else:
-				f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
-				f.write('')
-				f.close()
+				try:
+					f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
+					f.write('')
+					f.close()
+				except Exception,e:
+					cherrypy.response.headers["Content-Type"] = "application/json"
+					return json.dumps({'status': '-203', 'statusText': 'Error when writing into DLS fifo file' + str(e)})
 				
 			# Check if config.mot_pad_fifo_file exist and create it if needed.
 			if not os.path.exists(output['odr']['padenc']['pad_fifo_file']):
 				try:
 					os.mkfifo(output['odr']['padenc']['pad_fifo_file'])
 				except Exception,e:
-					pass
+					cherrypy.response.headers["Content-Type"] = "application/json"
+					return json.dumps({'status': '-204', 'statusText': 'Error when create PAD fifo file' + str(e)})
 			else:
 				if not stat.S_ISFIFO(os.stat(output['odr']['padenc']['pad_fifo_file']).st_mode):
 					#File %s is not a fifo file
@@ -157,10 +167,14 @@ class API():
 		supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-audioencoder.err.log\n"
 		supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-audioencoder.log\n"
 		
-		with open(output['global']['supervisor_file'], 'w') as supfile:
-			 supfile.write(supervisorConfig)
-			 supfile.write('\n')
-			 supfile.write(supervisorPadEncConfig)
+		try:
+			with open(output['global']['supervisor_file'], 'w') as supfile:
+				supfile.write(supervisorConfig)
+				supfile.write('\n')
+				supfile.write(supervisorPadEncConfig)
+		except Exception,e:
+			cherrypy.response.headers["Content-Type"] = "application/json"
+			return json.dumps({'status': '-205', 'statusText': 'Error when writing supervisor file: ' + str(e)})
 		
 		# Check if ODR program availaible in supervisor ProcessInfo and try to add it
 		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
@@ -170,16 +184,19 @@ class API():
 				server.supervisor.reloadConfig()
 				server.supervisor.addProcessGroup('ODR-audioencoder')
 			except:
-				pass
+				cherrypy.response.headers["Content-Type"] = "application/json"
+				return json.dumps({'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)})
 					
 		if not self.is_program_exist(programs, 'ODR-padencoder'):
 			try:
 				server.supervisor.reloadConfig()
 				server.supervisor.addProcessGroup('ODR-padencoder')
 			except:
-				pass
+				cherrypy.response.headers["Content-Type"] = "application/json"
+				return json.dumps({'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)})
 		
-		return 'Ok'
+		cherrypy.response.headers["Content-Type"] = "application/json"
+		return json.dumps({'status': '0', 'statusText': 'Ok'})
 	
 	@cherrypy.expose
 	@require()
@@ -218,9 +235,9 @@ class API():
 			output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
 			output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
 		except Exception,e:
-			return json.dumps({ })
+			return json.dumps({'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): ' + str(e)})
 		
-		return json.dumps(output)
+		return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
 	
 	
 	def serviceAction(self, action, service):
@@ -247,7 +264,7 @@ class API():
 				server.supervisor.reloadConfig()
 				#server.supervisor.startProcess(service)
 		except Exception,e:
-			return { 'status': '-100', 'statusText': str(e), 'data': [] }
+			return { 'status': '-401', 'statusText': str(e) }
 		else:
 			return { 'status': '0', 'statusText': 'Ok', 'data': [] }
 	

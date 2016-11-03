@@ -170,8 +170,9 @@ class API():
 		try:
 			with open(output['global']['supervisor_file'], 'w') as supfile:
 				supfile.write(supervisorConfig)
-				supfile.write('\n')
-				supfile.write(supervisorPadEncConfig)
+				if output['odr']['padenc']['enable'] == 'true':
+					supfile.write('\n')
+					supfile.write(supervisorPadEncConfig)
 		except Exception,e:
 			cherrypy.response.headers["Content-Type"] = "application/json"
 			return json.dumps({'status': '-205', 'statusText': 'Error when writing supervisor file: ' + str(e)})

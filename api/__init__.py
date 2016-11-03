@@ -76,13 +76,14 @@ class API():
 					cherrypy.response.headers["Content-Type"] = "application/json"
 					return json.dumps({'status': '-202', 'statusText': 'Error when create DLS fifo file' + str(e)})
 			else:
-				try:
-					f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
-					f.write('')
-					f.close()
-				except Exception,e:
-					cherrypy.response.headers["Content-Type"] = "application/json"
-					return json.dumps({'status': '-203', 'statusText': 'Error when writing into DLS fifo file' + str(e)})
+				if output['odr']['source']['type'] == 'stream':
+					try:
+						f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
+						f.write('')
+						f.close()
+					except Exception,e:
+						cherrypy.response.headers["Content-Type"] = "application/json"
+						return json.dumps({'status': '-203', 'statusText': 'Error when writing into DLS fifo file' + str(e)})
 				
 			# Check if config.mot_pad_fifo_file exist and create it if needed.
 			if not os.path.exists(output['odr']['padenc']['pad_fifo_file']):

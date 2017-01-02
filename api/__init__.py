@@ -9,7 +9,6 @@ import cherrypy
 
 import urllib
 import os
-import stat
 import xmlrpclib
 
 from config import Config
@@ -48,139 +47,28 @@ class API():
 		
 		output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
         
+        # Write configuration file
 		try:
-			with open(self.config_file, 'w') as outfile:
-				data = json.dumps(output, indent=4, separators=(',', ': '))
-				outfile.write(data)
+			self.conf.write(output)
 		except Exception,e:
 			cherrypy.response.headers["Content-Type"] = "application/json"
 			return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
-		
-		supervisorConfig = ""
-		# Write supervisor pad-encoder section
-		if output['odr']['padenc']['enable'] == 'true':
-			command = output['odr']['path']['padenc_path']
-			if output['odr']['padenc']['slide_directory'].strip() != '':
-				# Check if config.mot_slide_directory exist
-				if os.path.exists(output['odr']['padenc']['slide_directory']):
-					command += ' --dir=%s' % (output['odr']['padenc']['slide_directory'])
-					if output['odr']['padenc']['slide_once'] == 'true':
-						command += ' --erase'
-						
-			# Check if config.mot_dls_fifo_file exist and create it if needed.
-			if not os.path.isfile(output['odr']['padenc']['dls_fifo_file']):
-				try:
-					f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
-					f.close()
-				except Exception,e:
-					cherrypy.response.headers["Content-Type"] = "application/json"
-					return json.dumps({'status': '-202', 'statusText': 'Error when create DLS fifo file' + str(e)})
-			else:
-				if output['odr']['source']['type'] == 'stream':
-					try:
-						f = open(output['odr']['padenc']['dls_fifo_file'], 'w')
-						f.write('')
-						f.close()
-					except Exception,e:
-						cherrypy.response.headers["Content-Type"] = "application/json"
-						return json.dumps({'status': '-203', 'statusText': 'Error when writing into DLS fifo file' + str(e)})
-				
-			# Check if config.mot_pad_fifo_file exist and create it if needed.
-			if not os.path.exists(output['odr']['padenc']['pad_fifo_file']):
-				try:
-					os.mkfifo(output['odr']['padenc']['pad_fifo_file'])
-				except Exception,e:
-					cherrypy.response.headers["Content-Type"] = "application/json"
-					return json.dumps({'status': '-204', 'statusText': 'Error when create PAD fifo file' + str(e)})
-			else:
-				if not stat.S_ISFIFO(os.stat(output['odr']['padenc']['pad_fifo_file']).st_mode):
-					#File %s is not a fifo file
-					pass
-			
-			command += ' --sleep=%s' % (output['odr']['padenc']['slide_sleeping'])
-			command += ' --pad=%s' % (output['odr']['padenc']['pad'])
-			command += ' --dls=%s' % (output['odr']['padenc']['dls_fifo_file'])
-			command += ' --output=%s' % (output['odr']['padenc']['pad_fifo_file'])
-			
-			if output['odr']['padenc']['raw_dls'] == 'true':
-				command += ' --raw-dls'
-				
-			supervisorPadEncConfig = ""
-			supervisorPadEncConfig += "[program:ODR-padencoder]\n"
-			supervisorPadEncConfig += "command=%s\n" % (command)
-			supervisorPadEncConfig += "autostart=true\n"
-			supervisorPadEncConfig += "autorestart=true\n"
-			supervisorPadEncConfig += "priority=10\n"
-			supervisorPadEncConfig += "stderr_logfile=/var/log/supervisor/ODR-padencoder.err.log\n"
-			supervisorPadEncConfig += "stdout_logfile=/var/log/supervisor/ODR-padencoder.log\n"
-			
-		# Write supervisor audioencoder section
-		# Encoder path
-		command = output['odr']['path']['encoder_path']
-		
-		# Input stream
-		if output['odr']['source']['type'] == 'alsa':
-			command += ' -d %s' % (output['odr']['source']['device'])
-		if output['odr']['source']['type'] == 'stream':
-			command += ' --vlc-uri=%s' % (output['odr']['source']['url'])
-		if output['odr']['source']['driftcomp'] == 'true':
-			command += ' -D'
-		command += ' -b %s' % (output['odr']['output']['bitrate'])
-		command += ' -r %s' % (output['odr']['output']['samplerate'])
-		command += ' -c %s' % (output['odr']['output']['channels'])
-		
-		# DAB specific option
-		if output['odr']['output']['type'] == 'dab':
-			command += ' --dab'
-			command += ' --dabmode=%s' % (output['odr']['output']['dab_dabmode'])
-			command += ' --dabpsy=%s' % (output['odr']['output']['dab_dabpsy'])
-		
-		
-		# DAB+ specific option
-		if output['odr']['output']['type'] == 'dabp':
-			if output['odr']['output']['dabp_sbr'] == 'true':
-				command += ' --sbr'
-			if output['odr']['output']['dabp_ps'] == 'true':
-				command += ' --ps'
-			if output['odr']['output']['dabp_sbr'] == 'false' and output['odr']['output']['dabp_ps'] == 'false':
-				command += ' --aaclc'
-			if output['odr']['output']['dabp_afterburner'] == 'false':
-				command += ' --no-afterburner'
-		
-		# PAD encoder
-		if output['odr']['padenc']['enable'] == 'true':
-			if os.path.exists(output['odr']['padenc']['pad_fifo_file']) and stat.S_ISFIFO(os.stat(output['odr']['padenc']['pad_fifo_file']).st_mode):
-				command += ' --pad=%s' % (output['odr']['padenc']['pad'])
-				command += ' --pad-fifo=%s' % (output['odr']['padenc']['pad_fifo_file'])
-				command += ' --write-icy-text=%s' % (output['odr']['padenc']['dls_fifo_file'])
-		
-		# Output
-		hosts = output['odr']['output']['zmq_host'].replace(' ','').split(',')
-		for host in hosts:
-			command += ' -o tcp://%s' % (host)
-				
-		supervisorConfig = ""
-		supervisorConfig += "[program:ODR-audioencoder]\n"
-		supervisorConfig += "command=%s\n" % (command)
-		supervisorConfig += "autostart=true\n"
-		supervisorConfig += "autorestart=true\n"
-		supervisorConfig += "priority=10\n"
-		supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-audioencoder.err.log\n"
-		supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-audioencoder.log\n"
-		
+        
+        # Generate supervisor files
 		try:
-			with open(output['global']['supervisor_file'], 'w') as supfile:
-				supfile.write(supervisorConfig)
-				if output['odr']['padenc']['enable'] == 'true':
-					supfile.write('\n')
-					supfile.write(supervisorPadEncConfig)
+			self.conf.generateSupervisorFiles(output)
 		except Exception,e:
 			cherrypy.response.headers["Content-Type"] = "application/json"
-			return json.dumps({'status': '-205', 'statusText': 'Error when writing supervisor file: ' + str(e)})
+			return json.dumps({'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)})
+		
 		
 		# Check if ODR program availaible in supervisor ProcessInfo and try to add it
+		
+		# Retreive supervisor process
 		server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
 		programs = server.supervisor.getAllProcessInfo()
+		
+		# Check for ODR-audioencoder
 		if not self.is_program_exist(programs, 'ODR-audioencoder'):
 			try:
 				server.supervisor.reloadConfig()
@@ -188,7 +76,8 @@ class API():
 			except:
 				cherrypy.response.headers["Content-Type"] = "application/json"
 				return json.dumps({'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)})
-					
+		
+		# Check for ODR-padencoder
 		if not self.is_program_exist(programs, 'ODR-padencoder'):
 			try:
 				server.supervisor.reloadConfig()

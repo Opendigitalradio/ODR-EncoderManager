@@ -7,7 +7,8 @@ ODR-EncoderManager is currently in complet re-developpement in this branch and i
 
 # INSTALLATION
 
-  * (root) Install requirement : apt install python-cherrypy3 python-jinja2 supervisor
+  * (root) Install requirement : apt install python-cherrypy3 python-jinja2 python-serial supervisor
+  * (root) Add odr user to dialout group : usermod -a -G dialout odr
   * (user) Got to odr user home : cd /home/odr/
   * (user) Clone git repository : git clone https://github.com/YoannQueret/ODR-EncoderManager.git
   * (user) Rename sample config : move /home/odr/ODR-EncoderManager/config.json.sample /home/odr/ODR-EncoderManager/config.json

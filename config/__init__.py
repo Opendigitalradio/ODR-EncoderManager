@@ -98,6 +98,8 @@ class Config():
 			supervisorPadEncConfig += "autostart=true\n"
 			supervisorPadEncConfig += "autorestart=true\n"
 			supervisorPadEncConfig += "priority=10\n"
+			supervisorPadEncConfig += "user=odr\n"
+                        supervisorPadEncConfig += "group=odr\n"
 			supervisorPadEncConfig += "stderr_logfile=/var/log/supervisor/ODR-padencoder.err.log\n"
 			supervisorPadEncConfig += "stdout_logfile=/var/log/supervisor/ODR-padencoder.log\n"
 			
@@ -152,6 +154,8 @@ class Config():
 		supervisorConfig += "autostart=true\n"
 		supervisorConfig += "autorestart=true\n"
 		supervisorConfig += "priority=10\n"
+		supervisorConfig += "user=odr\n"
+                supervisorConfig += "group=odr\n"
 		supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-audioencoder.err.log\n"
 		supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-audioencoder.log\n"
 		

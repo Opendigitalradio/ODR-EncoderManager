@@ -50,6 +50,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 							<select type="select" class="form-control" id="source_type">
 								<option value="alsa">alsa</option>
 								<option value="stream">stream</option>
+								<option value="avt">avt</option>
 							</select>
 						</div>
 						<label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
@@ -79,7 +80,38 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 							<input type="text" class="form-control" id="source_url" placeholder="Enter streaming url">
 						</div>
 					</div>
+					<hr />
 					
+					<h4>Source avt</h4>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="source_avt_input_uri">input URI:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="source_avt_input_uri" placeholder="Enter Input URI. (udp://:32010)" data-toggle="tooltip" data-placement="top" title="Input URI. (Supported: 'udp://...')">
+						</div>
+						<label class="control-label col-sm-2" for="source_avt_pad_port">pad port:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="source_avt_pad_port" placeholder="Enter pad port" data-toggle="tooltip" data-placement="top" title="Port opened for PAD Frame requests (def=0 not opened)">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="source_avt_control_uri">control URI:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="source_avt_control_uri" placeholder="Enter Control URI. (udp://192.168.128.111:9325)" data-toggle="tooltip" data-placement="top" title="Output control URI (Supported: 'udp://...')">
+						</div>
+						<label class="control-label col-sm-2" for="source_avt_jitter_size">jitter size:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="source_avt_jitter_size" placeholder="Enter jitter size" data-toggle="tooltip" data-placement="top" title="Jitter buffer size, in 24ms frames (def=40)">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-2" for=""></label>
+						<div class="col-sm-3">
+						</div>
+						<label class="control-label col-sm-2" for="source_avt_timeout">timeout:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="source_avt_timeout" placeholder="Enter timeout" data-toggle="tooltip" data-placement="top" title="Maximum frame waiting time, in milliseconds (def=2000)">
+						</div>
+					</div>
 					
 				</div>
 			</div>
@@ -304,6 +336,13 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 						<label class="control-label col-sm-2" for="path_padenc_path">odr-audioenc path:</label>
 						<div class="col-sm-3">
 							<input type="text" class="form-control" id="path_padenc_path" placeholder="Enter odr-audioenc full path">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-sm-2" for="path_sourcecompanion_path">odr-sourcecompanion path:</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="path_sourcecompanion_path" placeholder="Enter odr-sourcecompanion full path">
 						</div>
 					</div>
 					

@@ -19,6 +19,7 @@
 // along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 // 
 
+
 function requestConfiguration(callback) {
 	$.ajax({
 		type: "GET",
@@ -73,6 +74,7 @@ function setConfiguration(callback) {
 		"path" :	{
 					"encoder_path": $('#path_encoder_path').val(),
 					"padenc_path": $('#path_padenc_path').val(),
+					"sourcecompanion_path": $('#path_sourcecompanion_path').val(),
 					"zmq_key_tmp_file": $('#path_zmq_key_tmp_file').val(),
 				},
 		"source" :	{
@@ -80,6 +82,11 @@ function setConfiguration(callback) {
 					"url": $('#source_url').val(),
 					"device": $('#source_device').val(),
 					"driftcomp": $('#source_driftcomp').val(),
+					"avt_input_uri": $('#source_avt_input_uri').val(),
+					"avt_control_uri": $('#source_avt_control_uri').val(),
+					"avt_pad_port": $('#source_avt_pad_port').val(),
+					"avt_jitter_size": $('#source_avt_jitter_size').val(),
+					"avt_timeout": $('#source_avt_timeout').val(),
 				},
 		"output" :	{
 					"type": $('#output_type').val(),
@@ -145,6 +152,101 @@ function setConfiguration(callback) {
 	
 }
 
+function setEnableDisable() {
+	if ($('#source_type').val() == 'stream') {
+		$('#source_url').prop('disabled', false);
+		$('#source_device').prop('disabled', true);
+		$('#source_driftcomp').prop('disabled', false);
+		$('#source_avt_input_uri').prop('disabled', true);
+		$('#source_avt_control_uri').prop('disabled', true);
+		$('#source_avt_pad_port').prop('disabled', true);
+		$('#source_avt_jitter_size').prop('disabled', true);
+		$('#source_avt_timeout').prop('disabled', true);
+		$('#output_type').prop('disabled', false);
+		$('#output_zmq_host').prop('disabled', false);
+		$('#output_zmq_key').prop('disabled', false);
+		$('#output_bitrate').prop('disabled', false);
+		$('#output_samplerate').prop('disabled', false);
+		$('#output_channels').prop('disabled', false);
+		if ($('#output_type').val() == 'dab') {
+			$('#output_dabp_sbr').prop('disabled', true);
+			$('#output_dabp_ps').prop('disabled', true);
+			$('#output_dabp_afterburner').prop('disabled', true);
+			$('#output_dab_dabmode').prop('disabled', false);
+			$('#output_dab_dabpsy').prop('disabled', false);
+		}
+		if ($('#output_type').val() == 'dabp') {
+			$('#output_dabp_sbr').prop('disabled', false);
+			$('#output_dabp_ps').prop('disabled', false);
+			$('#output_dabp_afterburner').prop('disabled', false);
+			$('#output_dab_dabmode').prop('disabled', true);
+			$('#output_dab_dabpsy').prop('disabled', true);
+		}
+	}
+	if ($('#source_type').val() == 'alsa') {
+		$('#source_url').prop('disabled', true);
+		$('#source_device').prop('disabled', false);
+		$('#source_driftcomp').prop('disabled', false);
+		$('#source_avt_input_uri').prop('disabled', true);
+		$('#source_avt_control_uri').prop('disabled', true);
+		$('#source_avt_pad_port').prop('disabled', true);
+		$('#source_avt_jitter_size').prop('disabled', true);
+		$('#source_avt_timeout').prop('disabled', true);
+		$('#output_type').prop('disabled', false);
+		$('#output_zmq_host').prop('disabled', false);
+		$('#output_zmq_key').prop('disabled', false);
+		$('#output_bitrate').prop('disabled', false);
+		$('#output_samplerate').prop('disabled', false);
+		$('#output_channels').prop('disabled', false);
+		if ($('#output_type').val() == 'dab') {
+			$('#output_dabp_sbr').prop('disabled', true);
+			$('#output_dabp_ps').prop('disabled', true);
+			$('#output_dabp_afterburner').prop('disabled', true);
+			$('#output_dab_dabmode').prop('disabled', false);
+			$('#output_dab_dabpsy').prop('disabled', false);
+		}
+		if ($('#output_type').val() == 'dabp') {
+			$('#output_dabp_sbr').prop('disabled', false);
+			$('#output_dabp_ps').prop('disabled', false);
+			$('#output_dabp_afterburner').prop('disabled', false);
+			$('#output_dab_dabmode').prop('disabled', true);
+			$('#output_dab_dabpsy').prop('disabled', true);
+		}
+		
+	}
+	if ($('#source_type').val() == 'avt') {
+		$('#source_url').prop('disabled', true);
+		$('#source_device').prop('disabled', true);
+		$('#source_driftcomp').prop('disabled', true);
+		$('#source_avt_input_uri').prop('disabled', false);
+		$('#source_avt_control_uri').prop('disabled', false);
+		$('#source_avt_pad_port').prop('disabled', false);
+		$('#source_avt_jitter_size').prop('disabled', false);
+		$('#source_avt_timeout').prop('disabled', false);
+		$('#output_type').prop('disabled', false);
+		$('#output_zmq_host').prop('disabled', false);
+		$('#output_zmq_key').prop('disabled', false);
+		$('#output_bitrate').prop('disabled', false);
+		$('#output_samplerate').prop('disabled', false);
+		$('#output_channels').prop('disabled', false);
+		if ($('#output_type').val() == 'dab') {
+			$('#output_dabp_sbr').prop('disabled', true);
+			$('#output_dabp_ps').prop('disabled', true);
+			$('#output_dabp_afterburner').prop('disabled', true);
+			$('#output_dab_dabmode').prop('disabled', false);
+			$('#output_dab_dabpsy').prop('disabled', false);
+		}
+		if ($('#output_type').val() == 'dabp') {
+			$('#output_dabp_sbr').prop('disabled', false);
+			$('#output_dabp_ps').prop('disabled', false);
+			$('#output_dabp_afterburner').prop('disabled', false);
+			$('#output_dab_dabmode').prop('disabled', true);
+			$('#output_dab_dabpsy').prop('disabled', true);
+		}
+	}
+}
+
+
 // Button handler
 $(function(){
 	$('#reload').click(function() {
@@ -158,6 +260,14 @@ $(function(){
 	
 	$('#save').click(function() {
 		setConfiguration();
+	});
+	
+	$("#source_type").change(function() {
+		setEnableDisable();
+	});
+	
+	$("#output_type").change(function() {
+		setEnableDisable();
 	});
 });
 

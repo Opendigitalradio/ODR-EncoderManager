@@ -54,9 +54,9 @@ function requestConfiguration(callback) {
 								console.log('Not found in form: '+debug);
 							}
 						});
-						
 					}
 				});
+				setEnableDisable();
 			} else {
 				$.gritter.add({
 					title: 'Load configuration',
@@ -152,7 +152,7 @@ function setConfiguration(callback) {
 	
 }
 
-function setEnableDisable() {
+function setEnableDisable(){
 	if ($('#source_type').val() == 'stream') {
 		$('#source_url').prop('disabled', false);
 		$('#source_device').prop('disabled', true);
@@ -183,6 +183,7 @@ function setEnableDisable() {
 			$('#output_dab_dabpsy').prop('disabled', true);
 		}
 	}
+	
 	if ($('#source_type').val() == 'alsa') {
 		$('#source_url').prop('disabled', true);
 		$('#source_device').prop('disabled', false);
@@ -214,6 +215,7 @@ function setEnableDisable() {
 		}
 		
 	}
+	
 	if ($('#source_type').val() == 'avt') {
 		$('#source_url').prop('disabled', true);
 		$('#source_device').prop('disabled', true);
@@ -274,5 +276,5 @@ $(function(){
 
 // ToolTip init
 $(function(){
-    $('[data-toggle="tooltip"]').tooltip();   
+	$('[data-toggle="tooltip"]').tooltip();   
 });

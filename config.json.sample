@@ -13,8 +13,8 @@
             "slide_once": "true",
             "pad_fifo_file": "/tmp/metadata.pad",
             "dls_fifo_file": "/tmp/metadata.dls",
-            "pad": "23",
-            "slide_sleeping": "10"
+            "pad": "34",
+            "slide_sleeping": "20"
         },
         "output": {
             "dab_dabmode": "j",
@@ -27,7 +27,7 @@
             "dab_dabpsy": "1",
             "samplerate": "48000",
             "bitrate": "96",
-            "zmq_host": "192.168.40.114:9001"
+            "zmq_host": "192.168.40.115:9001"
         },
         "source": {
             "avt_pad_port": "9405",
@@ -38,7 +38,7 @@
             "avt_control_uri": "udp://192.168.128.111:9325",
             "avt_input_uri": "udp://:32010",
             "device": "hw:1,0",
-            "type": "avt"
+            "type": "stream"
         }
     },
     "global": {

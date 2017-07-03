@@ -241,7 +241,7 @@ function setEnableDisable(){
 		if ($('#output_type').val() == 'dabp') {
 			$('#output_dabp_sbr').prop('disabled', false);
 			$('#output_dabp_ps').prop('disabled', false);
-			$('#output_dabp_afterburner').prop('disabled', false);
+			$('#output_dabp_afterburner').prop('disabled', true);
 			$('#output_dab_dabmode').prop('disabled', true);
 			$('#output_dab_dabpsy').prop('disabled', true);
 		}

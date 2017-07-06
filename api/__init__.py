@@ -139,18 +139,38 @@ class API():
     @cherrypy.expose
     @require()
     def getDLS(self):
+        dlplus=None
         self.conf = Config(self.config_file)
         cherrypy.response.headers["Content-Type"] = "application/json"
         
         if self.conf.config['odr']['padenc']['enable'] == 'true':
             try:
-                f = open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'r')
-                dls = f.read()
-                f.close()
+                with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'r') as f:
+                    for line in f:
+                        if line.startswith('#'):
+                            continue
+                        if line.startswith('DL_PLUS='):
+                            #dlplus={'artist': '', 'title': ''}
+                            continue
+                        if line.startswith('DL_PLUS_TAG='):
+                            #v = line.split("=", 1)
+                            #d = v[1].split(" ")
+                            #if d[0] == 4:
+                                #dartist={'start': d[1], 'len': d[2]}
+                            #if d[0] == 1:
+                                #dtitle={'start': d[1], 'len': d[2]}
+                            continue
+                        dls = line.rstrip()
             except Exception,e:
                 return json.dumps({'dls': 'Fail to read dls data'})
             else:
-                return json.dumps({'dls': str(dls)})
+                ## TODO : add DL PLUS Support to return
+                if dlplus:
+                    dlplus['artist'] = ''
+                    dlplus['title'] = ''
+                    return json.dumps({'dls': str(dls), 'dlplus': dlplus})
+                else:
+                    return json.dumps({'dls': str(dls)})
         else:
             return json.dumps({'dls': 'DLS is disable ...'})
     

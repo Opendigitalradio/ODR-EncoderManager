@@ -16,6 +16,9 @@ import xmlrpclib
 from config import Config
 from auth import AuthController, require, is_login
 
+import subprocess
+
+
 class API():
     
     def __init__(self, config_file):
@@ -37,6 +40,19 @@ class API():
         self.conf = Config(self.config_file)
         cherrypy.response.headers["Content-Type"] = "application/json"
         return json.dumps({'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr']})
+    
+    @cherrypy.expose
+    @require()
+    def getAlsaDevices(self):
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        command = '/usr/bin/arecord -l'
+        try:
+                output = subprocess.check_output(command,
+                                    shell=True,
+                                    stderr=subprocess.STDOUT)
+        except:
+                return json.dumps({'status': '-200', 'statusText': 'Error listing alsa devices', 'data': ''})
+        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
     
     @cherrypy.expose
     @require()

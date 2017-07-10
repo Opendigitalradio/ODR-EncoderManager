@@ -26,352 +26,378 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 {% include 'head.html' %}
 
 <body>
-	{% include 'body-nav.html' %}
+        {% include 'body-nav.html' %}
 
-	<div class="container-fluid">
-	
-		<div class="page-header">
-			<h1>Configuration</h1>      
-		</div>
+        <div class="container-fluid">
+        
+                <div class="page-header">
+                        <h1>Configuration</h1>      
+                </div>
 
-		<form class="form-horizontal" role="form">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-				<span class="glyphicon glyphicon-music"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseSource">Source</a>
-				</h4>
-			</div>
-			<div id="collapseSource" class="panel-collapse collapse">
-				<div class="panel-body">
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="source_type">Input type:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="source_type">
-								<option value="alsa">alsa</option>
-								<option value="stream">stream</option>
-								<option value="avt">avt</option>
-							</select>
-						</div>
-						<label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
+                <!-- Modal -->
+                <div class="modal fade" id="InfoModal" role="dialog">
+                <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Loading ...</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                </div>
+                </div>
+                </div>
+                
+                <!-- Long form -->
+                <form class="form-horizontal" role="form">
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                                <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-music"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseSource">Source</a>
+                                </h4>
+                        </div>
+                        <div id="collapseSource" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="source_type">Input type:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="source_type">
+                                                                <option value="alsa">alsa</option>
+                                                                <option value="stream">stream</option>
+                                                                <option value="avt">avt</option>
+                                                        </select>
+                                                </div>
+                                                <label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
                         <div class="col-sm-3">
-                            <select type="select" class="form-control" id="source_driftcomp">
+                        <select type="select" class="form-control" id="source_driftcomp">
                                 <option value="true">true</option>
                                 <option value="false">false</option>
-                            </select>
+                        </select>
                         </div>
-					</div>
-					<hr />
+                                        </div>
+                                        <hr />
 
-					<h4>Source alsa</h4>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="source_device">Device:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="source_device" placeholder="Enter audio device (ex: hw:1,0)">
-						</div>
-						
-					</div>
-					<hr />
-					
-					<h4>Source stream</h4>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="source_url">Stream URL:</label>
-						<div class="col-sm-8">
-							<input type="text" class="form-control" id="source_url" placeholder="Enter streaming url">
-						</div>
-					</div>
-					<hr />
-					
-					<h4>Source avt</h4>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="source_avt_input_uri">input URI:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="source_avt_input_uri" placeholder="Enter Input URI. (udp://:32010)" data-toggle="tooltip" data-placement="top" title="Input URI. (Supported: 'udp://...')">
-						</div>
-						<label class="control-label col-sm-2" for="source_avt_pad_port">pad port:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="source_avt_pad_port" placeholder="Enter pad port" data-toggle="tooltip" data-placement="top" title="Port opened for PAD Frame requests (def=0 not opened)">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="source_avt_control_uri">control URI:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="source_avt_control_uri" placeholder="Enter Control URI. (udp://192.168.128.111:9325)" data-toggle="tooltip" data-placement="top" title="Output control URI (Supported: 'udp://...')">
-						</div>
-						<label class="control-label col-sm-2" for="source_avt_jitter_size">jitter size:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="source_avt_jitter_size" placeholder="Enter jitter size" data-toggle="tooltip" data-placement="top" title="Jitter buffer size, in 24ms frames (def=40)">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for=""></label>
-						<div class="col-sm-3">
-						</div>
-						<label class="control-label col-sm-2" for="source_avt_timeout">timeout:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="source_avt_timeout" placeholder="Enter timeout" data-toggle="tooltip" data-placement="top" title="Maximum frame waiting time, in milliseconds (def=2000)">
-						</div>
-					</div>
-					
-				</div>
-			</div>
-		</div>
-		
-		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-				<span class="glyphicon glyphicon-play"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput">Output</a>
-				</h4>
-			</div>
-			<div id="collapseOutput" class="panel-collapse collapse">
-				<div class="panel-body">
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_type">Output type:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_type">
-								<option value="dabp">DAB+</option>
-								<option value="dab">DAB</option>
-							</select>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_bitrate">Bitrate:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_bitrate" placeholder="Enter bitrate (ex: 96)" data-toggle="tooltip" data-placement="top" title="The bitrate value need to be the same on multiplex configuration. Change it according multiplex configuration.">
-						</div>
-						<label class="control-label col-sm-2" for="output_samplerate">Samplerate:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)" data-toggle="tooltip" data-placement="top" title="Samplerate (ex: 48000)">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_channels">Channels:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_channels">
-								<option value="2">2 - Stéréo</option>
-								<option value="1">1 - Mono</option>
-							</select>
-						</div>
-					</div>
-					
-					<hr />
-					
-					<h4>DAB+ specific configuration</h4>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_dabp_sbr">SBR:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_dabp_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate from 96 kbps.">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
-						
-						
-						<label class="control-label col-sm-2" for="output_dabp_ps">PS:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrate multiple of 8kbps and under 56 kbps.">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_dabp_afterburner">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
-					</div>
-					<hr />
-					
-					<h4>DAB specific configuration</h4>
-						<div class="form-group">
-						<label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
-								<option value="s">s - Stéréo</option>
-								<option value="d">d - Dual-Channel</option>
-								<option value="j">j - Join-Stéréo (default)</option>
-								<option value="m">m - Mono</option>
-							</select>
-						</div>
-						
-						
-						<label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
-								<option value="0">0</option>
-								<option value="1">1 (default)</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-							</select>
-						</div>
-					</div>
-					<hr />
-					
-					
-					<h4>ZMQ configuration</h4>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_zmq_host">Hosts:</label>
-						<div class="col-sm-8">
-							<input type="text" class="form-control" id="output_zmq_host" placeholder="Enter multiplex hostname and port" data-toggle="tooltip" data-placement="top" title="You can enter multiple output destination (ip:port) with comma separated (ip1:port,ip2:port).">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="output_zmq_key">Key:</label>
-						<div class="col-sm-8">
-							<input type="text" class="form-control" id="output_zmq_key" placeholder="Enter ZMQ key if needed" data-toggle="tooltip" data-placement="top" title="Enter ZMQ key if needed">
-						</div>
-					</div>
-					
-				</div>
-			</div>
-		</div>
-		
-		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-				<span class="glyphicon glyphicon-eye-open"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapsePAD">PAD Encoder</a>
-				</h4>
-			</div>
-			<div id="collapsePAD" class="panel-collapse collapse">
-				<div class="panel-body">
-					
-					<div class="form-group">
-					<label class="control-label col-sm-2" for="padenc_enable">Enable:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="padenc_enable">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
+                                        <h4>Source alsa</h4>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="source_device">Device:</label>
+                                                <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                                <input type="text" class="form-control" id="source_device" placeholder="Enter audio device (ex: hw:1,0)">
+                                                                <span class="input-group-btn">
+                                                                        <button type="button" id="btn_list_alsa_devices" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">List devices</button>
+                                                                </span>
+                                                        </div>
+                                                </div>
 
-						<label class="control-label col-sm-2" for="padenc_pad">pad:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="padenc_pad">
-								<option value="23">23</option>
-								<option value="26">26</option>
-								<option value="34">34</option>
-								<option value="42">42</option>
-								<option value="58">58</option>
-							</select>
-						</div>
-						
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="padenc_slide_sleeping">Slide sleeping (seconds):</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="padenc_slide_sleeping" placeholder="Enter delay in seconds">
-						</div>
-						
-						<label class="control-label col-sm-2" for="padenc_slide_once">Remove slide</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="padenc_slide_once">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
-						
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
-						</div>
-						
-						<label class="control-label col-sm-2" for="padenc_raw_dls">Raw DLS:</label>
-						<div class="col-sm-3">
-							<select type="select" class="form-control" id="padenc_raw_dls">
-								<option value="true">true</option>
-								<option value="false">false</option>
-							</select>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="padenc_pad_fifo_file">PAD fifo file:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="padenc_pad_fifo_file" placeholder="Enter pad fifo file">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="padenc_dls_fifo_file">DLS fifo file:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="padenc_dls_fifo_file" placeholder="Enter dls fifo file">
-						</div>
-					</div>
-					
-				</div>
-			</div>
-		</div>
-		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h4 class="panel-title">
-				<span class="glyphicon glyphicon-cog"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseADVANCED">Advanced</a>
-				</h4>
-			</div>
-			<div id="collapseADVANCED" class="panel-collapse collapse">
-				<div class="panel-body">
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="path_encoder_path">odr-audioenc path:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="path_encoder_path" placeholder="Enter odr-audioenc full path">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="path_padenc_path">odr-padenc path:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="path_padenc_path" placeholder="Enter odr-audioenc full path">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="path_sourcecompanion_path">odr-sourcecompanion path:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="path_sourcecompanion_path" placeholder="Enter odr-sourcecompanion full path">
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label class="control-label col-sm-2" for="path_zmq_key_tmp_file">zmq tmp file:</label>
-						<div class="col-sm-3">
-							<input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter zmq tmp file path">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div>
-			<a href="#" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Reload configuration from loaded configuration."><span class="glyphicon glyphicon-refresh"></span> Reload configuration</a>
-			<a href="#" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
-		</div>
+                                                
+                                        </div>
+                                        <hr />
+                                        
+                                        <h4>Source stream</h4>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="source_url">Stream URL:</label>
+                                                <div class="col-sm-8">
+                                                        <input type="text" class="form-control" id="source_url" placeholder="Enter streaming url">
+                                                </div>
+                                        </div>
+                                        <hr />
+                                        
+                                        <h4>Source avt</h4>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="source_avt_input_uri">input URI:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_input_uri" placeholder="Enter Input URI. (udp://:32010)" data-toggle="tooltip" data-placement="top" title="Input URI. (Supported: 'udp://...')">
+                                                </div>
+                                                <label class="control-label col-sm-2" for="source_avt_pad_port">pad port:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_pad_port" placeholder="Enter pad port" data-toggle="tooltip" data-placement="top" title="Port opened for PAD Frame requests (def=0 not opened)">
+                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="source_avt_control_uri">control URI:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_control_uri" placeholder="Enter Control URI. (udp://192.168.128.111:9325)" data-toggle="tooltip" data-placement="top" title="Output control URI (Supported: 'udp://...')">
+                                                </div>
+                                                <label class="control-label col-sm-2" for="source_avt_jitter_size">jitter size:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_jitter_size" placeholder="Enter jitter size" data-toggle="tooltip" data-placement="top" title="Jitter buffer size, in 24ms frames (def=40)">
+                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for=""></label>
+                                                <div class="col-sm-3">
+                                                </div>
+                                                <label class="control-label col-sm-2" for="source_avt_timeout">timeout:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_timeout" placeholder="Enter timeout" data-toggle="tooltip" data-placement="top" title="Maximum frame waiting time, in milliseconds (def=2000)">
+                                                </div>
+                                        </div>
+                                        
+                                </div>
+                        </div>
+                </div>
+                
+                
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                                <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-play"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseOutput">Output</a>
+                                </h4>
+                        </div>
+                        <div id="collapseOutput" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_type">Output type:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_type">
+                                                                <option value="dabp">DAB+</option>
+                                                                <option value="dab">DAB</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_bitrate">Bitrate:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="output_bitrate" placeholder="Enter bitrate (ex: 96)" data-toggle="tooltip" data-placement="top" title="The bitrate value need to be the same on multiplex configuration. Change it according multiplex configuration.">
+                                                </div>
+                                                <label class="control-label col-sm-2" for="output_samplerate">Samplerate:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)" data-toggle="tooltip" data-placement="top" title="Samplerate (ex: 48000)">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_channels">Channels:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_channels">
+                                                                <option value="2">2 - Stéréo</option>
+                                                                <option value="1">1 - Mono</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        
+                                        <hr />
+                                        
+                                        <h4>DAB+ specific configuration</h4>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_dabp_sbr">SBR:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate from 96 kbps.">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
+                                                
+                                                
+                                                <label class="control-label col-sm-2" for="output_dabp_ps">PS:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrate multiple of 8kbps and under 56 kbps.">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_afterburner">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        <hr />
+                                        
+                                        <h4>DAB specific configuration</h4>
+                                                <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
+                                                                <option value="s">s - Stéréo</option>
+                                                                <option value="d">d - Dual-Channel</option>
+                                                                <option value="j">j - Join-Stéréo (default)</option>
+                                                                <option value="m">m - Mono</option>
+                                                        </select>
+                                                </div>
+                                                
+                                                
+                                                <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
+                                                                <option value="0">0</option>
+                                                                <option value="1">1 (default)</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        <hr />
+                                        
+                                        
+                                        <h4>ZMQ configuration</h4>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_zmq_host">Hosts:</label>
+                                                <div class="col-sm-8">
+                                                        <input type="text" class="form-control" id="output_zmq_host" placeholder="Enter multiplex hostname and port" data-toggle="tooltip" data-placement="top" title="You can enter multiple output destination (ip:port) with comma separated (ip1:port,ip2:port).">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_zmq_key">Key:</label>
+                                                <div class="col-sm-8">
+                                                        <input type="text" class="form-control" id="output_zmq_key" placeholder="Enter ZMQ key if needed" data-toggle="tooltip" data-placement="top" title="Enter ZMQ key if needed">
+                                                </div>
+                                        </div>
+                                        
+                                </div>
+                        </div>
+                </div>
+                
+                
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                                <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-eye-open"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapsePAD">PAD Encoder</a>
+                                </h4>
+                        </div>
+                        <div id="collapsePAD" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                        <label class="control-label col-sm-2" for="padenc_enable">Enable:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="padenc_enable">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
 
-		</form>
-		
-		
-		
-	</div>
+                                                <label class="control-label col-sm-2" for="padenc_pad">pad:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="padenc_pad">
+                                                                <option value="23">23</option>
+                                                                <option value="26">26</option>
+                                                                <option value="34">34</option>
+                                                                <option value="42">42</option>
+                                                                <option value="58">58</option>
+                                                        </select>
+                                                </div>
+                                                
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_sleeping">Slide sleeping (seconds):</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_slide_sleeping" placeholder="Enter delay in seconds">
+                                                </div>
+                                                
+                                                <label class="control-label col-sm-2" for="padenc_slide_once">Remove slide</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="padenc_slide_once">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
+                                                
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
+                                                </div>
+                                                
+                                                <label class="control-label col-sm-2" for="padenc_raw_dls">Raw DLS:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="padenc_raw_dls">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_pad_fifo_file">PAD fifo file:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_pad_fifo_file" placeholder="Enter pad fifo file">
+                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_dls_fifo_file">DLS fifo file:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_dls_fifo_file" placeholder="Enter dls fifo file">
+                                                </div>
+                                        </div>
+                                        
+                                </div>
+                        </div>
+                </div>
+                
+                <div class="panel panel-default">
+                        <div class="panel-heading">
+                                <h4 class="panel-title">
+                                <span class="glyphicon glyphicon-cog"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseADVANCED">Advanced</a>
+                                </h4>
+                        </div>
+                        <div id="collapseADVANCED" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="path_encoder_path">odr-audioenc path:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="path_encoder_path" placeholder="Enter odr-audioenc full path">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="path_padenc_path">odr-padenc path:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="path_padenc_path" placeholder="Enter odr-audioenc full path">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="path_sourcecompanion_path">odr-sourcecompanion path:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="path_sourcecompanion_path" placeholder="Enter odr-sourcecompanion full path">
+                                                </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="path_zmq_key_tmp_file">zmq tmp file:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter zmq tmp file path">
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+                
+                <div>
+                        <a href="#" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Reload configuration from loaded configuration."><span class="glyphicon glyphicon-refresh"></span> Reload configuration</a>
+                        <a href="#" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
+                </div>
+
+                </form>
+                
+                
+
+                
+                
+        </div>
 
 
 <script type="text/javascript">
         requestConfiguration();
 </script>
-	
+        
 </body>
 
 </html>

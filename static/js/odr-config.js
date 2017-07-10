@@ -271,6 +271,40 @@ $(function(){
 	$("#output_type").change(function() {
 		setEnableDisable();
 	});
+        
+        $('#btn_list_alsa_devices').click(function () {
+                $('#InfoModal h4.modal-title').text("Alsa capture devices list")
+                $.ajax({
+                        type: "GET",
+                        url: "/api/getAlsaDevices",
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        
+                        error: function(data) {
+                                //alert("error " + data['status'] + " : " + data['statusText']);
+                                $.gritter.add({
+                                        title: 'Loading alsa capture devices : ERROR !',
+                                        text: data['status'] + " : " + data['statusText'],
+                                        image: '/fonts/warning.png',
+                                        sticky: true,
+                                });
+                        },
+                        success: function(data) {
+                                if ( data['status'] == '0' ) {
+                                        info = '<p>Specifying the device using parameter <b>hw:X,Y</b>, where X=card, Y=device</p><hr />'
+                                        $('#InfoModal .modal-body').html(info+data['data'].replace(/\n/g,'<br />'))
+                                } else {
+                                        $.gritter.add({
+                                                title: 'Loading alsa capture devices',
+                                                text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                                                image: '/fonts/warning.png',
+                                                sticky: true,
+                                        });
+                                }
+                        }
+                });
+                
+        });
 });
 
 

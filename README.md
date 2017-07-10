@@ -9,9 +9,10 @@ ODR-EncoderManager is currently in complet re-developpement in this branch and i
 
   * (root) Install requirement : apt install python-cherrypy3 python-jinja2 python-serial supervisor
   * (root) Add odr user to dialout group : usermod -a -G dialout odr
+  * (root) Add odr user to audio group : usermod -a -G audio odr
   * (user) Got to odr user home : cd /home/odr/
   * (user) Clone git repository : git clone https://github.com/YoannQueret/ODR-EncoderManager.git
-  * (user) Rename sample config : move /home/odr/ODR-EncoderManager/config.json.sample /home/odr/ODR-EncoderManager/config.json
+  * (user) Rename sample config : mv /home/odr/ODR-EncoderManager/config.json.sample /home/odr/ODR-EncoderManager/config.json
   * (root) Make the symlink: ln -s /home/odr/ODR-EncoderManager/supervisor-encoder.conf /etc/supervisor/conf.d/odr-encoder.conf
   * (root) Make the symlink: ln -s /home/odr/ODR-EncoderManager/supervisor-gui.conf /etc/supervisor/conf.d/odr-gui.conf
   * (root) Edit /etc/supervisor/supervisord.conf and add this section :

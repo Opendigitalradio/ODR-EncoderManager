@@ -7,6 +7,7 @@
 import json
 import cherrypy
 import urllib
+import hashlib
 
 from config import Config
 
@@ -18,9 +19,9 @@ SESSION_KEY = '_cp_username'
 def check_credentials(config_auth, username, password):
 	"""Verifies credentials for username and password.
 	Returns None on success or a string describing the error on failure"""
-	
+
 	for up in config_auth['users']:
-		if up['username'] == username and up['password'] == password:
+		if (up['username'] == username and up['password'] == password) or (up['username'] == username and up['password'] == hashlib.md5(password).hexdigest()):
 			return None
 	return u"Incorrect username or password."
 

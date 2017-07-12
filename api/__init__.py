@@ -212,7 +212,6 @@ class API():
     
     
     @cherrypy.expose
-    @require()
     def setDLS(self, **params):
         self.conf = Config(self.config_file)
         

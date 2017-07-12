@@ -42,101 +42,101 @@ class API():
     @require()
     def backup(self):
         self.conf = Config(self.config_file)
-	result = io.BytesIO()
-	zipped = zipfile.ZipFile(result, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	zipped.writestr('config.json', json.dumps(self.conf.config, indent=4, separators=(',', ': ')))
-	zipped.close()
-	result.seek(0)
-	datefile = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-	cherrypy.response.headers['content-type']        = 'application/octet-stream'
-	cherrypy.response.headers['content-disposition'] = 'attachment; filename=backup-%s.zip' % (datefile)
-	return result
+        result = io.BytesIO()
+        zipped = zipfile.ZipFile(result, mode = 'w', compression = zipfile.ZIP_DEFLATED)
+        zipped.writestr('config.json', json.dumps(self.conf.config, indent=4, separators=(',', ': ')))
+        zipped.close()
+        result.seek(0)
+        datefile = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        cherrypy.response.headers['content-type']        = 'application/octet-stream'
+        cherrypy.response.headers['content-disposition'] = 'attachment; filename=backup-%s.zip' % (datefile)
+        return result
 
     @cherrypy.expose
     @require()
     def restore(self, myFile):
-	self.conf = Config(self.config_file)
+        self.conf = Config(self.config_file)
         size = 0
         data = myFile.file.read()
         size += len(data)
 
-	localfile = '/tmp/'+myFile.filename
-	file = open (localfile, 'wb')
-	file.write(data)
-	file.close()
+        localfile = '/tmp/'+myFile.filename
+        file = open (localfile, 'wb')
+        file.write(data)
+        file.close()
 
-	if zipfile.is_zipfile(localfile):
-		# Open local ZIP file and extract config.json file
-		fh = open( localfile , 'rb')
-		zipped = zipfile.ZipFile(fh)
-		for name in zipped.namelist():
-			if name == 'config.json':
-				zipped.extract(name, '/tmp/')
-		fh.close()
+        if zipfile.is_zipfile(localfile):
+            # Open local ZIP file and extract config.json file
+            fh = open( localfile , 'rb')
+            zipped = zipfile.ZipFile(fh)
+            for name in zipped.namelist():
+                if name == 'config.json':
+                    zipped.extract(name, '/tmp/')
+            fh.close()
 
-		# Remove ZIP file
-		try:
-			os.remove(localfile)
-		except Exception,e:
-                        pass
-		
-		# Read tmp config.json file
-		with open('/tmp/config.json') as data_file:
-	            output = json.load(data_file)
+            # Remove ZIP file
+            try:
+                os.remove(localfile)
+            except Exception,e:
+                pass
+            
+            # Read tmp config.json file
+            with open('/tmp/config.json') as data_file:
+                output = json.load(data_file)
 
-		# Remove config.json file
-		try:
-			os.remove('/tmp/config.json')
-		except Exception,e:
-			pass
+            # Remove config.json file
+            try:
+                os.remove('/tmp/config.json')
+            except Exception,e:
+                pass
 
-		# Write configuration file
-	        try:
-        	    self.conf.write(output)
-	        except Exception,e:
-	            cherrypy.response.headers["Content-Type"] = "application/json"
-        	    return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+            # Write configuration file
+            try:
+                self.conf.write(output)
+            except Exception,e:
+                cherrypy.response.headers["Content-Type"] = "application/json"
+                return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
 
-		# Generate supervisor files
-	        try:
-	            self.conf.generateSupervisorFiles(output)
-	        except Exception,e:
-	            cherrypy.response.headers["Content-Type"] = "application/json"
-	            return json.dumps({'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)})
+            # Generate supervisor files
+            try:
+                self.conf.generateSupervisorFiles(output)
+            except Exception,e:
+                cherrypy.response.headers["Content-Type"] = "application/json"
+                return json.dumps({'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)})
 
 
-	        # Check if ODR program availaible in supervisor ProcessInfo and try to add it
+            # Check if ODR program availaible in supervisor ProcessInfo and try to add it
 
-	        # Retreive supervisor process
-	        server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
-	        programs = server.supervisor.getAllProcessInfo()
+            # Retreive supervisor process
+            server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+            programs = server.supervisor.getAllProcessInfo()
 
-	        # Check for ODR-audioencoder
-	        if not self.is_program_exist(programs, 'ODR-audioencoder'):
-	            try:
-	                server.supervisor.reloadConfig()
-	                server.supervisor.addProcessGroup('ODR-audioencoder')
-	            except:
-	                cherrypy.response.headers["Content-Type"] = "application/json"
-	                return json.dumps({'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)})
+            # Check for ODR-audioencoder
+            if not self.is_program_exist(programs, 'ODR-audioencoder'):
+                try:
+                    server.supervisor.reloadConfig()
+                    server.supervisor.addProcessGroup('ODR-audioencoder')
+                except:
+                    cherrypy.response.headers["Content-Type"] = "application/json"
+                    return json.dumps({'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)})
 
-	        # Check for ODR-padencoder
-	        if not self.is_program_exist(programs, 'ODR-padencoder'):
-	            try:
-	                server.supervisor.reloadConfig()
-	                server.supervisor.addProcessGroup('ODR-padencoder')
-	            except:
-	                cherrypy.response.headers["Content-Type"] = "application/json"
-	                return json.dumps({'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)})
+            # Check for ODR-padencoder
+            if not self.is_program_exist(programs, 'ODR-padencoder'):
+                try:
+                    server.supervisor.reloadConfig()
+                    server.supervisor.addProcessGroup('ODR-padencoder')
+                except:
+                    cherrypy.response.headers["Content-Type"] = "application/json"
+                    return json.dumps({'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)})
 
-        	cherrypy.response.headers["Content-Type"] = "application/json"
-	        return json.dumps({'status': '0', 'statusText': 'Ok'})
-	else:
-        	cherrypy.response.headers["Content-Type"] = "application/json"
-		return json.dumps({'status': '-200', 'statusText': 'Uploaded file is not a zip file'})
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '0', 'statusText': 'Ok'})
+        else:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-200', 'statusText': 'Uploaded file is not a zip file'})
 
-	
-	
+        
+        
     @cherrypy.expose
     @require()
     def getConfig(self):
@@ -215,20 +215,37 @@ class API():
     @require()
     def setDLS(self, **params):
         self.conf = Config(self.config_file)
-        cherrypy.response.headers["Content-Type"] = "application/json"
         
         query = parse_query_string(cherrypy.request.query_string)
+
+        # Check is json output is needed
+        if 'json' in query:
+            ojson = True
+        else:
+            ojson = None  
         
+        # DLS (odr-padenc process) is enable
         if self.conf.config['odr']['padenc']['enable'] == 'true':
+            # dls parameters is present and override all other
             if 'dls' in query:
                 try:
                     with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w') as outfile:
                         outfile.write(query['dls'])
                 except Exception,e:
-                    return json.dumps({'status': '-210', 'statusText': 'Fail to write dls data'})
+                    r = {'status': '-210', 'statusText': 'Fail to write dls data'}
+                    if ojson:
+                        cherrypy.response.headers["Content-Type"] = "application/json"
+                        return json.dumps(r)
+                    else:
+                        return r['statusText']
                 else:
-                    return json.dumps({'status': '0', 'statusText': 'Ok', 'dls': query['dls']})
-                
+                    r = {'status': '0', 'statusText': 'Ok', 'dls': query['dls']}
+                    if ojson:
+                       cherrypy.response.headers["Content-Type"] = "application/json"
+                       return json.dumps(r)
+                    else:
+                       return r['statusText']
+            # dls is not present and artist and title are available    
             elif ('artist' in query) and ('title' in query):
                 data  = '##### parameters { #####\n'
                 data += 'DL_PLUS=1\n'
@@ -242,23 +259,44 @@ class API():
                     with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w') as outfile:
                         outfile.write(data)
                 except Exception,e:
-                    return json.dumps({'status': '-210', 'statusText': 'Fail to write dls data'})
+                    r = {'status': '-210', 'statusText': 'Fail to write dls data'}
+                    if ojson:
+                        cherrypy.response.headers["Content-Type"] = "application/json"
+                        return json.dumps(r)
+                    else:
+                        return r['statusText']
                 else:
-                    return json.dumps({'status': '0', 'statusText': 'Ok', 'dls': { 'artist': query['artist'], 'title': query['title']} })
-            
+                    r = {'status': '0', 'statusText': 'Ok', 'dls': { 'artist': query['artist'], 'title': query['title']} }
+                    if ojson:
+                        cherrypy.response.headers["Content-Type"] = "application/json"
+                        return json.dumps(r)
+                    else:
+                        return r['statusText']
+
+            # no needed parameters available
             else:
-                return json.dumps({'status': '-209', 'statusText': 'Error, you need to use dls or artist + title parameters'})
-            
-            return json.dumps({'status': '0', 'statusText': 'Ok', 'params': query})
+                r = {'status': '-209', 'statusText': 'Error, you need to use dls or artist + title parameters'}
+                if ojson:
+                    cherrypy.response.headers["Content-Type"] = "application/json"
+                    return json.dumps(r)
+                else:
+                    return r['statusText']
+
+        # DLS (odr-padenc process) is disable
         else:
-            return json.dumps({'status': '-208', 'statusTest': 'DLS is disable'})
+            r = {'status': '-208', 'statusTest': 'DLS is disable'}
+            if ojson:
+                cherrypy.response.headers["Content-Type"] = "application/json"
+                return json.dumps(r)
+            else:
+                return r['statusText']
     
     
     
     @cherrypy.expose
     @require()
     def getDLS(self):
-	dls=None
+        dls=None
         dlplus=None
         self.conf = Config(self.config_file)
         cherrypy.response.headers["Content-Type"] = "application/json"

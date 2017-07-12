@@ -247,26 +247,34 @@ class API():
                        return r['statusText']
             # dls is not present and artist and title are available    
             elif ('artist' in query) and ('title' in query):
-                data  = '##### parameters { #####\n'
-                data += 'DL_PLUS=1\n'
-                data += '# this tags \"%s\" as ITEM.ARTIST\n' % (query['artist'])
-                data += 'DL_PLUS_TAG=4 0 %s\n' % ( len(query['artist']) - 1 )
-                data += '# this tags \"%s\" as ITEM.TITLE\n' % (query['title'])
-                data += 'DL_PLUS_TAG=1 %s %s\n' % ( len(query['artist']) + 3 , len(query['title']) - 1 )
-                data += '##### parameters } #####\n'
-                data += '%s - %s\n' % (query['artist'], query['title'])
-                try:
-                    with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w') as outfile:
-                        outfile.write(data)
-                except Exception,e:
-                    r = {'status': '-210', 'statusText': 'Fail to write dls data'}
-                    if ojson:
-                        cherrypy.response.headers["Content-Type"] = "application/json"
-                        return json.dumps(r)
+                if (query['artist'] != '') and (query['title'] != ''):
+                    data  = '##### parameters { #####\n'
+                    data += 'DL_PLUS=1\n'
+                    data += '# this tags \"%s\" as ITEM.ARTIST\n' % (query['artist'])
+                    data += 'DL_PLUS_TAG=4 0 %s\n' % ( len(query['artist']) - 1 )
+                    data += '# this tags \"%s\" as ITEM.TITLE\n' % (query['title'])
+                    data += 'DL_PLUS_TAG=1 %s %s\n' % ( len(query['artist']) + 3 , len(query['title']) - 1 )
+                    data += '##### parameters } #####\n'
+                    data += '%s - %s\n' % (query['artist'], query['title'])
+                    try:
+                        with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w') as outfile:
+                            outfile.write(data)
+                    except Exception,e:
+                        r = {'status': '-210', 'statusText': 'Fail to write dls data'}
+                        if ojson:
+                            cherrypy.response.headers["Content-Type"] = "application/json"
+                            return json.dumps(r)
+                        else:
+                            return r['statusText']
                     else:
-                        return r['statusText']
+                        r = {'status': '0', 'statusText': 'Ok', 'dls': { 'artist': query['artist'], 'title': query['title']} }
+                        if ojson:
+                            cherrypy.response.headers["Content-Type"] = "application/json"
+                            return json.dumps(r)
+                        else:
+                            return r['statusText']
                 else:
-                    r = {'status': '0', 'statusText': 'Ok', 'dls': { 'artist': query['artist'], 'title': query['title']} }
+                    r = {'status': '-215', 'statusText': 'Error, artist or title are blank'}
                     if ojson:
                         cherrypy.response.headers["Content-Type"] = "application/json"
                         return json.dumps(r)

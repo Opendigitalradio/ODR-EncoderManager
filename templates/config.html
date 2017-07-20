@@ -243,11 +243,30 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                         
                                         <h4>ZMQ configuration</h4>
                                         <div class="form-group">
-                                                <label class="control-label col-sm-2" for="output_zmq_host">Hosts:</label>
-                                                <div class="col-sm-8">
-                                                        <input type="text" class="form-control" id="output_zmq_host" placeholder="Enter multiplex hostname and port" data-toggle="tooltip" data-placement="top" title="You can enter multiple output destination (ip:port) with comma separated (ip1:port,ip2:port).">
-                                                </div>
+                                            <label class="control-label col-sm-2" for="output_zmq_name">Hosts:</label>
+                                            <div class="col-sm-3">
+                                                <input type="text" class="form-control" id="add_output_zmq_name" value="" placeholder="Description"> 
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output">
+                                                        <input type="checkbox" id="add_output_zmq_enable" checked="checked">
+                                                    </span>
+                                                    <input type="text" class="form-control" id="add_output_zmq_host" value="" placeholder="Host or IP">
+                                                    <span class="input-group-addon">:</span>
+                                                    <input type="text" class="form-control" id="add_output_zmq_port"  value="" placeholder="Port">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-success" id="btn_output_zmq_add" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                                    </span>
+                                               </div>
+                                            </div>
                                         </div>
+                                        <div id="output_zmq_output">
+                                        </div>
+                                        
+                                        
+                                        
+
                                         
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_zmq_key">Key:</label>
@@ -392,11 +411,6 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 
                 
         </div>
-
-
-<script type="text/javascript">
-        requestConfiguration();
-</script>
         
 </body>
 

@@ -38,7 +38,26 @@
             "type": "dabp",
             "samplerate": "48000",
             "bitrate": "96",
-            "zmq_host": "192.168.40.115:9001"
+            "zmq_output": [
+                {
+                    "host": "192.168.40.120",
+                    "enable": "false",
+                    "name": "Mux test 120",
+                    "port": "9002"
+                },
+                {
+                    "host": "192.168.40.116",
+                    "enable": "true",
+                    "name": "Mux test 116",
+                    "port": "9001"
+                },
+                {
+                    "host": "192.168.40.117",
+                    "enable": "true",
+                    "name": "Mux test 117",
+                    "port": "9001"
+                }
+            ],
         }
     },
     "global": {

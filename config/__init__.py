@@ -161,9 +161,12 @@ class Config():
                 command += ' --pad-port=%s' % (config['odr']['source']['avt_pad_port'])
         
         # Output
-        hosts = config['odr']['output']['zmq_host'].replace(' ','').split(',')
-        for host in hosts:
-            command += ' -o tcp://%s' % (host)
+        #hosts = config['odr']['output']['zmq_host'].replace(' ','').split(',')
+        #for host in hosts:
+        #    command += ' -o tcp://%s' % (host)
+        for out in config['odr']['output']['zmq_output']:
+            if out['enable'] == 'true':
+                command += ' -o tcp://%s:%s' % (out['host'], out['port'])
                 
         supervisorConfig = ""
         supervisorConfig += "[program:ODR-audioencoder]\n"

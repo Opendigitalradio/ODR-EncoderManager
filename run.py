@@ -74,6 +74,13 @@ class Root():
                 tmpl = env.get_template("backup.html")
                 js = ['/js/odr-backup.js']
                 return tmpl.render(tab='backup', js=js, is_login=is_login())
+        
+        @cherrypy.expose
+        @require()
+        def user(self):
+                tmpl = env.get_template("user.html")
+                js = ['/js/odr-user.js']
+                return tmpl.render(tab='user', js=js, is_login=is_login())
 
 if __name__ == '__main__':
         # Get configuration file in argument

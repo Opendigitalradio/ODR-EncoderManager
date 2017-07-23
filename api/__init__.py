@@ -22,6 +22,8 @@ import zipfile
 import datetime
 import shutil
 
+import hashlib
+
 class API():
     
     def __init__(self, config_file):
@@ -345,7 +347,83 @@ class API():
             if p['name'] == program :
                 ex = True
         return ex
+    
+    @cherrypy.expose
+    @require()
+    def getUser(self):
+        self.conf = Config(self.config_file)
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        users = self.conf.config['auth']['users']
+        data = []
+        for u in users :
+            data.append( {'username': u['username']} )
+        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': data})
+    
+    @cherrypy.expose
+    @require()
+    def setUser(self):
+        self.conf = Config(self.config_file)
+    
+    @cherrypy.expose
+    @require()
+    def setPasswd(self):
+        self.conf = Config(self.config_file)
         
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        param = json.loads(rawbody)
+        
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        
+        change = None    
+        for i,value in enumerate(output['auth']['users']):
+            if value['username'] == param['username']:
+                output['auth']['users'][i]['password'] = hashlib.md5(param['password']).hexdigest()
+                change = True
+        if not change:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'User not found: ' + str(e)})
+                
+        # Write configuration file
+        try:
+            self.conf.write(output)
+        except Exception,e:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        
+    @cherrypy.expose
+    @require()
+    def delUser(self):
+        self.conf = Config(self.config_file)
+        
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        param = json.loads(rawbody)
+        
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        
+        change = None    
+        for i,value in enumerate(output['auth']['users']):
+            if value['username'] == param['username']:
+                output['auth']['users'].pop(i)
+                change = True
+        if not change:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'User not found: ' + str(e)})
+                
+        # Write configuration file
+        try:
+            self.conf.write(output)
+        except Exception,e:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return json.dumps({'status': '0', 'statusText': 'Ok'})
+    
     @cherrypy.expose
     @require()
     def getStatus(self):

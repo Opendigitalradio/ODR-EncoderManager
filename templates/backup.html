@@ -26,71 +26,69 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 {% include 'head.html' %}
 
 <body>
-        {% include 'body-nav.html' %}
+    {% include 'body-nav.html' %}
 
-        <div class="container-fluid">
+    <div class="container-fluid">
 
-                <div class="page-header">
-                        <h1>Backup & Restore</h1>
-                </div>
-              
-                <form class="form-horizontal" role="form">
-                <div class="panel panel-default">
-                        <div class="panel-heading">
-                                <h4 class="panel-title">
-                                <span class="glyphicon glyphicon-save"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseBACKUP">Backup</a>
-                                </h4>
-                        </div>
-                        <div id="collapseBACKUP" class="panel-collapse collapse in">
-                                <div class="panel-body">
-                                        <p>Download the ODR-Encoder Manager configuration file.</p>
-                                        <div class="form-group">
-                                                <label class="control-label col-sm-2" for="btn_backup"></label>
-                                                <div class="col-sm-3">
-                                                        <button type="button" id="btn_backup" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">Download configuration</button>
-                                                </div>
-                                        </div>
-                                </div>
-                        </div>
-                </div>
-                </form>
-                
-                <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post" action="/api/restore">
-                <div class="panel panel-default">
-                        <div class="panel-heading">
-                                <h4 class="panel-title">
-                                <span class="glyphicon glyphicon-open"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseRESTORE">Restore</a>
-                                </h4>
-                        </div>
-                        <div id="collapseRESTORE" class="panel-collapse collapse in">
-                                <div class="panel-body">
-                                        <p>Open an ODR-Encoder Manager configuration file and click the button below to restore the configuration.</p>
-                                        <div class="form-group">
-                                                <label class="control-label col-sm-2" for="my-file-selector">backup file:</label>
-						<div class="col-sm-3">
-							<label class="btn btn-primary" for="my-file-selector"><input id="my-file-selector" type="file" style="display:none" onchange="$('#upload-file-info').html(this.files[0].name)">Select file ...</label>
-						</div>
-
-						<label class="control-label col-sm-2" for="upload-file-info"></label>
-                                                <div class="col-sm-3">
-							<span class='' id="upload-file-info"></span>
-                                                </div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                                <label class="control-label col-sm-2" for="file"></label>
-                                                <div class="col-sm-3">
-                                                        <button type="button" id="btn_restore" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">Upload & Restore configuration</button>
-                                                </div>
-                                        </div>
-
-                                </div>
-                        </div>
-                </div>
-                </form>
-                
+        <div class="page-header">
+                <h1>Backup & Restore</h1>
         </div>
+        
+        <form class="form-horizontal" role="form">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                <span class="glyphicon glyphicon-save"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseBACKUP">Backup</a>
+                </h4>
+            </div>
+            <div id="collapseBACKUP" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <p>Download the ODR-Encoder Manager configuration file.</p>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="btn_backup"></label>
+                        <div class="col-sm-3">
+                            <button type="button" id="btn_backup" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">Download configuration</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+        
+        <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post" action="/api/restore">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-open"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseRESTORE">Restore</a>
+                </h4>
+            </div>
+            <div id="collapseRESTORE" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <p>Open an ODR-Encoder Manager configuration file and click the button below to restore the configuration.</p>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="my-file-selector">backup file:</label>
+                        <div class="col-sm-3">
+                            <label class="btn btn-primary" for="my-file-selector"><input id="my-file-selector" type="file" style="display:none" onchange="$('#upload-file-info').html(this.files[0].name)">Select file ...</label>
+                        </div>
 
+                        <label class="control-label col-sm-2" for="upload-file-info"></label>
+                            <div class="col-sm-3">
+                                <span class='' id="upload-file-info"></span>
+                            </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="file"></label>
+                        <div class="col-sm-3">
+                            <button type="button" id="btn_restore" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">Upload & Restore configuration</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+            
+    </div>
 
 </body>
 

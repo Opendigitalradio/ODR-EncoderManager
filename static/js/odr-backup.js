@@ -22,53 +22,49 @@
 
 // Button handler
 $(function(){
-	
-	$('#btn_backup').click(function() {
-    		window.location.href = '/api/backup';
-	});
+
+    $('#btn_backup').click(function() {
+        window.location.href = '/api/backup';
+    });
 
 
-	$('#btn_restore').click(function() {
-		var formData = new FormData();
-		formData.append('myFile', $('#my-file-selector')[0].files[0]);
+    $('#btn_restore').click(function() {
+        var formData = new FormData();
+        formData.append('myFile', $('#my-file-selector')[0].files[0]);
 
-		$.ajax({
-		        url : '/api/restore',
-		        type : 'POST',
-		        data : formData,
-		        processData: false,  // tell jQuery not to process the data
-		        contentType: false,  // tell jQuery not to set contentType
+        $.ajax({
+            url : '/api/restore',
+            type : 'POST',
+            data : formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,  // tell jQuery not to set contentType
 
-			error: function(data) {
-//                        	console.log(data);
-	                        $.gritter.add({
-	                                title: 'Restore configuration',
-	                                text: "ERROR = " + data['status'] + " : " + data['statusText'],
-	                                image: '/fonts/warning.png',
-	                                sticky: true,
-	                        });
-        	        },
-		       	success : function(data) {
-//		        	console.log(data);
-//				data = jQuery.parseJSON(data)
-	                        if ( data['status'] == '0' ) {
-        	                        $.gritter.add({
-                	                        title: 'Restore configuration',
-                        	                image: '/fonts/accept.png',
-                                	        text: 'Ok',
-	                                });
-        	                } else {
-                	                $.gritter.add({
-                        	                title: 'Restore configuration',
-                                	        text: "ERROR = " + data['status'] + " : " + data['statusText'],
-                                        	image: '/fonts/warning.png',
-	                                        sticky: true,
-        	                        });
-                	        }
-		        }
-		});
+            error: function(data) {
+                $.gritter.add({
+                    title: 'Restore configuration',
+                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            },
+            success : function(data) {
+                if ( data['status'] == '0' ) {
+                    $.gritter.add({
+                        title: 'Restore configuration',
+                        image: '/fonts/accept.png',
+                        text: 'Ok',
+                    });
+                } else {
+                    $.gritter.add({
+                        title: 'Restore configuration',
+                        text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                }
+            }
         });
-
+    });
 });
 
 // ToolTip init

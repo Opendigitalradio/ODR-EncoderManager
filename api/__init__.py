@@ -361,8 +361,34 @@ class API():
     
     @cherrypy.expose
     @require()
-    def setUser(self):
+    def addUser(self):
         self.conf = Config(self.config_file)
+        
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        param = json.loads(rawbody)
+        
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        
+        userexist = None    
+        for i,value in enumerate(output['auth']['users']):
+            if value['username'] == param['username']:
+                userexist = True
+        if not userexist:
+            output['auth']['users'].append({'username': param['username'], 'password': hashlib.md5(param['password']).hexdigest()});
+        else:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'User already exist'})
+                
+        # Write configuration file
+        try:
+            self.conf.write(output)
+        except Exception,e:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return json.dumps({'status': '0', 'statusText': 'Ok'})
     
     @cherrypy.expose
     @require()

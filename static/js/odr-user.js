@@ -71,9 +71,81 @@ $(function(){
 $(function(){
     requestUser();
     
+    $('#btn_user_add_save').click(function() {
+        $('#InfoModalAdd h4.modal-title').text("Add user")
+        if ( $('#add_username').val().length >= 2 ) {
+            if ( $('#add_password').val() == $('#add_password_confirm').val() ) {
+                if ( $('#add_password').val().length >= 6 ) {
+                    var param = {
+                        "username" : $('#add_username').val(),
+                        "password" : $('#add_password').val()
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/addUser",
+                        data: JSON.stringify(param),
+                        contentType: 'application/json',
+                        dataType: 'text',
+                        
+                        error: function(data) {
+                            //console.log(data);
+                            $.gritter.add({
+                                title: 'Save',
+                                text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                                image: '/fonts/warning.png',
+                                sticky: true,
+                            });
+                        },
+                        success: function(data) {
+                            data = jQuery.parseJSON(data)
+                            if ( data['status'] == '0' ) {
+                                $.gritter.add({
+                                    title: 'Save',
+                                    image: '/fonts/accept.png',
+                                    text: 'Ok',
+                                });
+                            } else {
+                                $.gritter.add({
+                                    title: 'Save',
+                                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                                    image: '/fonts/warning.png',
+                                    sticky: true,
+                                });
+                            }
+                        }
+                    });
+                    $('#add_password').val('');
+                    $('#add_password_confirm').val('');
+                    $('#InfoModalAdd').modal('hide');
+                    requestUser();
+                } else {
+                    $.gritter.add({
+                        title: 'Error !',
+                        text: 'Password too short',
+                        image: '/fonts/warning.png',
+                    }); 
+                }
+            } else {
+                $.gritter.add({
+                    title: 'Error !',
+                    text: 'Password mistmatch',
+                    image: '/fonts/warning.png',
+                });
+                $('#add_password').val('');
+                $('#add_password_confirm').val('');
+            }
+        } else {
+            $.gritter.add({
+                title: 'Error !',
+                text: 'Username too short',
+                image: '/fonts/warning.png',
+            });
+        }
+    });
+    
     $('#btn_user_edit_save').click(function() {
         if ( $('#edit_password').val() == $('#edit_password_confirm').val() ) {
-            if ( $('#edit_password').val().length > 6 ) {
+            if ( $('#edit_password').val().length >= 6 ) {
                 var param = {
                     "username" : $('#edit_username').val(),
                     "password" : $('#edit_password').val()

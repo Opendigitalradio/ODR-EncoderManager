@@ -51,6 +51,7 @@ function requestConfiguration(callback) {
                             else if ( $('#'+form_key).prop('tagName') == 'DIV' ) {
                                 
                                 if ( form_key == 'output_zmq_output') {
+                                    $( '#'+form_key ).empty();
                                     $.each( param_val, function( param_key, param_val ) {
                                         if (param_val['enable'] == 'true') {
                                             output_zmq_enable=' checked="checked"';

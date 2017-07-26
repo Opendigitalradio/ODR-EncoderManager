@@ -57,7 +57,7 @@
                     "name": "Mux test 117",
                     "port": "9001"
                 }
-            ],
+            ]
         }
     },
     "global": {

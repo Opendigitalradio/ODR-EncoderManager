@@ -29,12 +29,69 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
     {% include 'body-nav.html' %}
 
     <div class="container-fluid">
-
         <div class="page-header">
             <h1>Network</h1>
         </div>
         
-                
+        <form class="form-horizontal" role="form">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <span class="glyphicon glyphicon-transfer"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseCARDS">Manage network cards</a>
+                    </h4>
+                </div>
+                <div id="collapseCARDS" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <p>Choose a network card you want manage.</p>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="network_card">Network card:</label>
+                            <div class="col-sm-3">
+                                <select type="select" class="form-control" id="network_card">
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <hr />
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="network_dhcp">Enable DHCP</label>
+                            <div class="col-sm-3">
+                                <select type="select" class="form-control" id="network_dhcp" disabled="disabled">
+                                    <option value="true">true</option>
+                                    <option value="false">false</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="network_ip">IPv4 address</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="network_ip" disabled="disabled">
+                            </div>
+                            <label class="control-label col-sm-2" for="network_mask">IPv4 netmask</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="network_mask" disabled="disabled">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="network_gateway">IPv4 gateway</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="network_gateway" disabled="disabled">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="btn_save"></label>
+                            <div class="col-sm-3">
+                                <a href="#" class="btn btn-primary" id="btn_save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
     </div>
 
 </body>

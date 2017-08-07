@@ -124,6 +124,7 @@ $(function(){
 
 // Onload
 $(function(){
+   $("#btn_save").addClass('disabled');
    requestCards();
    
    $('#network_card').change(function() {

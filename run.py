@@ -6,7 +6,7 @@ import argparse
 import os
 import sys
 
-from config import Config
+from config import Config, is_network
 from auth import AuthController, require, is_login
 from api import API
 
@@ -39,19 +39,19 @@ class Root():
         def home(self):
                 tmpl = env.get_template("home.html")
                 js = []
-                return tmpl.render(tab='home', js=js, is_login=is_login())
+                return tmpl.render(tab='home', js=js, is_login=is_login(), is_network=is_network(self.config_file))
         
         @cherrypy.expose
         def help(self):
                 tmpl = env.get_template("help.html")
                 js = []
-                return tmpl.render(tab='help', js=js, is_login=is_login())
+                return tmpl.render(tab='help', js=js, is_login=is_login(), is_network=is_network(self.config_file))
         
         @cherrypy.expose
         def about(self):
                 tmpl = env.get_template("about.html")
                 js = []
-                return tmpl.render(tab='about', js=js, is_login=is_login())
+                return tmpl.render(tab='about', js=js, is_login=is_login(), is_network=is_network(self.config_file))
         
         # This is only available for authenticated user
         @cherrypy.expose
@@ -59,35 +59,35 @@ class Root():
         def status(self):
                 tmpl = env.get_template("status.html")
                 js = ['/js/odr-status.js']
-                return tmpl.render(tab='status', js=js, is_login=is_login())
+                return tmpl.render(tab='status', js=js, is_login=is_login(), is_network=is_network(self.config_file))
         
         @cherrypy.expose
         @require()
         def config(self):
                 tmpl = env.get_template("config.html")
                 js = ['/js/odr-config.js']
-                return tmpl.render(tab='config', js=js, is_login=is_login())
+                return tmpl.render(tab='config', js=js, is_login=is_login(), is_network=is_network(self.config_file))
 
         @cherrypy.expose
         @require()
         def backup(self):
                 tmpl = env.get_template("backup.html")
                 js = ['/js/odr-backup.js']
-                return tmpl.render(tab='backup', js=js, is_login=is_login())
+                return tmpl.render(tab='backup', js=js, is_login=is_login(), is_network=is_network(self.config_file))
         
         @cherrypy.expose
         @require()
         def user(self):
                 tmpl = env.get_template("user.html")
                 js = ['/js/odr-user.js']
-                return tmpl.render(tab='user', js=js, is_login=is_login())
+                return tmpl.render(tab='user', js=js, is_login=is_login(), is_network=is_network(self.config_file))
             
         @cherrypy.expose
         @require()
         def network(self):
                 tmpl = env.get_template("network.html")
                 js = ['/js/odr-network.js']
-                return tmpl.render(tab='user', js=js, is_login=is_login())
+                return tmpl.render(tab='user', js=js, is_login=is_login(), is_network=is_network(self.config_file))
 
 if __name__ == '__main__':
         # Get configuration file in argument

@@ -28,6 +28,13 @@ import sys
 import json
 import stat
 
+def is_network(config_file):
+    conf = Config(config_file)
+    if ('network' in conf.config['global']) and ('networkInterfaces_file' in conf.config['global']):
+        return True
+    else:
+        return False
+
 class Config():
     def __init__(self, config_file):
         self.config_file = config_file

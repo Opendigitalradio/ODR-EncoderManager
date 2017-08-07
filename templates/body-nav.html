@@ -15,6 +15,9 @@
                                         <ul class="dropdown-menu">
                                                 <li><a href="/backup">Backup & Restore</a></li>
                                                 <li><a href="/user">User management</a></li>
+                                                {% if is_network is sameas true %}
+                                                    <li><a href="/network">Networks management</a></li>
+                                                {% endif %}
                                         </ul>
                                 </li>
                                 <li class="dropdown{% if tab == 'help' or tab == 'about' %} active"{% endif %}">

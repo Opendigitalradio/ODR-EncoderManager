@@ -117,6 +117,39 @@ function requestCardInfo(callback) {
     });
 }
 
+function requestDNS(callback) {
+    $.ajax({
+        type: "GET",
+        url: "/api/getNetworkDNS",
+        contentType: 'application/json',
+        dataType: 'json',
+        
+        error: function(data) {
+            $.gritter.add({
+                title: 'Load DNS : ERROR !',
+                text: data['status'] + " : " + data['statusText'],
+                image: '/fonts/warning.png',
+                sticky: true,
+            });
+        },
+        success: function(data) {
+            if ( data['status'] == '0' ) {
+                $.each( data['data'], function( section_key, section_val ) {
+                    $( '#network_dns_servers' ).append('<div class="form-group"><div class="dns_server"><label class="control-label col-sm-2" for="network_dns_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_dns_server"  value="'+ section_val +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_dns_del" id="btn_network_dns_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
+                });
+                
+            } else {
+                $.gritter.add({
+                    title: 'Load DNS',
+                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            }
+        }
+    });
+}
+
 // ToolTip init
 $(function(){
     $('[data-toggle="tooltip"]').tooltip();   
@@ -126,6 +159,7 @@ $(function(){
 $(function(){
    $("#btn_save").addClass('disabled');
    requestCards();
+   requestDNS();
    
    $('#network_card').change(function() {
       requestCardInfo();
@@ -176,5 +210,62 @@ $(function(){
                 }
             }
         });
+   });
+   
+   
+   $('#btn_network_dns_server_add').click(function () {
+        
+       $( '#network_dns_servers' ).append('<div class="form-group"><div class="dns_server"><label class="control-label col-sm-2" for="network_dns_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_dns_server"  value="'+ $('#network_dns_server').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_dns_del" id="btn_network_dns_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
+        
+       
+        $('#network_dns_server').val('');
     });
+
+   
+   $('#btn_dns_save').click(function() {
+        console.log('dns save');
+        var param = [];
+        $('#network_dns_servers > .form-group > .dns_server').each(function () {
+            var $input = $(this)
+            param.push($input.find('#network_dns_server').val());
+        });
+        console.log(param);
+        $.ajax({
+            type: "POST",
+            url: "/api/setNetworkDNS",
+            data: JSON.stringify(param),
+            contentType: 'application/json',
+            dataType: 'text',
+            
+            error: function(data) {
+                $.gritter.add({
+                    title: 'Save',
+                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            },
+            success: function(data) {
+                data = jQuery.parseJSON(data)
+                if ( data['status'] == '0' ) {
+                    $.gritter.add({
+                        title: 'Save',
+                        image: '/fonts/accept.png',
+                        text: 'Ok',
+                    });
+                } else {
+                    $.gritter.add({
+                        title: 'Save',
+                        text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                }
+            }
+        });
+   });
+                        
+                        
+   
+   
 });

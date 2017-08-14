@@ -61,22 +61,24 @@ class Config():
         networkInterfaces += "iface lo inet loopback\n"
         networkInterfaces += "\n"
         for card in config['global']['network']['cards']:
-            if (card['ip'].strip() != "") and (card['netmask'].strip() != ""):
+            if card['dhcp'] == "true":
                 networkInterfaces += "allow-hotplug %s\n" % (card['card'])
-                if card['dhcp'] == "true":
-                    networkInterfaces += "iface %s inet %s\n" % (card['card'], 'dhcp')
-                else:
+                networkInterfaces += "iface %s inet %s\n" % (card['card'], 'dhcp')
+            else:
+                if (card['ip'].strip() != "") and (card['netmask'].strip() != ""):
+                    networkInterfaces += "allow-hotplug %s\n" % (card['card'])
                     networkInterfaces += "iface %s inet %s\n" % (card['card'], 'static')
                     networkInterfaces += "    address %s\n" % (card['ip'])
                     networkInterfaces += "    netmask %s\n" % (card['netmask'])
                     if card['gateway'].strip() != "":
                         networkInterfaces += "    gateway %s\n" % (card['gateway'])
-                networkInterfaces += "\n"
+            networkInterfaces += "\n"
             
         try:
             with open(config['global']['networkInterfaces_file'], 'w') as supfile:
                 supfile.write(networkInterfaces)
         except Exception,e:
+            
             raise ValueError( 'Error when writing network/interfaces file', str(e) )
         
         # Write network/DNS file

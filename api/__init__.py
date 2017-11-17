@@ -23,6 +23,7 @@ import datetime
 import shutil
 
 import hashlib
+import codecs
 
 class API():
     
@@ -349,7 +350,7 @@ class API():
             # dls parameters is present and override all other
             if 'dls' in query:
                 try:
-                    with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w') as outfile:
+                    with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
                         outfile.write(query['dls'])
                 except Exception,e:
                     r = {'status': '-210', 'statusText': 'Fail to write dls data'}
@@ -377,7 +378,7 @@ class API():
                     data += '##### parameters } #####\n'
                     data += '%s - %s\n' % (query['artist'], query['title'])
                     try:
-                        with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w') as outfile:
+                        with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
                             outfile.write(data)
                     except Exception,e:
                         r = {'status': '-210', 'statusText': 'Fail to write dls data'}

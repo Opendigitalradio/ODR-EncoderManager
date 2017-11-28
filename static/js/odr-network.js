@@ -150,6 +150,39 @@ function requestDNS(callback) {
     });
 }
 
+function requestNTP(callback) {
+    $.ajax({
+        type: "GET",
+        url: "/api/getNetworkNTP",
+        contentType: 'application/json',
+        dataType: 'json',
+        
+        error: function(data) {
+            $.gritter.add({
+                title: 'Load NTP : ERROR !',
+                text: data['status'] + " : " + data['statusText'],
+                image: '/fonts/warning.png',
+                sticky: true,
+            });
+        },
+        success: function(data) {
+            if ( data['status'] == '0' ) {
+                $.each( data['data'], function( section_key, section_val ) {
+                    $( '#network_ntp_servers' ).append('<div class="form-group"><div class="ntp_server"><label class="control-label col-sm-2" for="network_ntp_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_ntp_server"  value="'+ section_val +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_ntp_del" id="btn_network_ntp_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
+                });
+                
+            } else {
+                $.gritter.add({
+                    title: 'Load NTP',
+                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            }
+        }
+    });
+}
+
 // ToolTip init
 $(function(){
     $('[data-toggle="tooltip"]').tooltip();   
@@ -204,6 +237,7 @@ $(function(){
    $("#btn_save").addClass('disabled');
    requestCards();
    requestDNS();
+   requestNTP();
    
    $('#network_card').change(function() {
       requestCardInfo();
@@ -257,10 +291,56 @@ $(function(){
    });
    
    
+   $('#btn_network_ntp_server_add').click(function () {
+        $( '#network_ntp_servers' ).append('<div class="form-group"><div class="ntp_server"><label class="control-label col-sm-2" for="network_ntp_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_ntp_server"  value="'+ $('#network_ntp_server').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_ntp_del" id="btn_network_ntp_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
+       
+        $('#network_ntp_server').val('');
+    });
+   
+   $('#btn_ntp_save').click(function() {
+        var param = [];
+        $('#network_ntp_servers > .form-group > .ntp_server').each(function () {
+            var $input = $(this)
+            param.push($input.find('#network_ntp_server').val());
+        });
+        $.ajax({
+            type: "POST",
+            url: "/api/setNetworkNTP",
+            data: JSON.stringify(param),
+            contentType: 'application/json',
+            dataType: 'text',
+            
+            error: function(data) {
+                $.gritter.add({
+                    title: 'Save',
+                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            },
+            success: function(data) {
+                data = jQuery.parseJSON(data)
+                if ( data['status'] == '0' ) {
+                    $.gritter.add({
+                        title: 'Save',
+                        image: '/fonts/accept.png',
+                        text: 'Ok',
+                    });
+                } else {
+                    $.gritter.add({
+                        title: 'Save',
+                        text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                }
+            }
+        });
+   });
+   
+   
    $('#btn_network_dns_server_add').click(function () {
-        
-       $( '#network_dns_servers' ).append('<div class="form-group"><div class="dns_server"><label class="control-label col-sm-2" for="network_dns_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_dns_server"  value="'+ $('#network_dns_server').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_dns_del" id="btn_network_dns_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
-        
+        $( '#network_dns_servers' ).append('<div class="form-group"><div class="dns_server"><label class="control-label col-sm-2" for="network_dns_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_dns_server"  value="'+ $('#network_dns_server').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_dns_del" id="btn_network_dns_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
        
         $('#network_dns_server').val('');
     });

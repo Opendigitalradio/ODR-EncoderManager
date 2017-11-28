@@ -86,8 +86,6 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="col-sm-3">
                                 <button type="button" id="btn_save" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Write network configuration in configuration file." ><span class="glyphicon glyphicon-save"></span> Write changes</button>&nbsp;
                                 <button type="button" id="btn_reboot" class="btn btn-danger" data-toggle="modal" data-target="#confirm-reboot"><span class="glyphicon glyphicon-alert"></span> Reboot</button>
-<!--                                 <a href="#" class="btn btn-primary" id="btn_save" data-toggle="tooltip" data-placement="top" title="Write network configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a> -->
-<!--                                 <a href="#" class="btn btn-danger" id="btn_reboot" data-toggle="tooltip" data-placement="top" title="Restarting Audio Companion immediatly." data-toggle="modal" data-target="#confirm-reboot"><span class="glyphicon glyphicon-alert"></span> Reboot</a> -->
                             </div>
                         </div>
                         
@@ -157,6 +155,45 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
                                 <a href="#" class="btn btn-primary" id="btn_dns_save" data-toggle="tooltip" data-placement="top" title="Write DNS configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+        <form class="form-horizontal" role="form">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <span class="glyphicon glyphicon-transfer"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseNTP">Manage NTP servers</a>
+                    </h4>
+                </div>
+                <div id="collapseNTP" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <p>Setup your NTP.</p>
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="network_dns_server">NTP Servers:</label>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="network_ntp_server"  value="" placeholder="IP or hostname (ie: 8.8.8.8)">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-success" id="btn_network_ntp_server_add" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="network_ntp_servers">
+                        </div>
+                        
+                        
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="btn_save"></label>
+                            <div class="col-sm-3">
+                                <a href="#" class="btn btn-primary" id="btn_ntp_save" data-toggle="tooltip" data-placement="top" title="Write NTP configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
                             </div>
                         </div>
                     </div>

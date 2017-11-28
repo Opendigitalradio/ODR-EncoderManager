@@ -198,7 +198,47 @@ class API():
         cherrypy.response.headers["Content-Type"] = "application/json"
         return json.dumps({'status': '0', 'statusText': 'Ok'})
     
-    
+    @cherrypy.expose
+    @require()
+    def getNetworkNTP(self, **params):
+        self.conf = Config(self.config_file)
+        query = parse_query_string(cherrypy.request.query_string)
+
+        data = self.conf.config['global']['network']['ntp']
+        
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': data})
+
+    @cherrypy.expose
+    @require()
+    def setNetworkNTP(self):
+        self.conf = Config(self.config_file)
+        
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        param = json.loads(rawbody)
+        
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        
+        output['global']['network']['ntp'] = param
+        
+        # Write configuration file
+        try:
+            self.conf.write(output)
+        except Exception,e:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        
+        
+        # Generate network files
+        try:
+            self.conf.generateNetworkFiles(output)
+        except Exception,e:
+            cherrypy.response.headers["Content-Type"] = "application/json"
+            return json.dumps({'status': '-201', 'statusText': 'Error when writing network file: ' + str(e)})
+        
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        return json.dumps({'status': '0', 'statusText': 'Ok'})
 
     @cherrypy.expose
     @require()

@@ -338,6 +338,37 @@ $(function(){
         });
    });
    
+    $('#btn_restart_ntp').click(function() {
+        $(['/fonts/ie-spacer.gif',
+          '/fonts/gritter.png',
+          '/fonts/gritter-light.png',
+          '/fonts/warning.png']).preload();
+
+        $.ajax({
+            type: "GET",
+            url: "/api/restartNTP",
+            contentType: 'application/json',
+            dataType: 'json',
+            
+            error: function(data) {
+                $.gritter.add({
+                    title: 'Error',
+                    text: "Restart NTP can not be completed",
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            },
+            success: function(data) {
+                $.gritter.add({
+                    title: 'Ok',
+                    text: "Restart NTP in progress,  ...",
+                    image: '/fonts/accept.png',
+                    sticky: true,
+                });
+            }
+        });
+    });
+   
    
    $('#btn_network_dns_server_add').click(function () {
         $( '#network_dns_servers' ).append('<div class="form-group"><div class="dns_server"><label class="control-label col-sm-2" for="network_dns_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_dns_server"  value="'+ $('#network_dns_server').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_dns_del" id="btn_network_dns_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');

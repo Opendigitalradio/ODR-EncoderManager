@@ -242,6 +242,18 @@ class API():
 
     @cherrypy.expose
     @require()
+    def restartNTP(self):
+        command = 'sudo /usr/sbin/service ntp restart'
+        p_status = subprocess.call(command, shell=True)
+
+        cherrypy.response.headers["Content-Type"] = "application/json"
+        if int(p_status) != 0:
+            return json.dumps({'status': '-299', 'statusText': 'Can not process restart - %s ' % (int(p_status))})
+        else:
+            return json.dumps({'status': '0', 'statusText': 'Ok'})
+
+    @cherrypy.expose
+    @require()
     def getNetworkCards(self, **params):
         self.conf = Config(self.config_file)
         query = parse_query_string(cherrypy.request.query_string)

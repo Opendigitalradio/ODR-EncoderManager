@@ -243,7 +243,7 @@ class API():
     @cherrypy.expose
     @require()
     def restartNTP(self):
-        command = 'sudo /usr/sbin/service ntp restart'
+        command = 'sudo /bin/systemctl restart ntp'
         p_status = subprocess.call(command, shell=True)
 
         cherrypy.response.headers["Content-Type"] = "application/json"

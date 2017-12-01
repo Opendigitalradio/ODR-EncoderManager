@@ -114,17 +114,19 @@ if __name__ == '__main__':
             lcd.position( 2, 1 )
             lcd.write( net2_ip )
             time.sleep( 4 )
-        
-        with open(config.config['odr']['padenc']['dls_fifo_file'], 'r') as f:
-            for line in f:
-                if line.startswith('#'):
-                    continue
-                if line.startswith('DL_PLUS='):
-                    continue
-                if line.startswith('DL_PLUS_TAG='):
-                    continue
-                dls = line.rstrip()
-                
-        wtitle('DAB+ Encoder DLS', dls)
+        try:
+            with open(config.config['odr']['padenc']['dls_fifo_file'], 'r') as f:
+                for line in f:
+                    if line.startswith('#'):
+                        continue
+                    if line.startswith('DL_PLUS='):
+                        continue
+                    if line.startswith('DL_PLUS_TAG='):
+                        continue
+                    dls = line.rstrip()
+                    
+            wtitle('DAB+ Encoder DLS', dls)
+        except:
+            wtitle('DAB+ Encoder DLS', 'Fail to read dls')
         
 

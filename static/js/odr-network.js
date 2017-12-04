@@ -363,7 +363,7 @@ $(function(){
                     title: 'Ok',
                     text: "Restart NTP in progress,  ...",
                     image: '/fonts/accept.png',
-                    sticky: true,
+                    sticky: false,
                 });
             }
         });

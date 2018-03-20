@@ -395,10 +395,26 @@ class API():
     
     
     @cherrypy.expose
-    def setDLS(self, **params):
+    def setDLS(self, dls=None, artist=None, title=None, json=None, **params):
         self.conf = Config(self.config_file)
         
-        query = parse_query_string(cherrypy.request.query_string)
+        if cherrypy.request.method == 'POST':
+            query = {}
+            if dls:
+                query['dls'] = dls
+            elif artist and title:
+                query['artist'] = artist
+                query['title'] = title
+            if json:
+                query['json'] = json
+        
+        elif cherrypy.request.method == 'GET':
+            query = parse_query_string(cherrypy.request.query_string)
+            
+        else:
+            r = {'status': '-216', 'statusText': 'Only HTTP POST or GET are available'}
+            cherrypy.response.status = 400
+            return r['statusText']
 
         # Check is json output is needed
         if 'json' in query:
@@ -415,6 +431,7 @@ class API():
                         outfile.write(query['dls'])
                 except Exception,e:
                     r = {'status': '-210', 'statusText': 'Fail to write dls data'}
+                    cherrypy.response.status = 500
                     if ojson:
                         cherrypy.response.headers["Content-Type"] = "application/json"
                         return json.dumps(r)
@@ -443,6 +460,7 @@ class API():
                             outfile.write(data)
                     except Exception,e:
                         r = {'status': '-210', 'statusText': 'Fail to write dls data'}
+                        cherrypy.response.status = 500
                         if ojson:
                             cherrypy.response.headers["Content-Type"] = "application/json"
                             return json.dumps(r)
@@ -457,6 +475,7 @@ class API():
                             return r['statusText']
                 else:
                     r = {'status': '-215', 'statusText': 'Error, artist or title are blank'}
+                    cherrypy.response.status = 422
                     if ojson:
                         cherrypy.response.headers["Content-Type"] = "application/json"
                         return json.dumps(r)
@@ -466,6 +485,7 @@ class API():
             # no needed parameters available
             else:
                 r = {'status': '-209', 'statusText': 'Error, you need to use dls or artist + title parameters'}
+                cherrypy.response.status = 400
                 if ojson:
                     cherrypy.response.headers["Content-Type"] = "application/json"
                     return json.dumps(r)
@@ -475,6 +495,7 @@ class API():
         # DLS (odr-padenc process) is disable
         else:
             r = {'status': '-208', 'statusTest': 'DLS is disable'}
+            cherrypy.response.status = 422
             if ojson:
                 cherrypy.response.headers["Content-Type"] = "application/json"
                 return json.dumps(r)

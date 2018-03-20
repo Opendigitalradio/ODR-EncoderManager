@@ -360,8 +360,17 @@ class API():
         # Check if ODR program availaible in supervisor ProcessInfo and try to add it
         
         # Retreive supervisor process
-        server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
-        programs = server.supervisor.getAllProcessInfo()
+        try:
+            server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+        except Exception,e:
+                cherrypy.response.headers["Content-Type"] = "application/json"
+                return json.dumps({'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)})
+        
+        try:
+            programs = server.supervisor.getAllProcessInfo()
+        except Exception,e:
+                cherrypy.response.headers["Content-Type"] = "application/json"
+                return json.dumps({'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)})
         
         # Check for ODR-audioencoder
         if not self.is_program_exist(programs, 'ODR-audioencoder'):

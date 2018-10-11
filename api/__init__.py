@@ -665,6 +665,13 @@ class API():
             output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
         except Exception,e:
             return json.dumps({'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): ' + str(e)})
+
+        if 'supervisor_additional_processes' in self.conf.config['global']:
+            try:
+                for proc in self.conf.config['global']['supervisor_additional_processes']:
+                    output.append( server.supervisor.getProcessInfo(proc) )
+            except Exception,e:
+                return json.dumps({'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): ' + str(e)})
         
         return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
     

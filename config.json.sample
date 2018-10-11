@@ -67,6 +67,7 @@
         "static_directory": "/home/odr/ODR-EncoderManager/static/",
         "host": "0.0.0.0",
         "supervisor_file": "/home/odr/ODR-EncoderManager/supervisor-encoder.conf",
+        "supervisor_additional_processes": [],
         "port": 8080
     },
     "auth": {

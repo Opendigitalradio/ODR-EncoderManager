@@ -420,7 +420,7 @@ class API():
         if self.conf.config['odr']['padenc']['enable'] == 'true':
             # dls parameters is present and override all other
             if 'dls' in query:
-                if json.loads(self.getDLS())['dls'] == query['dls']:
+                if json.loads(self.getDLS())['dls'] == query['dls'] and 'dlplus' not in json.loads(self.getDLS()):
                     r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': query['dls']}
                     if 'output' in query and query['output'] == 'json':
                        cherrypy.response.headers["Content-Type"] = "application/json"
@@ -445,8 +445,15 @@ class API():
                        return json.dumps(r)
                     else:
                        return r['statusText']
-            # dls is not present and artist and title are available    
+            # dls is not present and artist and title are available
             elif ('artist' in query) and ('title' in query):
+                if 'dlplus' in json.loads(self.getDLS()) and json.loads(self.getDLS())['dlplus']['artist'] == query['artist'] and json.loads(self.getDLS())['dlplus']['title'] == query['title']:
+                    r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': { 'artist': query['artist'], 'title': query['title']}}
+                    if 'output' in query and query['output'] == 'json':
+                       cherrypy.response.headers["Content-Type"] = "application/json"
+                       return json.dumps(r)
+                    else:
+                       return r['statusText']
                 if (query['artist'] != '') and (query['title'] != ''):
                     data  = '##### parameters { #####\n'
                     data += 'DL_PLUS=1\n'
@@ -507,42 +514,56 @@ class API():
 
     @cherrypy.expose
     @require()
-    def getDLS(self):
-        dls=None
-        dlplus=None
+    def getDLS(self, **params):
+        query = parse_query_string(cherrypy.request.query_string)
         self.conf = Config(self.config_file)
         cherrypy.response.headers["Content-Type"] = "application/json"
 
+        output = []
+
         if self.conf.config['odr']['padenc']['enable'] == 'true':
+            dls=None
+            dlplus=None
+            dlplus_data=[]
             try:
                 with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'r') as f:
                     for line in f:
                         if line.startswith('#'):
                             continue
                         if line.startswith('DL_PLUS='):
-                            #dlplus={'artist': '', 'title': ''}
-                            continue
+                            dlplus=True
+                            #continue
                         if line.startswith('DL_PLUS_TAG='):
-                            #v = line.split("=", 1)
-                            #d = v[1].split(" ")
-                            #if d[0] == 4:
-                                #dartist={'start': d[1], 'len': d[2]}
-                            #if d[0] == 1:
-                                #dtitle={'start': d[1], 'len': d[2]}
-                            continue
+                            v = line.split("=", 1)
+                            d = v[1].split(" ")
+                            dlplusCode = {
+                                1: 'title',
+                                2: 'album',
+                                3: 'tracknumber',
+                                4: 'artist',
+                                5: 'composition',
+                                6: 'movement',
+                                7: 'conductor',
+                                8: 'composer',
+                                9: 'band',
+                                10: 'comment',
+                                11: 'genre'
+                                }
+                            dlplus_data.append( {'name': dlplusCode[int(d[0])], 'code': int(d[0]), 'start': int(d[1]), 'len': int(d[2])} )
                         dls = line.rstrip()
             except Exception,e:
-                return json.dumps({'dls': 'Fail to read dls data'})
+                return json.dumps({'dls': 'Fail to read DLS data'})
             else:
-                ## TODO : add DL PLUS Support to return
                 if dlplus:
-                    dlplus['artist'] = ''
-                    dlplus['title'] = ''
+                    dlplus= {}
+                    for d in dlplus_data:
+                        dlplus[d['name']] = dls[d['start']:d['start']+d['len']+1]
                     return json.dumps({'dls': str(dls), 'dlplus': dlplus})
                 else:
                     return json.dumps({'dls': str(dls)})
         else:
-            return json.dumps({'dls': 'DLS is disable ...'})
+            return json.dumps({'dls': 'DLS is disable'})
+        #return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
 
     def is_program_exist(self, json, program):
         ex = False

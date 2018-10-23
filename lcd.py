@@ -75,45 +75,25 @@ if __name__ == '__main__':
     lcd.color( 120, 120, 255 ) 
     
     while True:
-        # Retreive NETWORK IFACE IP
-        try:
-            config_ip = os.popen('ip addr show eth0').read().split("inet ")[1].split("/")[0]
-        except:
-            config_ip = False
-            
-        try:
-            net1_ip = os.popen('ip addr show eth1').read().split("inet ")[1].split("/")[0]
-        except:
-            net1_ip = False
-        
-        try:
-            net2_ip = os.popen('ip addr show eth2').read().split("inet ")[1].split("/")[0]
-        except:
-            net2_ip = False
-        
         lcd.autoscroll( False )
+
         # Display hostname and admin ip
         lcd.clear_screen()
         lcd.write( 'DAB+ Encoder')
         time.sleep( 2 )
-        if config_ip:
-            lcd.clear_screen()
-            lcd.write( 'IP iface CONFIG')
-            lcd.position( 2, 1 )
-            lcd.write( config_ip )
-            time.sleep( 4 )
-        if net1_ip:
-            lcd.clear_screen()
-            lcd.write( 'IP iface NET1')
-            lcd.position( 2, 1 )
-            lcd.write( net1_ip )
-            time.sleep( 4 )
-        if net2_ip:
-            lcd.clear_screen()
-            lcd.write( 'IP iface NET2')
-            lcd.position( 2, 1 )
-            lcd.write( net2_ip )
-            time.sleep( 4 )
+
+        # Retreive NETWORK IFACE IP
+        for card in config.config['global']['network']['cards']:
+            try:
+                ip = os.popen('ip addr show %s' % (card['card'])).read().split("inet ")[1].split("/")[0]
+            except:
+                pass
+            else:
+                lcd.clear_screen()
+                wtitle( str('IP iface %s' % (card['alias']) ), ip)
+                time.sleep( 4 )
+                
+        # Display DLS
         try:
             with open(config.config['odr']['padenc']['dls_fifo_file'], 'r') as f:
                 for line in f:

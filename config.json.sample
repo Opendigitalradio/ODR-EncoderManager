@@ -8,6 +8,10 @@
         },
         "padenc": {
             "enable": "true",
+            "uniform": "false",
+            "uniform_label": "1",
+            "uniform_label_ins": "1200",
+            "uniform_init_burst": "12",
             "raw_dls": "false",
             "slide_directory": "/tmp/slide/",
             "slide_once": "true",

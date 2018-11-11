@@ -151,7 +151,7 @@ class Config():
                         f.close()
                     except Exception,e:
                         raise ValueError( 'Error when writing into DLS fifo file', str(e) )
-                
+
             # Check if config.mot_pad_fifo_file exist and create it if needed.
             if not os.path.exists(config['odr']['padenc']['pad_fifo_file']):
                 try:
@@ -162,15 +162,34 @@ class Config():
                 if not stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo_file']).st_mode):
                     #File %s is not a fifo file
                     pass
-            
+
             command += ' --sleep=%s' % (config['odr']['padenc']['slide_sleeping'])
             command += ' --pad=%s' % (config['odr']['padenc']['pad'])
             command += ' --dls=%s' % (config['odr']['padenc']['dls_fifo_file'])
             command += ' --output=%s' % (config['odr']['padenc']['pad_fifo_file'])
-            
+
             if config['odr']['padenc']['raw_dls'] == 'true':
                 command += ' --raw-dls'
-                
+
+            # UNIFORM
+            if config['odr']['padenc']['uniform'] == 'true':
+                if config['odr']['output']['type'] == 'dabp':
+                    if config['odr']['output']['dabp_sbr'] == 'false':
+                        # AAC_LC
+                        if config['odr']['output']['samplerate'] == '48000':
+                            command += ' --frame-dur=20'
+                        elif config['odr']['output']['samplerate'] == '32000':
+                            command += ' --frame-dur=30'
+                    elif config['odr']['output']['dabp_sbr'] == 'true':
+                        # HE_AAC
+                        if config['odr']['output']['samplerate'] == '48000':
+                            command += ' --frame-dur=40'
+                        elif config['odr']['output']['samplerate'] == '32000':
+                            command += ' --frame-dur=60'
+                    command += ' --label=%s' % (config['odr']['padenc']['uniform_label'])
+                    command += ' --label-ins=%s' % (config['odr']['padenc']['uniform_label_ins'])
+                    command += ' --init-burst=%s' % (config['odr']['padenc']['uniform_init_burst'])
+
             supervisorPadEncConfig = ""
             supervisorPadEncConfig += "[program:ODR-padencoder]\n"
             supervisorPadEncConfig += "command=%s\n" % (command)

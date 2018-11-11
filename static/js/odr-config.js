@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2015 Yoann QUERET <yoann@queret.net>
+// Copyright (C) 2018 Yoann QUERET <yoann@queret.net>
 // 
 
 // 
@@ -26,7 +26,7 @@ function requestConfiguration(callback) {
         url: "/api/getConfig",
         contentType: 'application/json',
         dataType: 'json',
-        
+
         error: function(data) {
             $.gritter.add({
                 title: 'Load configuration : ERROR !',
@@ -41,7 +41,7 @@ function requestConfiguration(callback) {
                     if ( typeof section_val === 'object') {
                         $.each( section_val, function( param_key, param_val ) {
                             form_key = section_key + '_' + param_key
-                            
+
                             if ( $('#'+form_key).prop('tagName') == 'INPUT' ) {
                                 $('#'+form_key).val(param_val);
                             }
@@ -49,7 +49,7 @@ function requestConfiguration(callback) {
                                 $('#'+form_key+' option[value="'+param_val+'"]').prop('selected', true);
                             }
                             else if ( $('#'+form_key).prop('tagName') == 'DIV' ) {
-                                
+
                                 if ( form_key == 'output_zmq_output') {
                                     $( '#'+form_key ).empty();
                                     $.each( param_val, function( param_key, param_val ) {
@@ -61,7 +61,7 @@ function requestConfiguration(callback) {
                                         $( '#'+form_key ).append('<div class="form-group"><div class="output_zmq"><label class="control-label col-sm-2" for="output_zmq_name"></label><div class="col-sm-3"><input type="text" class="form-control" id="output_zmq_name" value="'+ param_val['name'] +'" placeholder="Description"> </div><div class="col-sm-5"><div class="input-group"><span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output"><input type="checkbox" id="output_zmq_enable"'+ output_zmq_enable +'></span><input type="text" class="form-control" id="output_zmq_host" value="'+ param_val['host'] +'" placeholder="Host or IP"><span class="input-group-addon">:</span><input type="text" class="form-control" id="output_zmq_port"  value="'+ param_val['port'] +'" placeholder="Port"><span class="input-group-btn"><button class="btn btn-danger btn_output_zmq_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>')
                                     });
                                 }
-                                
+
                             }
                             else {
                                 debug = section_key + '_' + param_key + ':' + param_val;
@@ -94,7 +94,7 @@ function setConfiguration(callback) {
             }
             zmq_output.push({name: $input.find('#output_zmq_name').val(), host: $input.find('#output_zmq_host').val(), port: $input.find('#output_zmq_port').val(), enable: zmq_output_enable});
         });
-     
+
         var param = {
          "path" : {
                      "encoder_path": $('#path_encoder_path').val(),
@@ -135,6 +135,10 @@ function setConfiguration(callback) {
                      "slide_sleeping": $('#padenc_slide_sleeping').val(),
                      "slide_once": $('#padenc_slide_once').val(),
                      "raw_dls": $('#padenc_raw_dls').val(),
+                     "uniform": $('#padenc_uniform').val(),
+                     "uniform_label": $('#padenc_uniform_label').val(),
+                     "uniform_label_ins": $('#padenc_uniform_label_ins').val(),
+                     "uniform_init_burst": $('#padenc_uniform_init_burst').val()
                  },
        }
 
@@ -144,7 +148,7 @@ function setConfiguration(callback) {
            data: JSON.stringify(param),
            contentType: 'application/json',
            dataType: 'text',
-         
+
            error: function(data) {
                //console.log(data);
                $.gritter.add({
@@ -205,7 +209,7 @@ function setEnableDisable(){
             $('#output_dab_dabpsy').prop('disabled', true);
         }
     }
-    
+
     if ($('#source_type').val() == 'alsa') {
         $('#source_url').prop('disabled', true);
         $('#source_device').prop('disabled', false);
@@ -235,9 +239,8 @@ function setEnableDisable(){
             $('#output_dab_dabmode').prop('disabled', true);
             $('#output_dab_dabpsy').prop('disabled', true);
         }
-        
     }
-    
+
     if ($('#source_type').val() == 'avt') {
         $('#source_url').prop('disabled', true);
         $('#source_device').prop('disabled', true);
@@ -280,19 +283,19 @@ $(function(){
                     text: 'Ok',
                 });
     });
-    
+
     $('#save').click(function() {
         setConfiguration();
     });
-    
+
     $("#source_type").change(function() {
         setEnableDisable();
     });
-    
+
     $("#output_type").change(function() {
         setEnableDisable();
     });
-        
+
     $('#btn_list_alsa_devices').click(function () {
         $('#InfoModal h4.modal-title').text("Alsa capture devices list")
         $.ajax({
@@ -300,7 +303,7 @@ $(function(){
             url: "/api/getAlsaDevices",
             contentType: 'application/json',
             dataType: 'json',
-                
+
             error: function(data) {
                 $.gritter.add({
                     title: 'Loading alsa capture devices : ERROR !',
@@ -322,9 +325,9 @@ $(function(){
                     });
                 }
             }
-        });      
+        });
     });
-    
+
     $('#btn_output_zmq_add').click(function () {
         if ( $('#add_output_zmq_enable').is(":checked") ) {
             output_zmq_enable=' checked="checked"';

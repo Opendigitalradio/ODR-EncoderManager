@@ -112,7 +112,7 @@ function requestDLS(callback) {
         }
     });
     setTimeout(function(){
-        requestDLS();},5000);
+        requestDLS();},500);
 }
 
 function sleep(delay) {

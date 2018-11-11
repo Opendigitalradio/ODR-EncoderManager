@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2015 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2018 Yoann QUERET <yoann@queret.net>
 -->
 
 <!--
@@ -29,9 +29,9 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
         {% include 'body-nav.html' %}
 
         <div class="container-fluid">
-        
+
                 <div class="page-header">
-                        <h1>Configuration</h1>      
+                        <h1>Configuration</h1>
                 </div>
 
                 <!-- Modal -->
@@ -50,7 +50,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 </div>
                 </div>
-                
+
                 <!-- Long form -->
                 <form class="form-horizontal" role="form">
                 <div class="panel panel-default">
@@ -61,7 +61,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div id="collapseSource" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="source_type">Input type:</label>
                                                 <div class="col-sm-3">
@@ -93,10 +93,9 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         </div>
                                                 </div>
 
-                                                
                                         </div>
                                         <hr />
-                                        
+
                                         <h4>Source stream</h4>
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="source_url">Stream URL:</label>
@@ -105,7 +104,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                 </div>
                                         </div>
                                         <hr />
-                                        
+
                                         <h4>Source avt</h4>
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="source_avt_input_uri">input URI:</label>
@@ -136,12 +135,11 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         <input type="text" class="form-control" id="source_avt_timeout" placeholder="Enter timeout" data-toggle="tooltip" data-placement="top" title="Maximum frame waiting time, in milliseconds (def=2000)">
                                                 </div>
                                         </div>
-                                        
+
                                 </div>
                         </div>
                 </div>
-                
-                
+
                 <div class="panel panel-default">
                         <div class="panel-heading">
                                 <h4 class="panel-title">
@@ -150,7 +148,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div id="collapseOutput" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_type">Output type:</label>
                                                 <div class="col-sm-3">
@@ -160,7 +158,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         </select>
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_bitrate">Bitrate:</label>
                                                 <div class="col-sm-3">
@@ -171,7 +169,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         <input type="text" class="form-control" id="output_samplerate" placeholder="Enter samplerate (ex: 48000)" data-toggle="tooltip" data-placement="top" title="Samplerate (ex: 48000)">
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_channels">Channels:</label>
                                                 <div class="col-sm-3">
@@ -181,9 +179,9 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         </select>
                                                 </div>
                                         </div>
-                                        
+
                                         <hr />
-                                        
+
                                         <h4>DAB+ specific configuration</h4>
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_dabp_sbr">SBR:</label>
@@ -193,8 +191,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                                 <option value="false">false</option>
                                                         </select>
                                                 </div>
-                                                
-                                                
+
                                                 <label class="control-label col-sm-2" for="output_dabp_ps">PS:</label>
                                                 <div class="col-sm-3">
                                                         <select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrates which are a multiple of 8kbps and under 56 kbps.">
@@ -203,7 +200,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         </select>
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
                                                 <div class="col-sm-3">
@@ -214,7 +211,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                 </div>
                                         </div>
                                         <hr />
-                                        
+
                                         <h4>DAB specific configuration</h4>
                                                 <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
@@ -226,8 +223,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                                 <option value="m">m - Mono</option>
                                                         </select>
                                                 </div>
-                                                
-                                                
+
                                                 <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
                                                 <div class="col-sm-3">
                                                         <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
@@ -239,8 +235,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                 </div>
                                         </div>
                                         <hr />
-                                        
-                                        
+
                                         <h4>ZMQ configuration</h4>
                                         <div class="form-group">
                                             <label class="control-label col-sm-2" for="output_zmq_name">Hosts:</label>
@@ -263,23 +258,19 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                         </div>
                                         <div id="output_zmq_output">
                                         </div>
-                                        
-                                        
-                                        
 
-                                        
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_zmq_key">Key:</label>
                                                 <div class="col-sm-8">
                                                         <input type="text" class="form-control" id="output_zmq_key" placeholder="Enter ZMQ key if needed" data-toggle="tooltip" data-placement="top" title="Enter ZMQ key if needed">
                                                 </div>
                                         </div>
-                                        
+
                                 </div>
                         </div>
                 </div>
-                
-                
+
+
                 <div class="panel panel-default">
                         <div class="panel-heading">
                                 <h4 class="panel-title">
@@ -288,7 +279,6 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div id="collapsePAD" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                        
                                         <div class="form-group">
                                         <label class="control-label col-sm-2" for="padenc_enable">Enable:</label>
                                                 <div class="col-sm-3">
@@ -308,15 +298,13 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                                 <option value="58">58</option>
                                                         </select>
                                                 </div>
-                                                
                                         </div>
-                                        
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_slide_sleeping">Slide sleeping (seconds):</label>
                                                 <div class="col-sm-3">
                                                         <input type="text" class="form-control" id="padenc_slide_sleeping" placeholder="Enter delay in seconds">
                                                 </div>
-                                                
+
                                                 <label class="control-label col-sm-2" for="padenc_slide_once">Remove slide</label>
                                                 <div class="col-sm-3">
                                                         <select type="select" class="form-control" id="padenc_slide_once">
@@ -324,15 +312,15 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                                 <option value="false">false</option>
                                                         </select>
                                                 </div>
-                                                
+
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
                                                 <div class="col-sm-3">
                                                         <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
                                                 </div>
-                                                
+
                                                 <label class="control-label col-sm-2" for="padenc_raw_dls">Raw DLS:</label>
                                                 <div class="col-sm-3">
                                                         <select type="select" class="form-control" id="padenc_raw_dls">
@@ -341,7 +329,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         </select>
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_pad_fifo_file">PAD fifo file:</label>
                                                 <div class="col-sm-3">
@@ -349,16 +337,40 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                 </div>
                                         </div>
                                         <div class="form-group">
-                                                <label class="control-label col-sm-2" for="padenc_dls_fifo_file">DLS fifo file:</label>
+                                                <label class="control-label col-sm-2" for="padenc_dls_fifo_file">DLS file:</label>
                                                 <div class="col-sm-3">
-                                                        <input type="text" class="form-control" id="padenc_dls_fifo_file" placeholder="Enter dls fifo file">
+                                                        <input type="text" class="form-control" id="padenc_dls_fifo_file" placeholder="Enter dls file">
                                                 </div>
                                         </div>
-                                        
+                                        <hr />
+                                        <h4>Uniform PAD</h4>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_uniform">enable:</label>
+                                                <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="padenc_uniform">
+                                                                <option value="true">true</option>
+                                                                <option value="false">false</option>
+                                                        </select>
+                                                </div>
+                                                <label class="control-label col-sm-2" for="padenc_uniform_label">label:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_uniform_label" placeholder="default:12" data-toggle="tooltip" data-placement="top" title="Wait DUR seconds between each label (if more than one file used)">
+                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_uniform_init_burst">uniform_init_burst:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_uniform_init_burst" placeholder="default: 12" data-toggle="tooltip" data-placement="top" title="Sets a PAD burst amount to initially fill the output FIFO">
+                                                </div>
+                                                <label class="control-label col-sm-2" for="padenc_uniform_label_ins">label_ins:</label>
+                                                <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="padenc_uniform_label_ins" placeholder="default: 1200" data-toggle="tooltip" data-placement="top" title="Insert label every DUR milliseconds">
+                                                </div>
+                                        </div>
                                 </div>
                         </div>
                 </div>
-                
+
                 <div class="panel panel-default">
                         <div class="panel-heading">
                                 <h4 class="panel-title">
@@ -367,28 +379,28 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div id="collapseADVANCED" class="panel-collapse collapse">
                                 <div class="panel-body">
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_encoder_path">odr-audioenc path:</label>
                                                 <div class="col-sm-3">
                                                         <input type="text" class="form-control" id="path_encoder_path" placeholder="Enter odr-audioenc full path">
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_padenc_path">odr-padenc path:</label>
                                                 <div class="col-sm-3">
                                                         <input type="text" class="form-control" id="path_padenc_path" placeholder="Enter odr-audioenc full path">
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_sourcecompanion_path">odr-sourcecompanion path:</label>
                                                 <div class="col-sm-3">
                                                         <input type="text" class="form-control" id="path_sourcecompanion_path" placeholder="Enter odr-sourcecompanion full path">
                                                 </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_zmq_key_tmp_file">zmq tmp file:</label>
                                                 <div class="col-sm-3">
@@ -398,20 +410,16 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                         </div>
                 </div>
-                
+
                 <div>
                         <a href="#" class="btn btn-info" id="reload" data-toggle="tooltip" data-placement="top" title="Reload configuration from loaded configuration."><span class="glyphicon glyphicon-refresh"></span> Reload configuration</a>
                         <a href="#" class="btn btn-primary" id="save" data-toggle="tooltip" data-placement="top" title="Write configuration in configuration file."><span class="glyphicon glyphicon-save"></span> Write changes</a>
                 </div>
 
                 </form>
-                
-                
 
-                
-                
         </div>
-        
+
 </body>
 
 </html>

@@ -11,7 +11,7 @@ from cherrypy.lib.httputil import parse_query_string
 
 import urllib
 import os
-import xmlrpclib
+import xmlrpc.client
 
 from config import Config
 from auth import AuthController, require, is_login
@@ -41,16 +41,16 @@ class API():
         return """This is the api area."""
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def reboot(self):
         command = 'sudo /sbin/shutdown -r now'
         p_status = subprocess.call(command, shell=True)
 
-        cherrypy.response.headers["Content-Type"] = "application/json"
         if int(p_status) != 0:
-            return json.dumps({'status': '-299', 'statusText': 'Can not process reboot - %s ' % (int(p_status))})
+            return {'status': '-299', 'statusText': 'Can not process reboot - %s ' % (int(p_status))}
         else:
-            return json.dumps({'status': '0', 'statusText': 'Ok'})
+            return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
     @require()
@@ -67,6 +67,7 @@ class API():
         return result
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def restore(self, myFile):
         self.conf = Config(self.config_file)
@@ -91,7 +92,7 @@ class API():
             # Remove ZIP file
             try:
                 os.remove(localfile)
-            except Exception,e:
+            except Exception as e:
                 pass
 
             # Read tmp config.json file
@@ -101,35 +102,32 @@ class API():
             # Remove config.json file
             try:
                 os.remove('/tmp/config.json')
-            except Exception,e:
+            except Exception as e:
                 pass
 
             # Write configuration file
             try:
                 self.conf.write(output)
-            except Exception,e:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+            except Exception as e:
+                return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
             # Generate supervisor files
             try:
                 self.conf.generateSupervisorFiles(output)
-            except Exception,e:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)})
+            except Exception as e:
+                return {'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)}
 
             # Generate network files
             try:
                 self.conf.generateNetworkFiles(output)
-            except Exception,e:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-202', 'statusText': 'Error when writing network file' + str(e)})
+            except Exception as e:
+                return {'status': '-202', 'statusText': 'Error when writing network file' + str(e)}
 
 
             # Check if ODR program availaible in supervisor ProcessInfo and try to add it
 
             # Retreive supervisor process
-            server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+            server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
             programs = server.supervisor.getAllProcessInfo()
 
             # Check for ODR-audioencoder
@@ -138,8 +136,7 @@ class API():
                     server.supervisor.reloadConfig()
                     server.supervisor.addProcessGroup('ODR-audioencoder')
                 except:
-                    cherrypy.response.headers["Content-Type"] = "application/json"
-                    return json.dumps({'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)})
+                    return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
 
             # Check for ODR-padencoder
             if not self.is_program_exist(programs, 'ODR-padencoder'):
@@ -147,34 +144,30 @@ class API():
                     server.supervisor.reloadConfig()
                     server.supervisor.addProcessGroup('ODR-padencoder')
                 except:
-                    cherrypy.response.headers["Content-Type"] = "application/json"
-                    return json.dumps({'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)})
+                    return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
 
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '0', 'statusText': 'Ok'})
+            return {'status': '0', 'statusText': 'Ok'}
         else:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-200', 'statusText': 'Uploaded file is not a zip file'})
+            return {'status': '-200', 'statusText': 'Uploaded file is not a zip file'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getNetworkDNS(self, **params):
         self.conf = Config(self.config_file)
         query = parse_query_string(cherrypy.request.query_string)
-
         data = self.conf.config['global']['network']['dns']
-
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': data})
+        return {'status': '0', 'statusText': 'Ok', 'data': data}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def setNetworkDNS(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        param = json.loads(rawbody)
+        param = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
@@ -183,40 +176,35 @@ class API():
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
 
         # Generate network files
         try:
             self.conf.generateNetworkFiles(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing network file: ' + str(e)})
-
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing network file: ' + str(e)}
+        return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getNetworkNTP(self, **params):
         self.conf = Config(self.config_file)
         query = parse_query_string(cherrypy.request.query_string)
-
         data = self.conf.config['global']['network']['ntp']
-
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': data})
+        return {'status': '0', 'statusText': 'Ok', 'data': data}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def setNetworkNTP(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        param = json.loads(rawbody)
+        param = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
@@ -225,34 +213,31 @@ class API():
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
 
         # Generate network files
         try:
             self.conf.generateNetworkFiles(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing network file: ' + str(e)})
-
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing network file: ' + str(e)}
+        return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def restartNTP(self):
         command = 'sudo /bin/systemctl restart ntp'
         p_status = subprocess.call(command, shell=True)
 
-        cherrypy.response.headers["Content-Type"] = "application/json"
         if int(p_status) != 0:
-            return json.dumps({'status': '-299', 'statusText': 'Can not process restart - %s ' % (int(p_status))})
+            return {'status': '-299', 'statusText': 'Can not process restart - %s ' % (int(p_status))}
         else:
-            return json.dumps({'status': '0', 'statusText': 'Ok'})
+            return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getNetworkCards(self, **params):
         self.conf = Config(self.config_file)
@@ -266,18 +251,17 @@ class API():
         else:
             data = self.conf.config['global']['network']['cards']
 
-
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': data})
+        return {'status': '0', 'statusText': 'Ok', 'data': data}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def setNetworkCard(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        param = json.loads(rawbody)
+        param = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
@@ -290,87 +274,79 @@ class API():
                 output['global']['network']['cards'][i]['gateway'] = param['gateway']
                 change = True
         if not change:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Card not found: ' + str(e)})
+            return {'status': '-201', 'statusText': 'Card not found: ' + str(e)}
 
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
 
         # Generate network files
         try:
             self.conf.generateNetworkFiles(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-202', 'statusText': 'Error generating network files' + str(e)})
-
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        except Exception as e:
+            return {'status': '-202', 'statusText': 'Error generating network files' + str(e)}
+        return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getConfig(self):
         self.conf = Config(self.config_file)
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr']})
+        return {'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr']}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getAlsaDevices(self):
-        cherrypy.response.headers["Content-Type"] = "application/json"
         command = '/usr/bin/arecord -l'
         try:
-                output = subprocess.check_output(command,
-                                    shell=True,
-                                    stderr=subprocess.STDOUT)
+            output = subprocess.check_output(command,
+                                shell=True,
+                                stderr=subprocess.STDOUT)
         except:
-                return json.dumps({'status': '-200', 'statusText': 'Error listing alsa devices', 'data': ''})
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
+            return {'status': '-200', 'statusText': 'Error listing alsa devices', 'data': ''}
+        return {'status': '0', 'statusText': 'Ok', 'data': str(output.decode('UTF-8'))}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def setConfig(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        odr = json.loads(rawbody)
+        odr = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
 
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
         # Generate supervisor files
         try:
             self.conf.generateSupervisorFiles(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)})
+        except Exception as e:
+            return {'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)}
 
 
         # Check if ODR program availaible in supervisor ProcessInfo and try to add it
 
         # Retreive supervisor process
         try:
-            server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
-        except Exception,e:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)})
+            server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
+        except Exception as e:
+                return {'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)}
 
         try:
             programs = server.supervisor.getAllProcessInfo()
-        except Exception,e:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)})
+        except Exception as e:
+                return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
 
         # Check for ODR-audioencoder
         if not self.is_program_exist(programs, 'ODR-audioencoder'):
@@ -378,8 +354,7 @@ class API():
                 server.supervisor.reloadConfig()
                 server.supervisor.addProcessGroup('ODR-audioencoder')
             except:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)})
+                return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
 
         # Check for ODR-padencoder
         if not self.is_program_exist(programs, 'ODR-padencoder'):
@@ -387,11 +362,9 @@ class API():
                 server.supervisor.reloadConfig()
                 server.supervisor.addProcessGroup('ODR-padencoder')
             except:
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps({'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)})
+                return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
 
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        return {'status': '0', 'statusText': 'Ok'}
 
 
     @cherrypy.expose
@@ -430,7 +403,7 @@ class API():
                 try:
                     with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
                         outfile.write(query['dls'])
-                except Exception,e:
+                except Exception as e:
                     r = {'status': '-210', 'statusText': 'Fail to write dls data'}
                     cherrypy.response.status = 500
                     if 'output' in query and query['output'] == 'json':
@@ -466,7 +439,7 @@ class API():
                     try:
                         with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
                             outfile.write(data)
-                    except Exception,e:
+                    except Exception as e:
                         r = {'status': '-210', 'statusText': 'Fail to write dls data'}
                         cherrypy.response.status = 500
                         if 'output' in query and query['output'] == 'json':
@@ -513,11 +486,12 @@ class API():
 
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getDLS(self, **params):
         query = parse_query_string(cherrypy.request.query_string)
         self.conf = Config(self.config_file)
-        cherrypy.response.headers["Content-Type"] = "application/json"
+        #cherrypy.response.headers["Content-Type"] = "application/json"
 
         output = []
 
@@ -551,19 +525,18 @@ class API():
                                 }
                             dlplus_data.append( {'name': dlplusCode[int(d[0])], 'code': int(d[0]), 'start': int(d[1]), 'len': int(d[2])} )
                         dls = line.rstrip()
-            except Exception,e:
-                return json.dumps({'dls': 'Fail to read DLS data'})
+            except Exception as e:
+                return {'dls': 'Fail to read DLS data'}
             else:
                 if dlplus:
                     dlplus= {}
                     for d in dlplus_data:
                         dlplus[d['name']] = dls[d['start']:d['start']+d['len']+1]
-                    return json.dumps({'dls': str(dls), 'dlplus': dlplus})
+                    return {'dls': str(dls), 'dlplus': dlplus}
                 else:
-                    return json.dumps({'dls': str(dls)})
+                    return {'dls': str(dls)}
         else:
-            return json.dumps({'dls': 'DLS is disable'})
-        #return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
+            return {'dls': 'DLS is disable'}
 
     def is_program_exist(self, json, program):
         ex = False
@@ -573,24 +546,25 @@ class API():
         return ex
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getUser(self):
         self.conf = Config(self.config_file)
-        cherrypy.response.headers["Content-Type"] = "application/json"
         users = self.conf.config['auth']['users']
         data = []
         for u in users :
             data.append( {'username': u['username']} )
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': data})
+        return {'status': '0', 'statusText': 'Ok', 'data': data}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def addUser(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        param = json.loads(rawbody)
+        param = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
@@ -601,57 +575,53 @@ class API():
         if not userexist:
             output['auth']['users'].append({'username': param['username'], 'password': hashlib.md5(param['password']).hexdigest()});
         else:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'User already exist'})
+            return {'status': '-201', 'statusText': 'User already exist'}
 
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def setPasswd(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        param = json.loads(rawbody)
+        param = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
-        change = None    
+        change = None
         for i,value in enumerate(output['auth']['users']):
             if value['username'] == param['username']:
-                output['auth']['users'][i]['password'] = hashlib.md5(param['password']).hexdigest()
+                output['auth']['users'][i]['password'] = hashlib.md5(param['password'].encode('utf-8')).hexdigest()
                 change = True
         if not change:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'User not found: ' + str(e)})
+            return {'status': '-201', 'statusText': 'User not found: ' + str(e)}
 
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def delUser(self):
         self.conf = Config(self.config_file)
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        param = json.loads(rawbody)
+        param = json.loads(rawbody.decode('utf-8'))
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
@@ -661,47 +631,44 @@ class API():
                 output['auth']['users'].pop(i)
                 change = True
         if not change:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'User not found: ' + str(e)})
+            return {'status': '-201', 'statusText': 'User not found: ' + str(e)}
 
         # Write configuration file
         try:
             self.conf.write(output)
-        except Exception,e:
-            cherrypy.response.headers["Content-Type"] = "application/json"
-            return json.dumps({'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)})
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        return json.dumps({'status': '0', 'statusText': 'Ok'})
+        return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def getStatus(self):
         self.conf = Config(self.config_file)
-        cherrypy.response.headers["Content-Type"] = "application/json"
-        server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+        server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         output = []
 
         try:
             output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
             output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
-        except Exception,e:
-            return json.dumps({'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): ' + str(e)})
+        except Exception as e:
+            return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): ' + str(e)}
 
         if 'supervisor_additional_processes' in self.conf.config['global']:
             try:
                 for proc in self.conf.config['global']['supervisor_additional_processes']:
                     output.append( server.supervisor.getProcessInfo(proc) )
-            except Exception,e:
-                return json.dumps({'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): ' + str(e)})
+            except Exception as e:
+                return {'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): ' + str(e)}
 
-        return json.dumps({'status': '0', 'statusText': 'Ok', 'data': output})
+        return {'status': '0', 'statusText': 'Ok', 'data': output}
 
 
     def serviceAction(self, action, service):
         self.conf = Config(self.config_file)
 
-        server = xmlrpclib.Server(self.conf.config['global']['supervisor_xmlrpc'])
+        server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         try:
             if action == 'start':
                 server.supervisor.reloadConfig()
@@ -721,40 +688,37 @@ class API():
                 server.supervisor.addProcessGroup(service)
                 server.supervisor.reloadConfig()
                 #server.supervisor.startProcess(service)
-        except Exception,e:
+        except Exception as e:
             return { 'status': '-401', 'statusText': str(e) }
         else:
             return { 'status': '0', 'statusText': 'Ok', 'data': [] }
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def start(self):
-        cherrypy.response.headers["Content-Type"] = "application/json"
-
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        data = odr = json.loads(rawbody)
+        data = odr = json.loads(rawbody.decode('utf-8'))
 
-        return json.dumps(self.serviceAction('start', data['service']))
+        return self.serviceAction('start', data['service'])
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def stop(self):
-        cherrypy.response.headers["Content-Type"] = "application/json"
-
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        data = odr = json.loads(rawbody)
+        data = odr = json.loads(rawbody.decode('utf-8'))
 
-        return json.dumps(self.serviceAction('stop', data['service']))
+        return self.serviceAction('stop', data['service'])
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     @require()
     def restart(self):
-        cherrypy.response.headers["Content-Type"] = "application/json"
-
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        data = odr = json.loads(rawbody)
+        data = odr = json.loads(rawbody.decode('utf-8'))
 
-        return json.dumps(self.serviceAction('restart', data['service']))
+        return self.serviceAction('restart', data['service'])

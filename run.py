@@ -89,7 +89,7 @@ class Root():
                 return tmpl.render(tab='user', js=js, is_login=is_login(), is_network=is_network(self.config_file))
 
 def signal_handler(signal, frame):
-    print 'Exiting...'
+    print ( "Exiting..." )
     cherrypy.engine.exit()
     sys.exit(0)
 
@@ -101,9 +101,9 @@ if __name__ == '__main__':
 
         # Check if configuration exist and is readable
         if os.path.isfile(cli_args.config) and os.access(cli_args.config, os.R_OK):
-                print "Use configuration file %s" % (cli_args.config)
+                print ( "Use configuration file %s" % (cli_args.config) )
         else:
-                print "Configuration file is missing or is not readable - %s" % (cli_args.config)
+                print ( "Configuration file is missing or is not readable - %s" % (cli_args.config) )
                 sys.exit(1)
 
         # Load configuration
@@ -118,12 +118,12 @@ if __name__ == '__main__':
                 'server.socket_port': int(config.config['global']['port']),
                 'request.show_tracebacks' : True,
                 'environment': 'production',
-                'tools.sessions.on': True,
-                'tools.encode.on': True,
-                'tools.encode.encoding': "utf-8",
                 'log.access_file' : os.path.join(config.config['global']['logs_directory'], 'access.log'),
                 'log.error_file' : os.path.join(config.config['global']['logs_directory'], 'error.log'),
                 'log.screen': False,
+                'tools.sessions.on': True,
+                'tools.encode.on': True,
+                'tools.encode.encoding': "utf-8"
                 })
 
         cherrypy.tree.mount(
@@ -154,7 +154,6 @@ if __name__ == '__main__':
                 }
         )
 
-        #cherrypy.engine.signal_handler.handlers["SIGINT"] = handle_sigint
         signal.signal(signal.SIGINT, signal_handler)
         cherrypy.engine.start()
         #cherrypy.engine.block()

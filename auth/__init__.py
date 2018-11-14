@@ -6,7 +6,11 @@
 
 import json
 import cherrypy
-import urllib
+try:
+    from urllib import quote  # Python 2.X
+except ImportError:
+    from urllib.parse import quote  # Python 3+
+
 import hashlib
 
 from config import Config
@@ -17,13 +21,13 @@ env = Environment(loader=FileSystemLoader('templates'))
 SESSION_KEY = '_cp_username'
 
 def check_credentials(config_auth, username, password):
-	"""Verifies credentials for username and password.
-	Returns None on success or a string describing the error on failure"""
+    """Verifies credentials for username and password.
+    Returns None on success or a string describing the error on failure"""
 
-	for up in config_auth['users']:
-		if (up['username'] == username and up['password'] == password) or (up['username'] == username and up['password'] == hashlib.md5(password).hexdigest()):
-			return None
-	return u"Incorrect username or password."
+    for up in config_auth['users']:
+        if (up['username'] == username and up['password'] == password) or (up['username'] == username and up['password'] == hashlib.md5(password.encode('utf-8')).hexdigest()):
+            return None
+    return "Incorrect username or password."
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
@@ -31,7 +35,7 @@ def check_auth(*args, **kwargs):
     conditions that the user must fulfill"""
     conditions = cherrypy.request.config.get('auth.require', None)
     # format GET params
-    get_parmas = urllib.quote(cherrypy.request.request_line.split()[1])
+    get_parmas = quote(cherrypy.request.request_line.split()[1])
     if conditions is not None:
         username = cherrypy.session.get(SESSION_KEY)
         if username:
@@ -44,7 +48,7 @@ def check_auth(*args, **kwargs):
         else:
             # Send old page as from_page parameter
             raise cherrypy.HTTPRedirect("/auth/login?from_page=%s" %get_parmas)
-    
+
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 
 def require(*conditions):
@@ -60,13 +64,13 @@ def require(*conditions):
     return decorate
 
 def is_login():
-	sess = cherrypy.session
-	username = sess.get(SESSION_KEY, None)
-	if username:
-		return True
-	else:
-		return False
-	
+    sess = cherrypy.session
+    username = sess.get(SESSION_KEY, None)
+    if username:
+        return True
+    else:
+        return False
+        
 # Conditions are callables that return True
 # if the user fulfills the conditions they define, False otherwise
 #
@@ -109,49 +113,49 @@ def all_of(*conditions):
 # Controller to provide login and logout actions
 
 class AuthController(object):
-	def __init__(self, config_file):
-		self.config_file = config_file
-	
-	def on_login(self, username):
-		"""Called on successful login"""
-	
-	def on_logout(self, username):
-		"""Called on logout"""
-		
-	def get_loginform(self, username, msg="Enter login information", from_page="/"):
-		return """<html><body>
-			<form method="post" action="/auth/login">
-			<input type="hidden" name="from_page" value="%(from_page)s" />
-			%(msg)s<br />
-			Username: <input type="text" name="username" value="%(username)s" /><br />
-			Password: <input type="password" name="password" /><br />
-			<input type="submit" value="Log in" />
-		</body></html>""" % locals()
-	
-	@cherrypy.expose
-	def login(self, username=None, password=None, from_page="/"):
-		if username is None or password is None:
-			tmpl = env.get_template("login.html")
-			return tmpl.render(username="", msg="Enter login information", from_page=from_page)
-			#return self.get_loginform("", from_page=from_page)
-		
-		conf = Config(self.config_file)
-		error_msg = check_credentials(conf.config['auth'], username, password)
-		if error_msg:
-			tmpl = env.get_template("login.html")
-			return tmpl.render(username=username, msg=error_msg, from_page=from_page)
-			#return self.get_loginform(username, error_msg, from_page)
-		else:
-			cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
-			self.on_login(username)
-			raise cherrypy.HTTPRedirect(from_page or "/")
-	
-	@cherrypy.expose
-	def logout(self, from_page="/"):
-		sess = cherrypy.session
-		username = sess.get(SESSION_KEY, None)
-		sess[SESSION_KEY] = None
-		if username:
-			cherrypy.request.login = None
-			self.on_logout(username)
-		raise cherrypy.HTTPRedirect(from_page or "/")
+    def __init__(self, config_file):
+        self.config_file = config_file
+
+    def on_login(self, username):
+        """Called on successful login"""
+
+    def on_logout(self, username):
+        """Called on logout"""
+
+    def get_loginform(self, username, msg="Enter login information", from_page="/"):
+        return """<html><body>
+            <form method="post" action="/auth/login">
+            <input type="hidden" name="from_page" value="%(from_page)s" />
+            %(msg)s<br />
+            Username: <input type="text" name="username" value="%(username)s" /><br />
+            Password: <input type="password" name="password" /><br />
+            <input type="submit" value="Log in" />
+        </body></html>""" % locals()
+
+    @cherrypy.expose
+    def login(self, username=None, password=None, from_page="/"):
+        if username is None or password is None:
+            tmpl = env.get_template("login.html")
+            return tmpl.render(username="", msg="Enter login information", from_page=from_page)
+            #return self.get_loginform("", from_page=from_page)
+
+        conf = Config(self.config_file)
+        error_msg = check_credentials(conf.config['auth'], username, password)
+        if error_msg:
+            tmpl = env.get_template("login.html")
+            return tmpl.render(username=username, msg=error_msg, from_page=from_page)
+            #return self.get_loginform(username, error_msg, from_page)
+        else:
+            cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
+            self.on_login(username)
+            raise cherrypy.HTTPRedirect(from_page or "/")
+
+    @cherrypy.expose
+    def logout(self, from_page="/"):
+        sess = cherrypy.session
+        username = sess.get(SESSION_KEY, None)
+        sess[SESSION_KEY] = None
+        if username:
+            cherrypy.request.login = None
+            self.on_logout(username)
+        raise cherrypy.HTTPRedirect(from_page or "/")

@@ -314,7 +314,7 @@ $(function(){
             },
             success: function(data) {
                 if ( data['status'] == '0' ) {
-                    info = '<p>Specifying the device using parameter <b>hw:X,Y</b>, where X=card, Y=device</p><hr />'
+                    info = '<p>Specifying the device using parameter <b>plughw:X,Y</b>, where X=card, Y=device</p><hr />'
                     $('#InfoModal .modal-body').html(info+data['data'].replace(/\n/g,'<br />'))
                 } else {
                     $.gritter.add({

@@ -393,7 +393,7 @@ class API():
         if self.conf.config['odr']['padenc']['enable'] == 'true':
             # dls parameters is present and override all other
             if 'dls' in query:
-                if json.loads(self.getDLS())['dls'] == query['dls'] and 'dlplus' not in json.loads(self.getDLS()):
+                if self.getDLS()['dls'] == query['dls'] and 'dlplus' not in self.getDLS():
                     r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': query['dls']}
                     if 'output' in query and query['output'] == 'json':
                        cherrypy.response.headers["Content-Type"] = "application/json"
@@ -420,7 +420,7 @@ class API():
                        return r['statusText']
             # dls is not present and artist and title are available
             elif ('artist' in query) and ('title' in query):
-                if 'dlplus' in json.loads(self.getDLS()) and json.loads(self.getDLS())['dlplus']['artist'] == query['artist'] and json.loads(self.getDLS())['dlplus']['title'] == query['title']:
+                if 'dlplus' in self.getDLS() and self.getDLS()['dlplus']['artist'] == query['artist'] and self.getDLS()['dlplus']['title'] == query['title']:
                     r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': { 'artist': query['artist'], 'title': query['title']}}
                     if 'output' in query and query['output'] == 'json':
                        cherrypy.response.headers["Content-Type"] = "application/json"

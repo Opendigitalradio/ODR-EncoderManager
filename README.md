@@ -1,10 +1,6 @@
 # ODR-EncoderManager
 OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder easly with a WebGUI.
 
-ODR-EncoderManager is currently in complet re-developpement in this branch and is not yet ready to use in production.
-
-![Screenshot] (https://raw.github.com/YoannQueret/ODR-EncoderManager/master/ODR-Encoder_Manager.png)
-
 # INSTALLATION
 
   * (root) Install requirement : apt install python-cherrypy3 python-jinja2 python-serial supervisor
@@ -33,7 +29,9 @@ password = pass ; Auth password
     * config.json
     * supervisor-gui.conf
   * If you want to change supervisor XMLRPC login/password, you need to edit /etc/supervisor/supervisord.conf and config.json files
-    
+
+# Note about Python2
+  * If you want to use python2, you need to run ''pip install future'' before to have xmlrpc.client support
 
 # ADVANCED
   * To use the reboot api (/api/reboot), you need to allow odr user to run shutdown command by adding the line bellow at the end of /etc/sudoers file :

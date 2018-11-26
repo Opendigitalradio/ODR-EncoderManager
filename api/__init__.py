@@ -121,13 +121,13 @@ class API():
             try:
                 self.conf.generateSupervisorFiles(output)
             except Exception as e:
-                return {'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)}
+                return {'status': '-202', 'statusText': 'Error generating supervisor files: ' + str(e)}
 
             # Generate network files
             try:
                 self.conf.generateNetworkFiles(output)
             except Exception as e:
-                return {'status': '-202', 'statusText': 'Error when writing network file' + str(e)}
+                return {'status': '-202', 'statusText': 'Error when writing network file: ' + str(e)}
 
 
             # Check if ODR program availaible in supervisor ProcessInfo and try to add it
@@ -338,7 +338,7 @@ class API():
         try:
             self.conf.generateSupervisorFiles(output)
         except Exception as e:
-            return {'status': '-202', 'statusText': 'Error generating supervisor files' + str(e)}
+            return {'status': '-202', 'statusText': 'Error generating supervisor files: ' + str(e)}
 
 
         # Check if ODR program availaible in supervisor ProcessInfo and try to add it

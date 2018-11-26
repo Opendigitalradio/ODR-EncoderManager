@@ -185,9 +185,21 @@ class Config():
                             command += ' --frame-dur=40'
                         elif config['odr']['output']['samplerate'] == '32000':
                             command += ' --frame-dur=60'
-                    command += ' --label=%s' % (config['odr']['padenc']['uniform_label'])
-                    command += ' --label-ins=%s' % (config['odr']['padenc']['uniform_label_ins'])
-                    command += ' --init-burst=%s' % (config['odr']['padenc']['uniform_init_burst'])
+
+                    if config['odr']['padenc']['uniform_label']:
+                        command += ' --label=%s' % (config['odr']['padenc']['uniform_label'])
+                    else:
+                        command += ' --label=12'
+
+                    if config['odr']['padenc']['uniform_label_ins']:
+                        command += ' --label-ins=%s' % (config['odr']['padenc']['uniform_label_ins'])
+                    else:
+                        command += ' --label-ins=12'
+
+                    if config['odr']['padenc']['uniform_init_burst']:
+                        command += ' --init-burst=%s' % (config['odr']['padenc']['uniform_init_burst'])
+                    else:
+                        command += ' --init-burst=1200'
 
             supervisorPadEncConfig = ""
             supervisorPadEncConfig += "[program:ODR-padencoder]\n"

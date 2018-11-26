@@ -679,7 +679,7 @@ class API():
     def start(self):
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        data = odr = json.loads(rawbody.decode('utf-8'))
+        data = json.loads(rawbody.decode('utf-8'))
 
         return self.serviceAction('start', data['service'])
 
@@ -689,7 +689,7 @@ class API():
     def stop(self):
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        data = odr = json.loads(rawbody.decode('utf-8'))
+        data = json.loads(rawbody.decode('utf-8'))
 
         return self.serviceAction('stop', data['service'])
 
@@ -699,6 +699,6 @@ class API():
     def restart(self):
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        data = odr = json.loads(rawbody.decode('utf-8'))
+        data = json.loads(rawbody.decode('utf-8'))
 
         return self.serviceAction('restart', data['service'])

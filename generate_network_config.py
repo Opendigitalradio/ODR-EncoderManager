@@ -18,17 +18,17 @@ if __name__ == '__main__':
     
     # Check if configuration exist and is readable
     if os.path.isfile(cli_args.config) and os.access(cli_args.config, os.R_OK):
-        print "Use configuration file %s" % (cli_args.config)
+        print("Use configuration file %s" % (cli_args.config))
     else:
-        print "Configuration file is missing or is not readable - %s" % (cli_args.config)
+        print("Configuration file is missing or is not readable - %s" % (cli_args.config))
         sys.exit(1)
-        
+
     # Load configuration
     config = Config(cli_args.config)
 
     # Generate network files
     try:
         config.generateNetworkFiles(config.config)
-    except Exception,e:
-        print 'Error generating network files', str(e)
+    except Exception as e:
+        print('Error generating network files', str(e))
 

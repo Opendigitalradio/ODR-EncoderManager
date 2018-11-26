@@ -30,9 +30,6 @@ password = pass ; Auth password
     * supervisor-gui.conf
   * If you want to change supervisor XMLRPC login/password, you need to edit `/etc/supervisor/supervisord.conf` and `config.json` files
 
-# Note about Python2
-  * If you want to use python2, you need to run `pip install future` before to have xmlrpc.client support
-
 # ADVANCED
   * To use the reboot api (/api/reboot), you need to allow odr user to run shutdown command by adding the line bellow at the end of /etc/sudoers file :
 ```

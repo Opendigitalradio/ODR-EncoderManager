@@ -11,7 +11,12 @@ from cherrypy.lib.httputil import parse_query_string
 
 import urllib
 import os
-import xmlrpc.client
+
+import sys
+if sys.version_info >= (3, 0):
+    from xmlrpc import client as xmlrpc_client
+else:
+    import xmlrpclib as xmlrpc_client
 
 from config import Config
 from auth import AuthController, require, is_login
@@ -128,7 +133,7 @@ class API():
             # Check if ODR program availaible in supervisor ProcessInfo and try to add it
 
             # Retreive supervisor process
-            server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
+            server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
             programs = server.supervisor.getAllProcessInfo()
 
             # Check for ODR-audioencoder
@@ -340,7 +345,7 @@ class API():
 
         # Retreive supervisor process
         try:
-            server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
+            server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         except Exception as e:
                 return {'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)}
 
@@ -621,7 +626,7 @@ class API():
     @require()
     def getStatus(self):
         self.conf = Config(self.config_file)
-        server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
+        server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         output = []
 
         try:
@@ -643,7 +648,7 @@ class API():
     def serviceAction(self, action, service):
         self.conf = Config(self.config_file)
 
-        server = xmlrpc.client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
+        server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         try:
             if action == 'start':
                 server.supervisor.reloadConfig()

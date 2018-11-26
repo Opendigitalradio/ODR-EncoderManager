@@ -38,6 +38,7 @@ class API():
 
     @cherrypy.expose
     def index(self):
+        cherrypy.response.headers['content-type'] = "text/plain"
         return """This is the api area."""
 
     @cherrypy.expose
@@ -385,9 +386,23 @@ class API():
             query = parse_query_string(cherrypy.request.query_string)
 
         else:
-            r = {'status': '-216', 'statusText': 'Only HTTP POST or GET are available'}
             cherrypy.response.status = 400
-            return r['statusText']
+            # it's impossible to use build_response here, because
+            # with an invalid request, the `output` parameter is
+            # also considered invalid.
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Only HTTP POST or GET are available"
+
+        def build_response(r):
+            """Helper function to choose between plain text and JSON
+            response. `r` shall be a dictionary.
+            """
+            if 'output' in query and query['output'] == 'json':
+                cherrypy.response.headers['content-type'] = "application/json"
+                return json.dumps(r).encode()
+            else:
+                cherrypy.response.headers['content-type'] = "text/plain"
+                return r['statusText']
 
         # DLS (odr-padenc process) is enable
         if self.conf.config['odr']['padenc']['enable'] == 'true':
@@ -395,38 +410,25 @@ class API():
             if 'dls' in query:
                 if self.getDLS()['dls'] == query['dls'] and 'dlplus' not in self.getDLS():
                     r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': query['dls']}
-                    if 'output' in query and query['output'] == 'json':
-                       cherrypy.response.headers["Content-Type"] = "application/json"
-                       return json.dumps(r)
-                    else:
-                       return r['statusText']
+                    return build_response(r)
+
                 try:
                     with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
                         outfile.write(query['dls'])
                 except Exception as e:
                     r = {'status': '-210', 'statusText': 'Fail to write dls data'}
                     cherrypy.response.status = 500
-                    if 'output' in query and query['output'] == 'json':
-                        cherrypy.response.headers["Content-Type"] = "application/json"
-                        return json.dumps(r)
-                    else:
-                        return r['statusText']
+                    return build_response(r)
                 else:
                     r = {'status': '0', 'statusText': 'Ok', 'dls': query['dls']}
-                    if 'output' in query and query['output'] == 'json':
-                       cherrypy.response.headers["Content-Type"] = "application/json"
-                       return json.dumps(r)
-                    else:
-                       return r['statusText']
+                    return build_response(r)
+
             # dls is not present and artist and title are available
             elif ('artist' in query) and ('title' in query):
                 if 'dlplus' in self.getDLS() and self.getDLS()['dlplus']['artist'] == query['artist'] and self.getDLS()['dlplus']['title'] == query['title']:
                     r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': { 'artist': query['artist'], 'title': query['title']}}
-                    if 'output' in query and query['output'] == 'json':
-                       cherrypy.response.headers["Content-Type"] = "application/json"
-                       return json.dumps(r)
-                    else:
-                       return r['statusText']
+                    return build_response(r)
+
                 if (query['artist'] != '') and (query['title'] != ''):
                     data  = '##### parameters { #####\n'
                     data += 'DL_PLUS=1\n'
@@ -442,46 +444,26 @@ class API():
                     except Exception as e:
                         r = {'status': '-210', 'statusText': 'Fail to write dls data'}
                         cherrypy.response.status = 500
-                        if 'output' in query and query['output'] == 'json':
-                            cherrypy.response.headers["Content-Type"] = "application/json"
-                            return json.dumps(r)
-                        else:
-                            return r['statusText']
+                        return build_response(r)
                     else:
                         r = {'status': '0', 'statusText': 'Ok', 'dls': { 'artist': query['artist'], 'title': query['title']} }
-                        if 'output' in query and query['output'] == 'json':
-                            cherrypy.response.headers["Content-Type"] = "application/json"
-                            return json.dumps(r)
-                        else:
-                            return r['statusText']
+                        return build_response(r)
                 else:
                     r = {'status': '-215', 'statusText': 'Error, artist or title are blank'}
                     cherrypy.response.status = 422
-                    if 'output' in query and query['output'] == 'json':
-                        cherrypy.response.headers["Content-Type"] = "application/json"
-                        return json.dumps(r)
-                    else:
-                        return r['statusText']
+                    return build_response(r)
 
             # no needed parameters available
             else:
                 r = {'status': '-209', 'statusText': 'Error, you need to use dls or artist + title parameters'}
                 cherrypy.response.status = 400
-                if 'output' in query and query['output'] == 'json':
-                    cherrypy.response.headers["Content-Type"] = "application/json"
-                    return json.dumps(r)
-                else:
-                    return r['statusText']
+                return build_response(r)
 
         # DLS (odr-padenc process) is disable
         else:
             r = {'status': '-208', 'statusTest': 'DLS is disable'}
             cherrypy.response.status = 422
-            if 'output' in query and query['output'] == 'json':
-                cherrypy.response.headers["Content-Type"] = "application/json"
-                return json.dumps(r)
-            else:
-                return r['statusText']
+            return build_response(r)
 
 
 

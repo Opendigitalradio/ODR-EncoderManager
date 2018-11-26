@@ -20,6 +20,7 @@
 // 
 
 function requestStatus(callback) {
+    console.log('request status loaded')
     $('#status > tbody').empty();
 
     $.ajax({
@@ -112,7 +113,7 @@ function requestDLS(callback) {
         }
     });
     setTimeout(function(){
-        requestDLS();},500);
+        requestDLS();},2000);
 }
 
 function sleep(delay) {
@@ -138,6 +139,8 @@ function serviceAction(action, service) {
                 image: '/fonts/warning.png',
                 sticky: true,
             });
+            sleep(1000);
+            requestStatus();
         },
         success: function(data) {
             if (data['status'] != '0') {
@@ -154,6 +157,8 @@ function serviceAction(action, service) {
                     text: 'Ok',
                 });
             }
+            sleep(1000);
+            requestStatus();
         }
     });
 }
@@ -164,35 +169,21 @@ $(function(){
 
     $('#refresh').click(function() {
         requestStatus();
-        $.gritter.add({
-                    title: 'Services status refresh',
-                    image: '/fonts/accept.png',
-                    text: 'Ok',
-                });
     });
 
     $('#status tbody').on( 'click', '#service_start', function () {
         service = $(this).parents('tr').find("td:first").html();
         serviceAction('start', service);
-
-        sleep(1000);
-        requestStatus();
     });
 
     $('#status tbody').on( 'click', '#service_restart', function () {
         service = $(this).parents('tr').find("td:first").html();
         serviceAction('restart', service);
-
-        sleep(1000);
-        requestStatus();
     });
 
     $('#status tbody').on( 'click', '#service_stop', function () {
         service = $(this).parents('tr').find("td:first").html();
         serviceAction('stop', service);
-
-        sleep(1000);
-        requestStatus();
     });
 
     $('#service_stop_all').click(function() {
@@ -202,9 +193,6 @@ $(function(){
                 service = $(this).find("td:first").html();
                 serviceAction('stop', service);
             });
-
-            sleep(1000);
-            requestStatus();
         }
     });
 
@@ -215,9 +203,6 @@ $(function(){
                 service = $(this).find("td:first").html();
                 serviceAction('start', service);
             });
-
-            sleep(1000);
-            requestStatus();
         }
     });
 
@@ -228,9 +213,6 @@ $(function(){
                 service = $(this).find("td:first").html();
                 serviceAction('restart', service);
             });
-
-            sleep(1000);
-            requestStatus();
         }
     });
 

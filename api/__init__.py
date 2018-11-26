@@ -266,7 +266,7 @@ class API():
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
-        change = None    
+        change = False
         for i,value in enumerate(output['global']['network']['cards']):
             if value['card'] == param['card']:
                 output['global']['network']['cards'][i]['dhcp'] = param['dhcp']
@@ -518,14 +518,10 @@ class API():
                 else:
                     return {'dls': str(dls)}
         else:
-            return {'dls': 'DLS is disable'}
+            return {'dls': 'DLS is disabled'}
 
     def is_program_exist(self, json, program):
-        ex = False
-        for p in json:
-            if p['name'] == program :
-                ex = True
-        return ex
+        return any(p['name'] == program for p in json)
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -534,7 +530,7 @@ class API():
         self.conf = Config(self.config_file)
         users = self.conf.config['auth']['users']
         data = []
-        for u in users :
+        for u in users:
             data.append( {'username': u['username']} )
         return {'status': '0', 'statusText': 'Ok', 'data': data}
 
@@ -550,14 +546,11 @@ class API():
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
-        userexist = None    
-        for i,value in enumerate(output['auth']['users']):
-            if value['username'] == param['username']:
-                userexist = True
-        if not userexist:
+        user_exists = any(u['username'] == param['username'] for u in output['auth']['users'])
+        if not user_exists:
             output['auth']['users'].append({'username': param['username'], 'password': hashlib.md5(param['password']).hexdigest()});
         else:
-            return {'status': '-201', 'statusText': 'User already exist'}
+            return {'status': '-201', 'statusText': 'User already exists'}
 
         # Write configuration file
         try:
@@ -579,13 +572,13 @@ class API():
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
-        change = None
+        change = False
         for i,value in enumerate(output['auth']['users']):
             if value['username'] == param['username']:
                 output['auth']['users'][i]['password'] = hashlib.md5(param['password'].encode('utf-8')).hexdigest()
                 change = True
         if not change:
-            return {'status': '-201', 'statusText': 'User not found: ' + str(e)}
+            return {'status': '-201', 'statusText': 'User not found: {}'.format(param['username'])}
 
         # Write configuration file
         try:
@@ -607,19 +600,19 @@ class API():
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
 
-        change = None    
+        change = False
         for i,value in enumerate(output['auth']['users']):
             if value['username'] == param['username']:
                 output['auth']['users'].pop(i)
                 change = True
         if not change:
-            return {'status': '-201', 'statusText': 'User not found: ' + str(e)}
+            return {'status': '-201', 'statusText': 'User not found: {}'.format(param['username'])}
 
         # Write configuration file
         try:
             self.conf.write(output)
         except Exception as e:
-            return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: {}'.format(e)}
 
         return {'status': '0', 'statusText': 'Ok'}
 
@@ -635,14 +628,14 @@ class API():
             output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
             output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
         except Exception as e:
-            return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): ' + str(e)}
+            return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): {}'.format(e)}
 
         if 'supervisor_additional_processes' in self.conf.config['global']:
             try:
                 for proc in self.conf.config['global']['supervisor_additional_processes']:
                     output.append( server.supervisor.getProcessInfo(proc) )
             except Exception as e:
-                return {'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): ' + str(e)}
+                return {'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): {}'.format(e)}
 
         return {'status': '0', 'statusText': 'Ok', 'data': output}
 

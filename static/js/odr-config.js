@@ -200,6 +200,8 @@ function setEnableDisable(){
             $('#output_dabp_afterburner').prop('disabled', true);
             $('#output_dab_dabmode').prop('disabled', false);
             $('#output_dab_dabpsy').prop('disabled', false);
+            $("#output_samplerate option").filter( "[value='48000'], [value='24000']" ).prop('disabled', false);
+            $("#output_samplerate option").filter( "[value='32000']" ).prop('disabled', true);
         }
         if ($('#output_type').val() == 'dabp') {
             $('#output_dabp_sbr').prop('disabled', false);
@@ -207,6 +209,8 @@ function setEnableDisable(){
             $('#output_dabp_afterburner').prop('disabled', false);
             $('#output_dab_dabmode').prop('disabled', true);
             $('#output_dab_dabpsy').prop('disabled', true);
+            $("#output_samplerate option").filter( "[value='48000'], [value='32000']" ).prop('disabled', false);
+            $("#output_samplerate option").filter( "[value='24000']" ).prop('disabled', true);
         }
     }
 

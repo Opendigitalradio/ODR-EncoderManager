@@ -172,6 +172,7 @@ class Config():
 
             # UNIFORM
             if config['odr']['padenc']['uniform'] == 'true':
+                # DAB+
                 if config['odr']['output']['type'] == 'dabp':
                     if config['odr']['output']['dabp_sbr'] == 'false':
                         # AAC_LC
@@ -186,20 +187,29 @@ class Config():
                         elif config['odr']['output']['samplerate'] == '32000':
                             command += ' --frame-dur=60'
 
-                    if config['odr']['padenc']['uniform_label']:
-                        command += ' --label=%s' % (config['odr']['padenc']['uniform_label'])
-                    else:
-                        command += ' --label=12'
+                # DAB
+                if config['odr']['output']['type'] == 'dab':
+                    if config['odr']['output']['samplerate'] == '48000':
+                        command += ' --frame-dur=24'
+                    elif config['odr']['output']['samplerate'] == '24000':
+                        command += ' --frame-dur=48'
 
-                    if config['odr']['padenc']['uniform_label_ins']:
-                        command += ' --label-ins=%s' % (config['odr']['padenc']['uniform_label_ins'])
-                    else:
-                        command += ' --label-ins=12'
+                # DAB+ / DAB Common
+                if config['odr']['padenc']['uniform_label']:
+                    command += ' --label=%s' % (config['odr']['padenc']['uniform_label'])
+                else:
+                    command += ' --label=12'
 
-                    if config['odr']['padenc']['uniform_init_burst']:
-                        command += ' --init-burst=%s' % (config['odr']['padenc']['uniform_init_burst'])
-                    else:
-                        command += ' --init-burst=1200'
+                if config['odr']['padenc']['uniform_label_ins']:
+                    command += ' --label-ins=%s' % (config['odr']['padenc']['uniform_label_ins'])
+                else:
+                    command += ' --label-ins=12'
+
+                if config['odr']['padenc']['uniform_init_burst']:
+                    command += ' --init-burst=%s' % (config['odr']['padenc']['uniform_init_burst'])
+                else:
+                    command += ' --init-burst=1200'
+
 
             supervisorPadEncConfig = ""
             supervisorPadEncConfig += "[program:ODR-padencoder]\n"

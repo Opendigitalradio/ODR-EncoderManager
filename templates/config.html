@@ -294,19 +294,13 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 
                                                 <label class="control-label col-sm-2" for="padenc_pad">pad:</label>
                                                 <div class="col-sm-3">
-                                                        <select type="select" class="form-control" id="padenc_pad">
-                                                                <option value="23">23</option>
-                                                                <option value="26">26</option>
-                                                                <option value="34">34</option>
-                                                                <option value="42">42</option>
-                                                                <option value="58">58</option>
-                                                        </select>
+                                                        <input type="text" class="form-control" id="padenc_pad" placeholder="default: 34" data-toggle="tooltip" data-placement="top" title="PAD length in bytes. Possible values: 6 (short X-PAD), 8 to 196 (variable size X-PAD)">
                                                 </div>
                                         </div>
                                         <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_slide_sleeping">Slide sleeping (seconds):</label>
                                                 <div class="col-sm-3">
-                                                        <input type="text" class="form-control" id="padenc_slide_sleeping" placeholder="Enter delay in seconds">
+                                                        <input type="text" class="form-control" id="padenc_slide_sleeping" placeholder="default: 10" data-toggle="tooltip" data-placement="top" title="Wait DUR seconds between each slide">
                                                 </div>
 
                                                 <label class="control-label col-sm-2" for="padenc_slide_once">Remove slide</label>
@@ -327,7 +321,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 
                                                 <label class="control-label col-sm-2" for="padenc_raw_dls">Raw DLS:</label>
                                                 <div class="col-sm-3">
-                                                        <select type="select" class="form-control" id="padenc_raw_dls">
+                                                        <select type="select" class="form-control" id="padenc_raw_dls" data-toggle="tooltip" data-placement="top" title="If set to true, do not convert DLS texts to Complete EBU Latin based repertoire character set encoding.">
                                                                 <option value="true">true</option>
                                                                 <option value="false">false</option>
                                                         </select>

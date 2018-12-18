@@ -162,8 +162,14 @@ class Config():
                     #File %s is not a fifo file
                     pass
 
-            command += ' --sleep=%s' % (config['odr']['padenc']['slide_sleeping'])
-            command += ' --pad=%s' % (config['odr']['padenc']['pad'])
+            if config['odr']['padenc']['slide_sleeping']:
+                command += ' --sleep=%s' % (config['odr']['padenc']['slide_sleeping'])
+            else:
+                command += ' --sleep=10'
+            if config['odr']['padenc']['pad']:
+                command += ' --pad=%s' % (config['odr']['padenc']['pad'])
+            else:
+                command += ' --pad=34'
             command += ' --dls=%s' % (config['odr']['padenc']['dls_fifo_file'])
             command += ' --output=%s' % (config['odr']['padenc']['pad_fifo_file'])
 

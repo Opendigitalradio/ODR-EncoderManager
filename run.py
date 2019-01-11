@@ -132,15 +132,24 @@ if __name__ == '__main__':
                 },
             '/css': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"css/")
+                'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"css/"),
+                'tools.gzip.on'       : True,
+                'tools.expires.on'    : True,
+                'tools.expires.secs'  : 0
                 },
             '/js': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"js/")
+                'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"js/"),
+                'tools.gzip.on'       : True,
+                'tools.expires.on'    : True,
+                'tools.expires.secs'  : 0
                 },
             '/fonts': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"fonts/")
+                'tools.staticdir.dir': os.path.join(config.config['global']['static_directory'], u"fonts/"),
+                'tools.gzip.on'       : True,
+                'tools.expires.on'    : True,
+                'tools.expires.secs'  : 0
                 },
             '/favicon.ico': {
                 'tools.staticfile.on': True,

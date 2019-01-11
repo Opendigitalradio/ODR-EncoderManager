@@ -140,6 +140,7 @@ class Config():
                 try:
                     f = open(config['odr']['padenc']['dls_fifo_file'], 'w')
                     f.close()
+                    os.chmod(config['odr']['padenc']['dls_fifo_file'], 0o775)
                 except Exception as e:
                     raise ValueError('Error when create DLS fifo file: {}'.format(e))
 

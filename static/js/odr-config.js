@@ -42,6 +42,10 @@ function requestConfiguration(callback) {
                         $.each( section_val, function( param_key, param_val ) {
                             form_key = section_key + '_' + param_key
 
+                            // -- To keep compatibility
+                            if ( form_key == 'padenc_pad_fifo_file') { form_key='padenc_pad_fifo' }
+                            if ( form_key == 'padenc_dls_fifo_file') { form_key='padenc_dls_file' }
+
                             if ( $('#'+form_key).prop('tagName') == 'INPUT' ) {
                                 $('#'+form_key).val(param_val);
                             }
@@ -129,8 +133,8 @@ function setConfiguration(callback) {
          "padenc" : {
                      "enable": $('#padenc_enable').val(),
                      "pad": $('#padenc_pad').val(),
-                     "pad_fifo_file": $('#padenc_pad_fifo_file').val(),
-                     "dls_fifo_file": $('#padenc_dls_fifo_file').val(),
+                     "pad_fifo": $('#padenc_pad_fifo').val(),
+                     "dls_file": $('#padenc_dls_file').val(),
                      "slide_directory": $('#padenc_slide_directory').val(),
                      "slide_sleeping": $('#padenc_slide_sleeping').val(),
                      "slide_once": $('#padenc_slide_once').val(),

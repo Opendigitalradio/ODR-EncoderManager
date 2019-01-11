@@ -135,24 +135,24 @@ class Config():
                     if config['odr']['padenc']['slide_once'] == 'true':
                         command += ' --erase'
 
-            # Check if config.mot_dls_fifo_file exist and create it if needed.
-            if not os.path.isfile(config['odr']['padenc']['dls_fifo_file']):
+            # Check if config.mot_dls_file exist and create it if needed.
+            if not os.path.isfile(config['odr']['padenc']['dls_file']):
                 try:
-                    f = open(config['odr']['padenc']['dls_fifo_file'], 'w')
+                    f = open(config['odr']['padenc']['dls_file'], 'w')
                     f.close()
-                    os.chmod(config['odr']['padenc']['dls_fifo_file'], 0o775)
+                    os.chmod(config['odr']['padenc']['dls_file'], 0o775)
                 except Exception as e:
-                    raise ValueError('Error when create DLS fifo file: {}'.format(e))
+                    raise ValueError('Error when create DLS file: {}'.format(e))
 
-            # Check if config.mot_pad_fifo_file exist and create it if needed.
-            if not os.path.exists(config['odr']['padenc']['pad_fifo_file']):
+            # Check if config.mot_pad_fifo exist and create it if needed.
+            if not os.path.exists(config['odr']['padenc']['pad_fifo']):
                 try:
-                    os.mkfifo(config['odr']['padenc']['pad_fifo_file'])
+                    os.mkfifo(config['odr']['padenc']['pad_fifo'])
                 except Exception as e:
-                    raise ValueError('Error when create PAD fifo file: {}'.format(e))
+                    raise ValueError('Error when create PAD fifo: {}'.format(e))
             else:
-                if not stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo_file']).st_mode):
-                    #File %s is not a fifo file
+                if not stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo']).st_mode):
+                    #File %s is not a fifo
                     pass
 
             if config['odr']['padenc']['slide_sleeping']:
@@ -163,8 +163,8 @@ class Config():
                 command += ' --pad=%s' % (config['odr']['padenc']['pad'])
             else:
                 command += ' --pad=34'
-            command += ' --dls=%s' % (config['odr']['padenc']['dls_fifo_file'])
-            command += ' --output=%s' % (config['odr']['padenc']['pad_fifo_file'])
+            command += ' --dls=%s' % (config['odr']['padenc']['dls_file'])
+            command += ' --output=%s' % (config['odr']['padenc']['pad_fifo'])
 
             if config['odr']['padenc']['raw_dls'] == 'true':
                 command += ' --raw-dls'
@@ -257,12 +257,12 @@ class Config():
 
         # PAD encoder
         if config['odr']['padenc']['enable'] == 'true':
-            if os.path.exists(config['odr']['padenc']['pad_fifo_file']) and stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo_file']).st_mode):
+            if os.path.exists(config['odr']['padenc']['pad_fifo']) and stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo']).st_mode):
                 command += ' --pad=%s' % (config['odr']['padenc']['pad'])
-                command += ' --pad-fifo=%s' % (config['odr']['padenc']['pad_fifo_file'])
+                command += ' --pad-fifo=%s' % (config['odr']['padenc']['pad_fifo'])
                 # Write icy-text only for stream input type
                 if config['odr']['source']['type'] == 'stream' :
-                    command += ' --write-icy-text=%s' % (config['odr']['padenc']['dls_fifo_file'])
+                    command += ' --write-icy-text=%s' % (config['odr']['padenc']['dls_file'])
 
         # AVT input type specific option
         if config['odr']['source']['type'] == 'avt':

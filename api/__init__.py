@@ -418,7 +418,7 @@ class API():
                     return build_response(r)
 
                 try:
-                    with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
+                    with codecs.open(self.conf.config['odr']['padenc']['dls_file'], 'w', 'utf-8') as outfile:
                         outfile.write(query['dls'])
                 except Exception as e:
                     r = {'status': '-210', 'statusText': 'Fail to write dls data'}
@@ -444,7 +444,7 @@ class API():
                     data += '##### parameters } #####\n'
                     data += '%s - %s\n' % (query['artist'], query['title'])
                     try:
-                        with codecs.open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'w', 'utf-8') as outfile:
+                        with codecs.open(self.conf.config['odr']['padenc']['dls_file'], 'w', 'utf-8') as outfile:
                             outfile.write(data)
                     except Exception as e:
                         r = {'status': '-210', 'statusText': 'Fail to write dls data'}
@@ -487,7 +487,7 @@ class API():
             dlplus=None
             dlplus_data=[]
             try:
-                with open(self.conf.config['odr']['padenc']['dls_fifo_file'], 'r') as f:
+                with open(self.conf.config['odr']['padenc']['dls_file'], 'r') as f:
                     for line in f:
                         if line.startswith('#'):
                             continue

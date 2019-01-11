@@ -142,14 +142,6 @@ class Config():
                     f.close()
                 except Exception as e:
                     raise ValueError('Error when create DLS fifo file: {}'.format(e))
-            else:
-                if config['odr']['source']['type'] == 'stream':
-                    try:
-                        f = open(config['odr']['padenc']['dls_fifo_file'], 'w')
-                        f.write('')
-                        f.close()
-                    except Exception as e:
-                        raise ValueError('Error when writing into DLS fifo file: {}'.format(e))
 
             # Check if config.mot_pad_fifo_file exist and create it if needed.
             if not os.path.exists(config['odr']['padenc']['pad_fifo_file']):

@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2015 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
 -->
 
 <!--
@@ -32,7 +32,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
         <div class="page-header">
             <h1>Network</h1>
         </div>
-        
+
         <form class="form-horizontal" role="form">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -50,9 +50,9 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                 </select>
                             </div>
                         </div>
-                        
+
                         <hr />
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="network_dhcp">Enable DHCP</label>
                             <div class="col-sm-3">
@@ -62,7 +62,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="network_ip">IPv4 address</label>
                             <div class="col-sm-3">
@@ -73,14 +73,14 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                 <input type="text" class="form-control" id="network_mask" disabled="disabled">
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="network_gateway">IPv4 gateway</label>
                             <div class="col-sm-3">
                                 <input type="text" class="form-control" id="network_gateway" disabled="disabled">
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
@@ -88,8 +88,8 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                 <button type="button" id="btn_reboot" class="btn btn-danger" data-toggle="modal" data-target="#confirm-reboot"><span class="glyphicon glyphicon-alert"></span> Reboot</button>
                             </div>
                         </div>
-                        
-                         <div class="form-group">
+
+                        <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-8">
                                 <div class="alert alert-warning">
@@ -101,7 +101,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </form>
-        
+
          <!-- Modal -->
         <div class="modal fade" id="confirm-reboot" role="dialog">
             <div class="modal-dialog modal-lg">
@@ -122,8 +122,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
             </div>
             </div>
         </div>
-        
-        
+
         <form class="form-horizontal" role="form">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -134,7 +133,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 <div id="collapseDNS" class="panel-collapse collapse in">
                     <div class="panel-body">
                         <p>Setup your DNS.</p>
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="network_dns_server">DNS Servers:</label>
                             <div class="col-sm-3">
@@ -148,9 +147,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div id="network_dns_servers">
                         </div>
-                        
-                        
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
@@ -173,7 +170,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 <div id="collapseNTP" class="panel-collapse collapse in">
                     <div class="panel-body">
                         <p>Setup your NTP.</p>
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="network_dns_server">NTP Servers:</label>
                             <div class="col-sm-3">
@@ -187,9 +184,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                         <div id="network_ntp_servers">
                         </div>
-                        
-                        
-                        
+
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
@@ -201,7 +196,6 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
             </div>
         </form>
-        
 
     </div>
 

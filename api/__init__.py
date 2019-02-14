@@ -1,8 +1,26 @@
-# -*- encoding: UTF-8 -*-
-#
-# Form based authentication for CherryPy. Requires the
-# Session tool to be loaded.
-#
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+"""
+
+"""
+This file is part of ODR-EncoderManager.
+
+ODR-EncoderManager is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ODR-EncoderManager is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import json
 import cherrypy
@@ -29,6 +47,8 @@ import shutil
 
 import hashlib
 import codecs
+
+import uuid
 
 class API():
 
@@ -115,19 +135,19 @@ class API():
             try:
                 self.conf.write(output)
             except Exception as e:
-                return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
+                return {'status': '-221', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
             # Generate supervisor files
             try:
                 self.conf.generateSupervisorFiles(output)
             except Exception as e:
-                return {'status': '-202', 'statusText': 'Error generating supervisor files: ' + str(e)}
+                return {'status': '-222', 'statusText': 'Error generating supervisor files: ' + str(e)}
 
             # Generate network files
             try:
                 self.conf.generateNetworkFiles(output)
             except Exception as e:
-                return {'status': '-202', 'statusText': 'Error when writing network file: ' + str(e)}
+                return {'status': '-222', 'statusText': 'Error when writing network file: ' + str(e)}
 
 
             # Check if ODR program availaible in supervisor ProcessInfo and try to add it
@@ -280,7 +300,85 @@ class API():
                 output['global']['network']['cards'][i]['gateway'] = param['gateway']
                 change = True
         if not change:
-            return {'status': '-201', 'statusText': 'Card not found: ' + str(e)}
+            return {'status': '-231', 'statusText': 'Card not found: ' + str(e)}
+
+        # Write configuration file
+        try:
+            self.conf.write(output)
+        except Exception as e:
+            return {'status': '-232', 'statusText': 'Error when writing configuration file: ' + str(e)}
+
+
+        # Generate network files
+        try:
+            self.conf.generateNetworkFiles(output)
+        except Exception as e:
+            return {'status': '-233', 'statusText': 'Error generating network files' + str(e)}
+        return {'status': '0', 'statusText': 'Ok'}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @require()
+    def getConfig(self, **params):
+        query = parse_query_string(cherrypy.request.query_string)
+        self.conf = Config(self.config_file)
+
+        if 'uniq_id' in query:
+            for data in self.conf.config['odr']:
+                if data['uniq_id'] == query['uniq_id']:
+                    return {'status': '0', 'statusText': 'Ok', 'data': data}
+            return {'status': '-299', 'statusText': 'coder not found', 'data': {}}
+        else:
+            return {'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr'][0]}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @require()
+    def getCoder(self):
+        query = parse_query_string(cherrypy.request.query_string)
+        self.conf = Config(self.config_file)
+
+        output = []
+        for data in self.conf.config['odr']:
+            output.append( {'name': data['name'], 'description': data['description'], 'uniq_id': data['uniq_id']} )
+
+        return {'status': '0', 'statusText': 'Ok', 'data': output}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @require()
+    def setCoder(self):
+        self.conf = Config(self.config_file)
+
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        param = json.loads(rawbody.decode('utf-8'))
+
+        odr = []
+        odr_to_remove = []
+
+        # Check for existing coder Name/Description change and remove
+        for data in self.conf.config['odr']:
+            coder_exist = None
+            for coder in param:
+                if data['uniq_id'] == coder['uniq_id']:
+                    coder_exist = True
+                    data['name'] = coder['name']
+                    data['description'] = coder['description']
+                    odr.append( data )
+            if not coder_exist:
+                odr_to_remove.append( data )
+
+        for coder in param:
+            ex = None
+            for data in self.conf.config['odr']:
+                if data['uniq_id'] == coder['uniq_id']:
+                    ex = True
+            if not ex:
+                coder['uniq_id'] = str(uuid.uuid4())
+                odr.append( coder )
+
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
 
         # Write configuration file
         try:
@@ -288,20 +386,61 @@ class API():
         except Exception as e:
             return {'status': '-201', 'statusText': 'Error when writing configuration file: ' + str(e)}
 
-
-        # Generate network files
+        # Generate supervisor files
         try:
-            self.conf.generateNetworkFiles(output)
+            self.conf.generateSupervisorFiles(output)
         except Exception as e:
-            return {'status': '-202', 'statusText': 'Error generating network files' + str(e)}
-        return {'status': '0', 'statusText': 'Ok'}
+            return {'status': '-202', 'statusText': 'Error generating supervisor files: ' + str(e)}
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    @require()
-    def getConfig(self):
-        self.conf = Config(self.config_file)
-        return {'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr']}
+        # Remove service
+        if len(odr_to_remove) >> 0:
+            try:
+                server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
+            except Exception as e:
+                    return {'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)}
+
+            try:
+                programs = server.supervisor.getAllProcessInfo()
+            except Exception as e:
+                    return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
+
+            for odr in odr_to_remove:
+                if all (k in odr for k in ("source","output","padenc","path")):
+                    # Remove DLS fifo / PAD file
+                    if os.path.exists(data['padenc']['dls_file']):
+                        try:
+                            os.remove(data['padenc']['dls_file'])
+                        except:
+                            pass
+                    if os.path.exists(data['padenc']['pad_fifo']):
+                        try:
+                            os.remove(data['padenc']['pad_fifo'])
+                        except:
+                            pass
+
+                    # Remove service ODR-audioencoder
+                    service = 'ODR-audioencoder-%s' % (odr['uniq_id'])
+                    if self.is_program_exist(programs, service):
+                        try:
+                            server.supervisor.stopProcess(service)
+                            server.supervisor.reloadConfig()
+                            server.supervisor.removeProcessGroup(service)
+                            server.supervisor.reloadConfig()
+                        except Exception as e:
+                            return {'status': '-206', 'statusText': 'Error when removing ODR-audioencoder (XMLRPC): ' + str(e)}
+
+                    # Remove service ODR-padencoder
+                    service = 'ODR-padencoder-%s' % (odr['uniq_id'])
+                    if self.is_program_exist(programs, service):
+                        try:
+                            server.supervisor.stopProcess(service)
+                            server.supervisor.reloadConfig()
+                            server.supervisor.removeProcessGroup(service)
+                            server.supervisor.reloadConfig()
+                        except Exception as e:
+                            return {'status': '-206', 'statusText': 'Error when removing ODR-padencoder (XMLRPC): ' + str(e)}
+
+        return {'status': '0', 'statusText': 'Ok', 'data': 'ok'}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -324,7 +463,48 @@ class API():
 
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
-        odr = json.loads(rawbody.decode('utf-8'))
+        param = json.loads(rawbody.decode('utf-8'))
+
+        # Remove PAD fifo & DLS file of changed
+        for data in self.conf.config['odr']:
+            if data['uniq_id'] == param['uniq_id']:
+                if all (k in data for k in ("source","output","padenc","path")):
+                    if data['padenc']['dls_file'] != param['padenc']['dls_file']:
+                        if os.path.exists(data['padenc']['dls_file']):
+                            try:
+                                os.remove(data['padenc']['dls_file'])
+                            except:
+                                pass
+                    if data['padenc']['pad_fifo'] != param['padenc']['pad_fifo']:
+                        if os.path.exists(data['padenc']['pad_fifo']):
+                            try:
+                                os.remove(data['padenc']['pad_fifo'])
+                            except:
+                                pass
+
+        # Check if PAD fifo & DLS file are already used by other encoder
+        for data in self.conf.config['odr']:
+            if data['uniq_id'] != param['uniq_id']:
+                if all (k in data for k in ("source","output","padenc","path")):
+                    if data['padenc']['pad_fifo'] == param['padenc']['pad_fifo']:
+                        return {'status': '-221', 'statusText': 'PAD Encoder > PAD fifo already used by encoder: ' + data['name']}
+                    if data['padenc']['dls_file'] == param['padenc']['dls_file']:
+                        return {'status': '-222', 'statusText': 'PAD Encoder > DLS file already used by encoder: ' + data['name']}
+                    if data['padenc']['slide_directory'] == param['padenc']['slide_directory']:
+                        return {'status': '-223', 'statusText': 'PAD Encoder > Slide directory already used by encoder: ' + data['name']}
+
+        # Merge change
+        odr = []
+        for data in self.conf.config['odr']:
+            if data['uniq_id'] == param['uniq_id']:
+                param['name'] = data['name']
+                param['uniq_id'] = data['uniq_id']
+                param['description'] = data['description']
+                if 'action' in param:
+                    param.pop('action')
+                odr.append( param )
+            else:
+                odr.append ( data )
 
         output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
 
@@ -342,7 +522,6 @@ class API():
 
 
         # Check if ODR program availaible in supervisor ProcessInfo and try to add it
-
         # Retreive supervisor process
         try:
             server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
@@ -355,18 +534,18 @@ class API():
                 return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
 
         # Check for ODR-audioencoder
-        if not self.is_program_exist(programs, 'ODR-audioencoder'):
+        if not self.is_program_exist(programs, 'ODR-audioencoder-%s' % (param['uniq_id'])):
             try:
                 server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup('ODR-audioencoder')
+                server.supervisor.addProcessGroup('ODR-audioencoder-%s' % (param['uniq_id']))
             except:
                 return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
 
         # Check for ODR-padencoder
-        if not self.is_program_exist(programs, 'ODR-padencoder'):
+        if not self.is_program_exist(programs, 'ODR-padencoder-%s'  % (param['uniq_id'])):
             try:
                 server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup('ODR-padencoder')
+                server.supervisor.addProcessGroup('ODR-padencoder-%s' % (param['uniq_id']))
             except:
                 return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
 
@@ -374,7 +553,7 @@ class API():
 
 
     @cherrypy.expose
-    def setDLS(self, dls=None, artist=None, title=None, output=None, **params):
+    def setDLS(self, dls=None, artist=None, title=None, output=None, uniq_id=None, **params):
         self.conf = Config(self.config_file)
 
         if cherrypy.request.method == 'POST':
@@ -386,6 +565,8 @@ class API():
                 query['title'] = title
             if output:
                 query['output'] = output
+            if uniq_id:
+                query['uniq_id'] = uniq_id
 
         elif cherrypy.request.method == 'GET':
             query = parse_query_string(cherrypy.request.query_string)
@@ -407,123 +588,172 @@ class API():
                 return json.dumps(r).encode()
             else:
                 cherrypy.response.headers['content-type'] = "text/plain"
-                return r['statusText']
-
-        # DLS (odr-padenc process) is enable
-        if self.conf.config['odr']['padenc']['enable'] == 'true':
-            # dls parameters is present and override all other
-            if 'dls' in query:
-                if self.getDLS()['dls'] == query['dls'] and 'dlplus' not in self.getDLS():
-                    r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': query['dls']}
-                    return build_response(r)
-
-                try:
-                    with codecs.open(self.conf.config['odr']['padenc']['dls_file'], 'w', 'utf-8') as outfile:
-                        outfile.write(query['dls'])
-                except Exception as e:
-                    r = {'status': '-210', 'statusText': 'Fail to write dls data'}
-                    cherrypy.response.status = 500
-                    return build_response(r)
+                if len(r) == 0:
+                    return 'no data updated'
                 else:
-                    r = {'status': '0', 'statusText': 'Ok', 'dls': query['dls']}
-                    return build_response(r)
+                    output = ''
+                    for o in r:
+                        output += '%s: %s\n' % (o['coder_name'], o['statusText'] )
+                    return output
 
-            # dls is not present and artist and title are available
-            elif ('artist' in query) and ('title' in query):
-                if 'dlplus' in self.getDLS() and self.getDLS()['dlplus']['artist'] == query['artist'] and self.getDLS()['dlplus']['title'] == query['title']:
-                    r = {'status': '0', 'statusText': 'Ok-oldegal', 'dls': { 'artist': query['artist'], 'title': query['title']}}
-                    return build_response(r)
+        def process_query(odr, query):
+            output = {}
+            output['coder_name'] = odr['name']
+            output['coder_uniq_id'] = odr['uniq_id']
+            output['coder_description'] = odr['description']
 
-                if (query['artist'] != '') and (query['title'] != ''):
-                    data  = '##### parameters { #####\n'
-                    data += 'DL_PLUS=1\n'
-                    data += '# this tags \"%s\" as ITEM.ARTIST\n' % (query['artist'])
-                    data += 'DL_PLUS_TAG=4 0 %s\n' % ( len(query['artist']) - 1 )
-                    data += '# this tags \"%s\" as ITEM.TITLE\n' % (query['title'])
-                    data += 'DL_PLUS_TAG=1 %s %s\n' % ( len(query['artist']) + 3 , len(query['title']) - 1 )
-                    data += '##### parameters } #####\n'
-                    data += '%s - %s\n' % (query['artist'], query['title'])
-                    try:
-                        with codecs.open(self.conf.config['odr']['padenc']['dls_file'], 'w', 'utf-8') as outfile:
-                            outfile.write(data)
-                    except Exception as e:
-                        r = {'status': '-210', 'statusText': 'Fail to write dls data'}
-                        cherrypy.response.status = 500
-                        return build_response(r)
+            if 'padenc' in odr:
+                # DLS (odr-padenc process) is enable
+                if odr['padenc']['enable'] == 'true':
+                    # dls parameters is present and override all other
+                    if 'dls' in query:
+                        if self.getDLS(output['coder_uniq_id'])['data'][0]['dls'] == query['dls'] and 'dlplus' not in self.getDLS(output['coder_uniq_id'])['data'][0]:
+                            output['status'] = 0
+                            output['statusText'] = 'Ok-oldegal'
+                            output['dls'] = query['dls']
+                            return output
+                        try:
+                            with codecs.open(odr['padenc']['dls_file'], 'w', 'utf-8') as outfile:
+                                outfile.write(query['dls'])
+                        except Exception as e:
+                            output['status'] = -210
+                            output['statusText'] = 'Fail to write dls data'
+                            return output
+                        else:
+                            output['status'] = 0
+                            output['statusText'] = 'Ok'
+                            output['dls'] = query['dls']
+                            return output
+
+                    # dls is not present and artist and title are available
+                    elif ('artist' in query) and ('title' in query):
+                        if 'dlplus' in self.getDLS(output['coder_uniq_id'])['data'][0] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['artist'] == query['artist'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['title'] == query['title']:
+                            output['status'] = 0
+                            output['statusText'] = 'Ok-oldegal'
+                            output['dlplus'] = {'artist': query['artist'], 'title': query['title']}
+                            return output
+
+                        if (query['artist'] != '') and (query['title'] != ''):
+                            data  = '##### parameters { #####\n'
+                            data += 'DL_PLUS=1\n'
+                            data += '# this tags \"%s\" as ITEM.ARTIST\n' % (query['artist'])
+                            data += 'DL_PLUS_TAG=4 0 %s\n' % ( len(query['artist']) - 1 )
+                            data += '# this tags \"%s\" as ITEM.TITLE\n' % (query['title'])
+                            data += 'DL_PLUS_TAG=1 %s %s\n' % ( len(query['artist']) + 3 , len(query['title']) - 1 )
+                            data += '##### parameters } #####\n'
+                            data += '%s - %s\n' % (query['artist'], query['title'])
+                            try:
+                                with codecs.open(odr['padenc']['dls_file'], 'w', 'utf-8') as outfile:
+                                    outfile.write(data)
+                            except Exception as e:
+                                output['status'] = -210
+                                output['statusText'] = 'Fail to write dls data'
+                                return output
+                            else:
+                                output['status'] = 0
+                                output['statusText'] = 'Ok'
+                                output['dlplus'] = {'artist': query['artist'], 'title': query['title']}
+                                return output
+                        else:
+                            output['status'] = -210
+                            output['statusText'] = 'artist or title are blank'
+                            return output
+
+                    # no needed parameters availablefor odr in self.conf.config['odr']:
                     else:
-                        r = {'status': '0', 'statusText': 'Ok', 'dls': { 'artist': query['artist'], 'title': query['title']} }
-                        return build_response(r)
+                        output['status'] = -209
+                        output['statusText'] = 'Error, you need to use dls or artist + title parameters'
+                        return output
+
+                # DLS (odr-padenc process) is disable
                 else:
-                    r = {'status': '-215', 'statusText': 'Error, artist or title are blank'}
-                    cherrypy.response.status = 422
-                    return build_response(r)
+                    output['status'] = -208
+                    output['statusText'] = 'PAD Encoder is disable'
+                    return output
 
-            # no needed parameters available
+            # padenc is not present in configuration / encoder is not configured.
             else:
-                r = {'status': '-209', 'statusText': 'Error, you need to use dls or artist + title parameters'}
-                cherrypy.response.status = 400
-                return build_response(r)
+                output['status'] = -211
+                output['statusText'] = 'Encoder is not configured'
+                return output
 
-        # DLS (odr-padenc process) is disable
+
+        output = []
+        if 'uniq_id' in query:
+            for odr in self.conf.config['odr']:
+                if odr['uniq_id'] == query['uniq_id']:
+                    output.append( process_query(odr, query) )
         else:
-            r = {'status': '-208', 'statusTest': 'DLS is disable'}
-            cherrypy.response.status = 422
-            return build_response(r)
+            for odr in self.conf.config['odr']:
+                output.append( process_query(odr, query) )
+
+        return build_response(output)
 
 
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @require()
-    def getDLS(self, **params):
+    def getDLS(self, uniq_id=None, **params):
         query = parse_query_string(cherrypy.request.query_string)
         self.conf = Config(self.config_file)
-        #cherrypy.response.headers["Content-Type"] = "application/json"
+
+        if uniq_id:
+            query['uniq_id'] = uniq_id
 
         output = []
-
-        if self.conf.config['odr']['padenc']['enable'] == 'true':
-            dls=None
-            dlplus=None
-            dlplus_data=[]
-            try:
-                with open(self.conf.config['odr']['padenc']['dls_file'], 'r') as f:
-                    for line in f:
-                        if line.startswith('#'):
-                            continue
-                        if line.startswith('DL_PLUS='):
-                            dlplus=True
-                            #continue
-                        if line.startswith('DL_PLUS_TAG='):
-                            v = line.split("=", 1)
-                            d = v[1].split(" ")
-                            dlplusCode = {
-                                1: 'title',
-                                2: 'album',
-                                3: 'tracknumber',
-                                4: 'artist',
-                                5: 'composition',
-                                6: 'movement',
-                                7: 'conductor',
-                                8: 'composer',
-                                9: 'band',
-                                10: 'comment',
-                                11: 'genre'
-                                }
-                            dlplus_data.append( {'name': dlplusCode[int(d[0])], 'code': int(d[0]), 'start': int(d[1]), 'len': int(d[2])} )
-                        dls = line.rstrip()
-            except Exception as e:
-                return {'dls': 'Fail to read DLS data'}
-            else:
-                if dlplus:
-                    dlplus= {}
-                    for d in dlplus_data:
-                        dlplus[d['name']] = dls[d['start']:d['start']+d['len']+1]
-                    return {'dls': str(dls), 'dlplus': dlplus}
+        for odr in self.conf.config['odr']:
+            if (('uniq_id' in query) and (query['uniq_id'] == odr['uniq_id']) or ('uniq_id' not in query)):
+                if 'padenc' in odr:
+                    if odr['padenc']['enable'] == 'true':
+                        dls=None
+                        dlplus=None
+                        dlplus_data=[]
+                        try:
+                            with open(odr['padenc']['dls_file'], 'r') as f:
+                                for line in f:
+                                    if line.startswith('#'):
+                                        continue
+                                    if line.startswith('DL_PLUS='):
+                                        dlplus=True
+                                        #continue
+                                    if line.startswith('DL_PLUS_TAG='):
+                                        v = line.split("=", 1)
+                                        d = v[1].split(" ")
+                                        dlplusCode = {
+                                            1: 'title',
+                                            2: 'album',
+                                            3: 'tracknumber',
+                                            4: 'artist',
+                                            5: 'composition',
+                                            6: 'movement',
+                                            7: 'conductor',
+                                            8: 'composer',
+                                            9: 'band',
+                                            10: 'comment',
+                                            11: 'genre'
+                                            }
+                                        dlplus_data.append( {'name': dlplusCode[int(d[0])], 'code': int(d[0]), 'start': int(d[1]), 'len': int(d[2])} )
+                                    dls = line.rstrip()
+                        except Exception as e:
+                            output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': 'Fail to read DLS data' })
+                        else:
+                            if dlplus:
+                                dlplus= {}
+                                for d in dlplus_data:
+                                    dlplus[d['name']] = dls[d['start']:d['start']+d['len']+1]
+                                output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': str(dls), 'dlplus': dlplus})
+                            else:
+                                output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': str(dls)})
+                    else:
+                        output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': 'DLS is disabled'})
                 else:
-                    return {'dls': str(dls)}
-        else:
-            return {'dls': 'DLS is disabled'}
+                        output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': 'Encoder is not configured'})
+
+        if ('uniq_id' in query) and (len(output) == 0):
+            return {'status': '0', 'statusText': 'uniq_id not found', 'data': output}
+
+        return {'status': '0', 'statusText': 'Ok', 'data': output}
 
     def is_program_exist(self, json, program):
         return any(p['name'] == program for p in json)
@@ -630,15 +860,62 @@ class API():
         output = []
 
         try:
-            output.append( server.supervisor.getProcessInfo('ODR-audioencoder') )
-            output.append( server.supervisor.getProcessInfo('ODR-padencoder') )
+            for data in self.conf.config['odr']:
+                if all (k in data for k in ("source","output","padenc","path")):
+                    for p in ('ODR-audioencoder', 'ODR-padencoder'):
+                        pn = server.supervisor.getProcessInfo('%s-%s' % (p, data['uniq_id']) )
+                        pn['coder_name'] = data['name']
+                        pn['coder_description'] = data['description']
+                        pn['coder_uniq_id'] = data['uniq_id']
+                        output.append( pn )
+                else:
+                    output.append({
+                        'now': 0,
+                        'group': 'ODR-audioencoder-%s' % (data['uniq_id']),
+                        'description': 'CODER is not configured',
+                        'pid': 0,
+                        'stderr_logfile': '',
+                        'stop': 0,
+                        'statename': 'UNKNOWN',
+                        'start': 0,
+                        'state': 1000,
+                        'stdout_logfile': '',
+                        'logfile': '',
+                        'existstatus': 0,
+                        'name': 'ODR-audioencoder-%s' % (data['uniq_id']),
+                        'coder_name': data['name'],
+                        'coder_description': data['description'],
+                        'coder_uniq_id': data['uniq_id']
+                        })
+                    output.append({
+                        'now': 0,
+                        'group': 'ODR-padencoder-%s' % (data['uniq_id']),
+                        'description': 'CODER is not configured',
+                        'pid': 0,
+                        'stderr_logfile': '',
+                        'stop': 0,
+                        'statename': 'UNKNOWN',
+                        'start': 0,
+                        'state': 1000,
+                        'stdout_logfile': '',
+                        'logfile': '',
+                        'existstatus': 0,
+                        'name': 'ODR-padencoder-%s' % (data['uniq_id']),
+                        'coder_name': data['name'],
+                        'coder_description': data['description'],
+                        'coder_uniq_id': data['uniq_id']
+                        })
         except Exception as e:
             return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): {}'.format(e)}
 
         if 'supervisor_additional_processes' in self.conf.config['global']:
             try:
                 for proc in self.conf.config['global']['supervisor_additional_processes']:
-                    output.append( server.supervisor.getProcessInfo(proc) )
+                    pn = server.supervisor.getProcessInfo(proc)
+                    pn['coder_name'] = 'Other process'
+                    pn['coder_description'] = 'It\'s an additional supervisor process'
+                    pn['coder_uniq_id'] = ''
+                    output.append( pn )
             except Exception as e:
                 return {'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): {}'.format(e)}
 

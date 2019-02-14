@@ -1,5 +1,26 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+"""
+Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+"""
+
+"""
+This file is part of ODR-EncoderManager.
+
+ODR-EncoderManager is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ODR-EncoderManager is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import cherrypy
 import argparse
@@ -12,6 +33,8 @@ from api import API
 
 import signal
 import time
+
+import uuid
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
@@ -62,10 +85,17 @@ class Root():
 
     @cherrypy.expose
     @require()
-    def config(self):
-        tmpl = env.get_template("config.html")
-        js = ['/js/odr-config.js']
-        return tmpl.render(tab='config', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+    def encoderconfig(self):
+        tmpl = env.get_template("encoderconfig.html")
+        js = ['/js/odr-encoderconfig.js']
+        return tmpl.render(tab='encoderconfig', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+
+    @cherrypy.expose
+    @require()
+    def encodermanage(self):
+        tmpl = env.get_template("encodermanage.html")
+        js = ['/js/odr-encodermanage.js']
+        return tmpl.render(tab='encodermanage', js=js, is_login=is_login(), is_network=is_network(self.config_file))
 
     @cherrypy.expose
     @require()
@@ -109,6 +139,23 @@ if __name__ == '__main__':
     # Load configuration
     config = Config(cli_args.config)
 
+    # Check if configuration file need to be updated to support multi encoder
+    if isinstance(config.config['odr'], dict):
+        print ( 'Convert configuration file to support multi encoder ...' )
+
+        odr = config.config['odr']
+        odr['name'] = 'default coder'
+        odr['uniq_id'] = str(uuid.uuid4())
+        odr['description'] = 'This is the default coder converted from previous version'
+        output = { 'global': config.config['global'], 'auth': config.config['auth'], 'odr': [ odr ] }
+
+        # Write configuration file
+        try:
+            config.write(output)
+        except Exception as e:
+            print ( 'Error when writing configuration file: ' + str(e) )
+            sys.exit(2)
+
     # Start cherrypy
     if config.config['global']['daemon']:
         cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
@@ -116,11 +163,11 @@ if __name__ == '__main__':
     cherrypy.config.update({
         'server.socket_host': config.config['global']['host'],
         'server.socket_port': int(config.config['global']['port']),
-        'request.show_tracebacks' : True,
+        'request.show_tracebacks' : False,
         'environment': 'production',
         'log.access_file' : os.path.join(config.config['global']['logs_directory'], 'access.log'),
         'log.error_file' : os.path.join(config.config['global']['logs_directory'], 'error.log'),
-        'log.screen': False,
+        #'log.screen': False,
         'tools.sessions.on': True,
         'tools.encode.on': True,
         'tools.encode.encoding': "utf-8"

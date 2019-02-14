@@ -1,29 +1,83 @@
-// 
-// Copyright (C) 2018 Yoann QUERET <yoann@queret.net>
-// 
+//
+// Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+//
 
-// 
+//
 // This file is part of ODR-EncoderManager.
-// 
+//
 // ODR-EncoderManager is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // ODR-EncoderManager is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 
 
-function requestConfiguration(callback) {
+function requestCoder() {
     $.ajax({
         type: "GET",
-        url: "/api/getConfig",
+        url: "/api/getCoder",
+        contentType: 'application/json',
+        dataType: 'json',
+
+        error: function(data) {
+            $.gritter.add({
+                title: 'Load coder : ERROR !',
+                text: data['status'] + " : " + data['statusText'],
+                image: '/fonts/warning.png',
+                sticky: true,
+            });
+        },
+        success: function(data) {
+            if (data['status'] == '-401') {
+                console.log('Session timeout. Please login again.')
+                $.gritter.add({
+                    title: 'Session timeout',
+                    text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            } else
+            if ( data['status'] == '0' ) {
+                $('#tab_coder li').remove();
+                $.each(data['data'], function (key, val) {
+                    $('<li><p class="coder_uniq_id hidden">'+val['uniq_id']+'</p><a href="#coder" data-toggle="tab">'+val['name']+'</a></li>').appendTo('#tab_coder');
+                });
+                $('#tab_coder a:first').tab('show');
+
+                // Handler when tab focus change
+                $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                    requestConfiguration();
+                });
+
+            } else {
+                $.gritter.add({
+                    title: 'Load coder',
+                    text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            }
+        }
+    });
+}
+
+
+function requestConfiguration(reload=false) {
+    coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+
+    console.log('Configuration request for: '+coder_uniq_id)
+
+    $.ajax({
+        type: "GET",
+        url: "/api/getConfig?uniq_id="+coder_uniq_id,
         contentType: 'application/json',
         dataType: 'json',
 
@@ -36,8 +90,61 @@ function requestConfiguration(callback) {
             });
         },
         success: function(data) {
+            if (data['status'] == '-401') {
+                console.log('Session timeout. Please login again.')
+                $.gritter.add({
+                    title: 'Session timeout',
+                    text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            } else
             if ( data['status'] == '0' ) {
+                // Set default value
+                $('#source_type option[value="stream"]').prop('selected', true);
+                $('#source_driftcomp option[value="true"]').prop('selected', true);
+                $('#source_device').val('plughw:1,0');
+                $('#source_url').val('');
+                $('#source_avt_input_uri').val('udp://:32010');
+                $('#source_avt_control_uri').val('udp://192.168.128.111:9325');
+                $('#source_avt_pad_port').val('9405');
+                $('#source_avt_jitter_size').val('80');
+                $('#source_avt_timeout').val('2000');
+
+                $('#output_type').val('dabp');
+                $('#output_bitrate').val('88');
+                $('#output_channels option[value="2"]').prop('selected', true);
+                $('#output_samplerate option[value="48000"]').prop('selected', true);
+                $('#output_dabp_sbr option[value="true"]').prop('selected', true);
+                $('#output_dabp_afterburner option[value="true"]').prop('selected', true);
+                $('#output_dabp_ps option[value="false"]').prop('selected', true);
+                $('#output_dab_dabmode option[value="j"]').prop('selected', true);
+                $('#output_dab_dabpsy option[value="1"]').prop('selected', true);
+                $('#output_zmq_output').html('');
+                $('#output_zmq_key').val('');
+
+                $('#padenc_enable option[value="true"]').prop('selected', true);
+                $('#padenc_slide_sleeping').val('20');
+                $('#padenc_slide_directory').val('/tmp/slide/');
+                $('#padenc_pad_fifo').val('/tmp/metadata.pad');
+                $('#padenc_dls_file').val('/tmp/metadata.dls');
+                $('#padenc_pad').val('34');
+                $('#padenc_slide_once option[value="true"]').prop('selected', true);
+                $('#padenc_raw_dls option[value="false"]').prop('selected', true);
+                $('#padenc_uniform option[value="true"]').prop('selected', true);
+                $('#padenc_uniform_init_burst').val('12');
+                $('#padenc_uniform_label').val('12');
+                $('#padenc_uniform_label_ins').val('1200');
+
+                $('#path_encoder_path').val('/usr/local/bin/odr-audioenc');
+                $('#path_padenc_path').val('/usr/local/bin/odr-padenc');
+                $('#path_sourcecompanion_path').val('/usr/local/bin/odr-sourcecompanion');
+                $('#path_zmq_key_tmp_file').val('/tmp/zmq.key');
+
+                // Set value from configuration if available
                 $.each( data['data'], function( section_key, section_val ) {
+                    if (section_key == 'description') { $('#coder_description').html(section_val); }
+
                     if ( typeof section_val === 'object') {
                         $.each( section_val, function( param_key, param_val ) {
                             form_key = section_key + '_' + param_key
@@ -75,6 +182,13 @@ function requestConfiguration(callback) {
                     }
                 });
                 setEnableDisable();
+                if (reload == true) {
+                    $.gritter.add({
+                        title: 'Reload configuration',
+                        image: '/fonts/accept.png',
+                        text: 'Ok',
+                    });
+                }
             } else {
                 $.gritter.add({
                     title: 'Load configuration',
@@ -87,7 +201,7 @@ function requestConfiguration(callback) {
     });
 }
 
-function setConfiguration(callback) {
+function setConfiguration() {
         var zmq_output = [];
         $('#output_zmq_output > .form-group > .output_zmq').each(function () {
             var $input = $(this)
@@ -99,87 +213,101 @@ function setConfiguration(callback) {
             zmq_output.push({name: $input.find('#output_zmq_name').val(), host: $input.find('#output_zmq_host').val(), port: $input.find('#output_zmq_port').val(), enable: zmq_output_enable});
         });
 
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+
+        console.log('Save configuration for: '+coder_uniq_id)
+
         var param = {
-         "path" : {
-                     "encoder_path": $('#path_encoder_path').val(),
-                     "padenc_path": $('#path_padenc_path').val(),
-                     "sourcecompanion_path": $('#path_sourcecompanion_path').val(),
-                     "zmq_key_tmp_file": $('#path_zmq_key_tmp_file').val(),
-                 },
-         "source" : {
-                     "type": $('#source_type').val(),
-                     "url": $('#source_url').val(),
-                     "device": $('#source_device').val(),
-                     "driftcomp": $('#source_driftcomp').val(),
-                     "avt_input_uri": $('#source_avt_input_uri').val(),
-                     "avt_control_uri": $('#source_avt_control_uri').val(),
-                     "avt_pad_port": $('#source_avt_pad_port').val(),
-                     "avt_jitter_size": $('#source_avt_jitter_size').val(),
-                     "avt_timeout": $('#source_avt_timeout').val(),
-                 },
-         "output" : {
-                     "type": $('#output_type').val(),
-                     "zmq_output": zmq_output,
-                     "zmq_key": $('#output_zmq_key').val(),
-                     "bitrate": $('#output_bitrate').val(),
-                     "samplerate": $('#output_samplerate').val(),
-                     "channels": $('#output_channels').val(),
-                     "dabp_sbr": $('#output_dabp_sbr').val(),
-                     "dabp_ps": $('#output_dabp_ps').val(),
-                     "dabp_afterburner": $('#output_dabp_afterburner').val(),
-                     "dab_dabmode": $('#output_dab_dabmode').val(),
-                     "dab_dabpsy": $('#output_dab_dabpsy').val()
-                 },
-         "padenc" : {
-                     "enable": $('#padenc_enable').val(),
-                     "pad": $('#padenc_pad').val(),
-                     "pad_fifo": $('#padenc_pad_fifo').val(),
-                     "dls_file": $('#padenc_dls_file').val(),
-                     "slide_directory": $('#padenc_slide_directory').val(),
-                     "slide_sleeping": $('#padenc_slide_sleeping').val(),
-                     "slide_once": $('#padenc_slide_once').val(),
-                     "raw_dls": $('#padenc_raw_dls').val(),
-                     "uniform": $('#padenc_uniform').val(),
-                     "uniform_label": $('#padenc_uniform_label').val(),
-                     "uniform_label_ins": $('#padenc_uniform_label_ins').val(),
-                     "uniform_init_burst": $('#padenc_uniform_init_burst').val()
-                 },
-       }
+            "uniq_id": coder_uniq_id,
+            "path" : {
+                        "encoder_path": $('#path_encoder_path').val(),
+                        "padenc_path": $('#path_padenc_path').val(),
+                        "sourcecompanion_path": $('#path_sourcecompanion_path').val(),
+                        "zmq_key_tmp_file": $('#path_zmq_key_tmp_file').val(),
+                    },
+            "source" : {
+                        "type": $('#source_type').val(),
+                        "url": $('#source_url').val(),
+                        "device": $('#source_device').val(),
+                        "driftcomp": $('#source_driftcomp').val(),
+                        "avt_input_uri": $('#source_avt_input_uri').val(),
+                        "avt_control_uri": $('#source_avt_control_uri').val(),
+                        "avt_pad_port": $('#source_avt_pad_port').val(),
+                        "avt_jitter_size": $('#source_avt_jitter_size').val(),
+                        "avt_timeout": $('#source_avt_timeout').val(),
+                    },
+            "output" : {
+                        "type": $('#output_type').val(),
+                        "zmq_output": zmq_output,
+                        "zmq_key": $('#output_zmq_key').val(),
+                        "bitrate": $('#output_bitrate').val(),
+                        "samplerate": $('#output_samplerate').val(),
+                        "channels": $('#output_channels').val(),
+                        "dabp_sbr": $('#output_dabp_sbr').val(),
+                        "dabp_ps": $('#output_dabp_ps').val(),
+                        "dabp_afterburner": $('#output_dabp_afterburner').val(),
+                        "dab_dabmode": $('#output_dab_dabmode').val(),
+                        "dab_dabpsy": $('#output_dab_dabpsy').val()
+                    },
+            "padenc" : {
+                        "enable": $('#padenc_enable').val(),
+                        "pad": $('#padenc_pad').val(),
+                        "pad_fifo": $('#padenc_pad_fifo').val(),
+                        "dls_file": $('#padenc_dls_file').val(),
+                        "slide_directory": $('#padenc_slide_directory').val(),
+                        "slide_sleeping": $('#padenc_slide_sleeping').val(),
+                        "slide_once": $('#padenc_slide_once').val(),
+                        "raw_dls": $('#padenc_raw_dls').val(),
+                        "uniform": $('#padenc_uniform').val(),
+                        "uniform_label": $('#padenc_uniform_label').val(),
+                        "uniform_label_ins": $('#padenc_uniform_label_ins').val(),
+                        "uniform_init_burst": $('#padenc_uniform_init_burst').val()
+                    },
+        }
 
-       $.ajax({
-           type: "POST",
-           url: "/api/setConfig",
-           data: JSON.stringify(param),
-           contentType: 'application/json',
-           dataType: 'text',
+        $.ajax({
+            type: "POST",
+            url: "/api/setConfig",
+            data: JSON.stringify(param),
+            contentType: 'application/json',
+            dataType: 'text',
 
-           error: function(data) {
-               //console.log(data);
-               $.gritter.add({
-                   title: 'Write changes',
-                   text: "ERROR = " + data['status'] + " : " + data['statusText'],
-                   image: '/fonts/warning.png',
-                   sticky: true,
-               });
-           },
-           success: function(data) {
-              data = jQuery.parseJSON(data)
-              if ( data['status'] == '0' ) {
-                   $.gritter.add({
-                       title: 'Write changes',
-                       image: '/fonts/accept.png',
-                       text: 'Ok',
-                   });
-               } else {
-                   $.gritter.add({
-                       title: 'Write changes',
-                       text: "ERROR = " + data['status'] + " : " + data['statusText'],
-                       image: '/fonts/warning.png',
-                       sticky: true,
-                   });
-               }
-           }
-       });
+            error: function(data) {
+                //console.log(data);
+                $.gritter.add({
+                    title: 'Write changes',
+                    text: "ERROR = " + data['status'] + "<br />" + data['statusText'],
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            },
+            success: function(data) {
+                data = jQuery.parseJSON(data)
+                if (data['status'] == '-401') {
+                    console.log('Session timeout. Please login again.')
+                    $.gritter.add({
+                        title: 'Session timeout',
+                        text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                } else
+                if ( data['status'] == '0' ) {
+                    $.gritter.add({
+                        title: 'Write changes',
+                        image: '/fonts/accept.png',
+                        text: 'Ok',
+                    });
+                } else {
+                    $.gritter.add({
+                        title: 'Write changes',
+                        text: "ERROR = " + data['status'] + "<br />" + data['statusText'],
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                }
+            }
+        });
 }
 
 function setEnableDisable(){
@@ -284,12 +412,7 @@ function setEnableDisable(){
 // Button handler
 $(function(){
     $('#reload').click(function() {
-        requestConfiguration();
-        $.gritter.add({
-                    title: 'Reload configuration',
-                    image: '/fonts/accept.png',
-                    text: 'Ok',
-                });
+        requestConfiguration(reload=true);
     });
 
     $('#save').click(function() {
@@ -321,6 +444,15 @@ $(function(){
                 });
             },
             success: function(data) {
+                if (data['status'] == '-401') {
+                    console.log('Session timeout. Please login again.')
+                    $.gritter.add({
+                        title: 'Session timeout',
+                        text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                } else
                 if ( data['status'] == '0' ) {
                     info = '<p>Specifying the device using parameter <b>plughw:X,Y</b>, where X=card, Y=device</p><hr />'
                     $('#InfoModal .modal-body').html(info+data['data'].replace(/\n/g,'<br />'))
@@ -357,5 +489,5 @@ $(function(){
 
 // Onload
 $(function(){
-    requestConfiguration();
+    requestCoder();
 });

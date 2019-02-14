@@ -27,7 +27,7 @@ function requestUser(callback) {
         url: "/api/getUser",
         contentType: 'application/json',
         dataType: 'json',
-        
+
         error: function(data) {
             $.gritter.add({
                 title: 'Load user : ERROR !',
@@ -37,6 +37,15 @@ function requestUser(callback) {
             });
         },
         success: function(data) {
+            if (data['status'] == '-401') {
+                console.log('Session timeout. Please login again.')
+                $.gritter.add({
+                    title: 'Session timeout',
+                    text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            } else
             if ( data['status'] == '0' ) {
                 $.each( data['data'], function( section_key, section_val ) {
                     $('#user-list').append(
@@ -70,7 +79,7 @@ $(function(){
 // Onload
 $(function(){
     requestUser();
-    
+
     $('#btn_user_add_save').click(function() {
         $('#InfoModalAdd h4.modal-title').text("Add user")
         if ( $('#add_username').val().length >= 2 ) {
@@ -86,7 +95,7 @@ $(function(){
                         data: JSON.stringify(param),
                         contentType: 'application/json',
                         dataType: 'text',
-                        
+
                         error: function(data) {
                             //console.log(data);
                             $.gritter.add({
@@ -98,6 +107,15 @@ $(function(){
                         },
                         success: function(data) {
                             data = jQuery.parseJSON(data)
+                            if (data['status'] == '-401') {
+                                console.log('Session timeout. Please login again.')
+                                $.gritter.add({
+                                    title: 'Session timeout',
+                                    text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                                    image: '/fonts/warning.png',
+                                    sticky: true,
+                                });
+                            } else
                             if ( data['status'] == '0' ) {
                                 $.gritter.add({
                                     title: 'Save',
@@ -142,7 +160,7 @@ $(function(){
             });
         }
     });
-    
+
     $('#btn_user_edit_save').click(function() {
         if ( $('#edit_password').val() == $('#edit_password_confirm').val() ) {
             if ( $('#edit_password').val().length >= 6 ) {
@@ -156,7 +174,7 @@ $(function(){
                     data: JSON.stringify(param),
                     contentType: 'application/json',
                     dataType: 'text',
-                    
+
                     error: function(data) {
                         //console.log(data);
                         $.gritter.add({
@@ -168,6 +186,15 @@ $(function(){
                     },
                     success: function(data) {
                         data = jQuery.parseJSON(data)
+                        if (data['status'] == '-401') {
+                            console.log('Session timeout. Please login again.')
+                            $.gritter.add({
+                                title: 'Session timeout',
+                                text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                                image: '/fonts/warning.png',
+                                sticky: true,
+                            });
+                        } else
                         if ( data['status'] == '0' ) {
                             $.gritter.add({
                                 title: 'Save',
@@ -200,9 +227,9 @@ $(function(){
             $('#edit_password').val('');
             $('#edit_password_confirm').val('');
         }
-        
+
     });
-    
+
     $('#btn_user_edit_delete').click(function() {
         console.log($('ul#user-list li').size());
 
@@ -222,7 +249,7 @@ $(function(){
                     data: JSON.stringify(param),
                     contentType: 'application/json',
                     dataType: 'text',
-                    
+
                     error: function(data) {
                         //console.log(data);
                         $.gritter.add({
@@ -234,6 +261,15 @@ $(function(){
                     },
                     success: function(data) {
                         data = jQuery.parseJSON(data)
+                        if (data['status'] == '-401') {
+                            console.log('Session timeout. Please login again.')
+                            $.gritter.add({
+                                title: 'Session timeout',
+                                text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                                image: '/fonts/warning.png',
+                                sticky: true,
+                            });
+                        } else
                         if ( data['status'] == '0' ) {
                             $.gritter.add({
                                 title: 'Delete',

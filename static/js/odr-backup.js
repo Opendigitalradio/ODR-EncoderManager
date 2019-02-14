@@ -48,6 +48,15 @@ $(function(){
                 });
             },
             success : function(data) {
+                if (data['status'] == '-401') {
+                    console.log('Session timeout. Please login again.')
+                    $.gritter.add({
+                        title: 'Session timeout',
+                        text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                } else
                 if ( data['status'] == '0' ) {
                     $.gritter.add({
                         title: 'Restore configuration',
@@ -69,5 +78,5 @@ $(function(){
 
 // ToolTip init
 $(function(){
-	$('[data-toggle="tooltip"]').tooltip();   
+    $('[data-toggle="tooltip"]').tooltip();   
 });

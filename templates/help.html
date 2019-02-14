@@ -26,15 +26,70 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 {% include 'head.html' %}
 
 <body>
-	{% include 'body-nav.html' %}
+    {% include 'body-nav.html' %}
 
-	<div class="container-fluid">
-		<div class="jumbotron">
-			<h2>Help : Comming soon ...</h2>
-		</div>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>Help</h1>
+        </div>
 
-	</div>
 
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">How to set DLS / DL+</a>
+                </h4>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <b>Set DLS / DL+ for all encoder</b>
+                    <p>To set a text metadata used for DLS, use http GET or POST on the Encoder Manager API from your automation software.</p>
+                    <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}</pre>
+
+                    <p>As an alternative DLS+ tags are automatically activated if you use artist & title parameters:</p>
+                    <pre>http://{ip}:8080/api/setDLS?artist={artist}&title={title}</pre>
+
+                    <p>Many radio automation software can send this information to Encoder Manager API by using a call of this type (for example)</p>
+                    <pre>http://{ip}:8080/api/setDLS?dls=%%artist%% - %%title%%</pre>
+                    <p>%%artist%% - %%title%% should be replaced with the expression expected from your radio automation software.</p>
+                    <p>At each events on your playlist (when a track start) the radio automation software will send via this url the appropriate metadata to  Encoder Manager API. It will be reflected on the DAB signal.</p>
+
+                    <b>Set DLS / DL+ for specific encoder</b>
+                    <p>If you want to update DLS / DL+ for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
+                    <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}&uniq_id={00000000-0000-0000-0000-000000000000}</pre>
+                </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">How to set SLS (SlideShow)</a>
+                </h4>
+                </div>
+                <div id="collapse2" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p>coming soon ...</p>
+                </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Lorem ipsum</a>
+                </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse">
+                <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                commodo consequat.</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
 
 </body>
 

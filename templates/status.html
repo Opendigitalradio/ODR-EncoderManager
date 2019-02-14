@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2015 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
 -->
 
 <!--
@@ -25,47 +25,72 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 {% include 'head.html' %}
 
 <body>
-	{% include 'body-nav.html' %}
+    {% include 'body-nav.html' %}
 
-	<div class="container-fluid">
+    <div class="container-fluid">
 
-		<div class="page-header">
-			<h1>Status</h1>
-		</div>
-		
-		
-		<div class="form-group">
-			<label class="sr-only" for="dls">Dynamic Label Segment (DLS)</label>
-			<div class="input-group" id="dlsgroup">
-				<div class="input-group-addon">DLS</div>
-				<input type="text" class="form-control" id="dls" placeholder="Waiting refresh ..." readonly>
-				<div class="input-group-addon">DLS</div>
-			</div>
-		</div>
-		
-		<hr />
-		
-		<table id="status" class="table table-hover">
-			<thead>
-				<tr>
-					<th>Service</th>
-					<th>Pid</th>
-					<th>Status</th>
-					<th>Description</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
-		
-		<button type="button" class="btn btn-sm btn-info" id="refresh">Refresh</button> 
-		<button type="button" class="btn btn-sm btn-success" id="service_start_all">Start all</button>
-		<button type="button" class="btn btn-sm btn-warning" id="service_restart_all">Restart all</button> 
-		<button type="button" class="btn btn-sm btn-danger" id="service_stop_all">Stop all</button> 
-		
-	</div>
+        <div class="page-header">
+            <h1>Status</h1>
+        </div>
 
+        <!-- Modal -->
+        <div id="modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Loading ...</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+
+        </div>
+        </div>
+
+        <table id="dls" class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Encoder</th>
+                    <th class="col-md-1 hidden">UUID</th>
+                    <th class="col-md-4">DLS</th>
+                    <th class="col-md-4">DL+</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <hr />
+
+        <table id="status" class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Encoder</th>
+                    <th class="col-md-1 hidden">UUID</th>
+                    <th class="col-md-1">Service</th>
+                    <th class="col-md-1">Pid</th>
+                    <th class="col-md-1">Status</th>
+                    <th class="col-md-2">Description</th>
+                    <th class="col-md-1">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-sm btn-info" id="refresh"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+        <button type="button" class="btn btn-sm btn-success" id="service_start_all"><span class="glyphicon glyphicon-play"></span> Start all</button>
+        <button type="button" class="btn btn-sm btn-warning" id="service_restart_all"><span class="glyphicon glyphicon-repeat"></span> Restart all</button>
+        <button type="button" class="btn btn-sm btn-danger" id="service_stop_all"><span class="glyphicon glyphicon-stop"></span> Stop all</button>
+
+    </div>
 
 </body>
 

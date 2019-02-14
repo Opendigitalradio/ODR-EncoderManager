@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (C) 2018 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
 """
 
 """
@@ -125,180 +125,182 @@ class Config():
 
     def generateSupervisorFiles(self, config):
         supervisorConfig = ""
-        # Write supervisor pad-encoder section
-        if config['odr']['padenc']['enable'] == 'true':
-            command = config['odr']['path']['padenc_path']
-            if config['odr']['padenc']['slide_directory'].strip() != '':
-                # Check if config.mot_slide_directory exist
-                if os.path.exists(config['odr']['padenc']['slide_directory']):
-                    command += ' --dir=%s' % (config['odr']['padenc']['slide_directory'])
-                    if config['odr']['padenc']['slide_once'] == 'true':
-                        command += ' --erase'
+        for odr in config['odr']:
+            if all (k in odr for k in ("source","output","padenc","path")):
+                # Write supervisor pad-encoder section
+                if odr['padenc']['enable'] == 'true':
+                    command = odr['path']['padenc_path']
+                    command += ' -v'
+                    if odr['padenc']['slide_directory'].strip() != '':
+                        # Check if config.mot_slide_directory exist
+                        if os.path.exists(odr['padenc']['slide_directory']):
+                            command += ' --dir=%s' % (odr['padenc']['slide_directory'])
+                            if odr['padenc']['slide_once'] == 'true':
+                                command += ' --erase'
 
-            # Check if config.mot_dls_file exist and create it if needed.
-            if not os.path.isfile(config['odr']['padenc']['dls_file']):
-                try:
-                    f = open(config['odr']['padenc']['dls_file'], 'w')
-                    f.close()
-                    os.chmod(config['odr']['padenc']['dls_file'], 0o775)
-                except Exception as e:
-                    raise ValueError('Error when create DLS file: {}'.format(e))
+                    # Check if config.mot_dls_file exist and create it if needed.
+                    if not os.path.isfile(odr['padenc']['dls_file']):
+                        try:
+                            f = open(odr['padenc']['dls_file'], 'w')
+                            f.close()
+                            os.chmod(odr['padenc']['dls_file'], 0o775)
+                        except Exception as e:
+                            raise ValueError('Error when create DLS file: {}'.format(e))
 
-            # Check if config.mot_pad_fifo exist and create it if needed.
-            if not os.path.exists(config['odr']['padenc']['pad_fifo']):
-                try:
-                    os.mkfifo(config['odr']['padenc']['pad_fifo'])
-                except Exception as e:
-                    raise ValueError('Error when create PAD fifo: {}'.format(e))
-            else:
-                if not stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo']).st_mode):
-                    #File %s is not a fifo
-                    pass
+                    # Check if config.mot_pad_fifo exist and create it if needed.
+                    if not os.path.exists(odr['padenc']['pad_fifo']):
+                        try:
+                            os.mkfifo(odr['padenc']['pad_fifo'])
+                        except Exception as e:
+                            raise ValueError('Error when create PAD fifo: {}'.format(e))
+                    else:
+                        if not stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
+                            #File %s is not a fifo
+                            pass
 
-            if config['odr']['padenc']['slide_sleeping']:
-                command += ' --sleep=%s' % (config['odr']['padenc']['slide_sleeping'])
-            else:
-                command += ' --sleep=10'
-            if config['odr']['padenc']['pad']:
-                command += ' --pad=%s' % (config['odr']['padenc']['pad'])
-            else:
-                command += ' --pad=34'
-            command += ' --dls=%s' % (config['odr']['padenc']['dls_file'])
-            command += ' --output=%s' % (config['odr']['padenc']['pad_fifo'])
+                    if odr['padenc']['slide_sleeping']:
+                        command += ' --sleep=%s' % (odr['padenc']['slide_sleeping'])
+                    else:
+                        command += ' --sleep=10'
+                    if odr['padenc']['pad']:
+                        command += ' --pad=%s' % (odr['padenc']['pad'])
+                    else:
+                        command += ' --pad=34'
+                    command += ' --dls=%s' % (odr['padenc']['dls_file'])
+                    command += ' --output=%s' % (odr['padenc']['pad_fifo'])
 
-            if config['odr']['padenc']['raw_dls'] == 'true':
-                command += ' --raw-dls'
+                    if odr['padenc']['raw_dls'] == 'true':
+                        command += ' --raw-dls'
 
-            # UNIFORM
-            if config['odr']['padenc']['uniform'] == 'true':
-                # DAB+
-                if config['odr']['output']['type'] == 'dabp':
-                    if config['odr']['output']['dabp_sbr'] == 'false':
-                        # AAC_LC
-                        if config['odr']['output']['samplerate'] == '48000':
-                            command += ' --frame-dur=20'
-                        elif config['odr']['output']['samplerate'] == '32000':
-                            command += ' --frame-dur=30'
-                    elif config['odr']['output']['dabp_sbr'] == 'true':
-                        # HE_AAC
-                        if config['odr']['output']['samplerate'] == '48000':
-                            command += ' --frame-dur=40'
-                        elif config['odr']['output']['samplerate'] == '32000':
-                            command += ' --frame-dur=60'
+                    # UNIFORM
+                    if odr['padenc']['uniform'] == 'true':
+                        # DAB+
+                        if odr['output']['type'] == 'dabp':
+                            if odr['output']['dabp_sbr'] == 'false':
+                                # AAC_LC
+                                if odr['output']['samplerate'] == '48000':
+                                    command += ' --frame-dur=20'
+                                elif odr['output']['samplerate'] == '32000':
+                                    command += ' --frame-dur=30'
+                            elif odr['output']['dabp_sbr'] == 'true':
+                                # HE_AAC
+                                if odr['output']['samplerate'] == '48000':
+                                    command += ' --frame-dur=40'
+                                elif odr['output']['samplerate'] == '32000':
+                                    command += ' --frame-dur=60'
 
-                # DAB
-                if config['odr']['output']['type'] == 'dab':
-                    if config['odr']['output']['samplerate'] == '48000':
-                        command += ' --frame-dur=24'
-                    elif config['odr']['output']['samplerate'] == '24000':
-                        command += ' --frame-dur=48'
+                        # DAB
+                        if odr['output']['type'] == 'dab':
+                            if odr['output']['samplerate'] == '48000':
+                                command += ' --frame-dur=24'
+                            elif odr['output']['samplerate'] == '24000':
+                                command += ' --frame-dur=48'
 
-                # DAB+ / DAB Common
-                if config['odr']['padenc']['uniform_label']:
-                    command += ' --label=%s' % (config['odr']['padenc']['uniform_label'])
-                else:
-                    command += ' --label=12'
+                        # DAB+ / DAB Common
+                        if odr['padenc']['uniform_label']:
+                            command += ' --label=%s' % (odr['padenc']['uniform_label'])
+                        else:
+                            command += ' --label=12'
 
-                if config['odr']['padenc']['uniform_label_ins']:
-                    command += ' --label-ins=%s' % (config['odr']['padenc']['uniform_label_ins'])
-                else:
-                    command += ' --label-ins=1200'
+                        if odr['padenc']['uniform_label_ins']:
+                            command += ' --label-ins=%s' % (odr['padenc']['uniform_label_ins'])
+                        else:
+                            command += ' --label-ins=1200'
 
-                if config['odr']['padenc']['uniform_init_burst']:
-                    command += ' --init-burst=%s' % (config['odr']['padenc']['uniform_init_burst'])
-                else:
-                    command += ' --init-burst=12'
+                        if odr['padenc']['uniform_init_burst']:
+                            command += ' --init-burst=%s' % (odr['padenc']['uniform_init_burst'])
+                        else:
+                            command += ' --init-burst=12'
 
 
-            supervisorPadEncConfig = ""
-            supervisorPadEncConfig += "[program:ODR-padencoder]\n"
-            supervisorPadEncConfig += "command=%s\n" % (command)
-            supervisorPadEncConfig += "autostart=true\n"
-            supervisorPadEncConfig += "autorestart=true\n"
-            supervisorPadEncConfig += "priority=10\n"
-            supervisorPadEncConfig += "user=odr\n"
-            supervisorPadEncConfig += "group=odr\n"
-            supervisorPadEncConfig += "stderr_logfile=/var/log/supervisor/ODR-padencoder.log\n"
-            supervisorPadEncConfig += "stdout_logfile=/var/log/supervisor/ODR-padencoder.log\n"
+                    supervisorConfig += "# %s\n" % (odr['name'])
+                    supervisorConfig += "[program:ODR-padencoder-%s]\n" % (odr['uniq_id'])
+                    supervisorConfig += "command=%s\n" % (command)
+                    supervisorConfig += "autostart=true\n"
+                    supervisorConfig += "autorestart=true\n"
+                    supervisorConfig += "priority=10\n"
+                    supervisorConfig += "user=odr\n"
+                    supervisorConfig += "group=odr\n"
+                    supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-padencoder-%s.log\n" % (odr['uniq_id'])
+                    supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-padencoder-%s.log\n" % (odr['uniq_id'])
+                    supervisorConfig += "\n"
 
-        # Write supervisor audioencoder section
-        # Encoder path
-        if config['odr']['source']['type'] == 'alsa' or config['odr']['source']['type'] == 'stream':
-            command = config['odr']['path']['encoder_path']
-        if config['odr']['source']['type'] == 'avt':
-            command = config['odr']['path']['sourcecompanion_path']
+                # Write supervisor audioencoder section
+                # Encoder path
+                if odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream':
+                    command = odr['path']['encoder_path']
+                if odr['source']['type'] == 'avt':
+                    command = odr['path']['sourcecompanion_path']
 
-        # Input stream
-        if config['odr']['source']['type'] == 'alsa':
-            command += ' --device %s' % (config['odr']['source']['device'])
-        if config['odr']['source']['type'] == 'stream':
-            command += ' --vlc-uri=%s' % (config['odr']['source']['url'])
-        # driftcomp for alsa or stream input type only
-        if ( config['odr']['source']['type'] == 'alsa' or config['odr']['source']['type'] == 'stream' ) and config['odr']['source']['driftcomp'] == 'true':
-            command += ' --drift-comp'
+                # Input stream
+                if odr['source']['type'] == 'alsa':
+                    command += ' --device %s' % (odr['source']['device'])
+                if odr['source']['type'] == 'stream':
+                    command += ' --vlc-uri=%s' % (odr['source']['url'])
+                # driftcomp for alsa or stream input type only
+                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' ) and odr['source']['driftcomp'] == 'true':
+                    command += ' --drift-comp'
 
-        # bitrate, samplerate, channels for all input type
-        command += ' --bitrate=%s' % (config['odr']['output']['bitrate'])
-        command += ' --rate=%s' % (config['odr']['output']['samplerate'])
-        command += ' --channels=%s' % (config['odr']['output']['channels'])
+                # bitrate, samplerate, channels for all input type
+                command += ' --bitrate=%s' % (odr['output']['bitrate'])
+                command += ' --rate=%s' % (odr['output']['samplerate'])
+                command += ' --channels=%s' % (odr['output']['channels'])
 
-        # DAB specific option only for alsa or stream input type
-        if ( config['odr']['source']['type'] == 'alsa' or config['odr']['source']['type'] == 'stream' ) and config['odr']['output']['type'] == 'dab':
-            command += ' --dab'
-            command += ' --dabmode=%s' % (config['odr']['output']['dab_dabmode'])
-            command += ' --dabpsy=%s' % (config['odr']['output']['dab_dabpsy'])
+                # DAB specific option only for alsa or stream input type
+                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' ) and odr['output']['type'] == 'dab':
+                    command += ' --dab'
+                    command += ' --dabmode=%s' % (odr['output']['dab_dabmode'])
+                    command += ' --dabpsy=%s' % (odr['output']['dab_dabpsy'])
 
-        # DAB+ specific option for all input type
-        if config['odr']['output']['type'] == 'dabp':
-            if config['odr']['output']['dabp_sbr'] == 'true':
-                command += ' --sbr'
-            if config['odr']['output']['dabp_ps'] == 'true':
-                command += ' --ps'
-            if config['odr']['output']['dabp_sbr'] == 'false' and config['odr']['output']['dabp_ps'] == 'false':
-                command += ' --aaclc'
-            # Disable afterburner only for alsa or stream input type
-            if ( config['odr']['source']['type'] == 'alsa' or config['odr']['source']['type'] == 'stream' ) and config['odr']['output']['dabp_afterburner'] == 'false':
-                command += ' --no-afterburner'
+                # DAB+ specific option for all input type
+                if odr['output']['type'] == 'dabp':
+                    if odr['output']['dabp_sbr'] == 'true':
+                        command += ' --sbr'
+                    if odr['output']['dabp_ps'] == 'true':
+                        command += ' --ps'
+                    if odr['output']['dabp_sbr'] == 'false' and config['odr']['output']['dabp_ps'] == 'false':
+                        command += ' --aaclc'
+                    # Disable afterburner only for alsa or stream input type
+                    if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' ) and odr['output']['dabp_afterburner'] == 'false':
+                        command += ' --no-afterburner'
 
-        # PAD encoder
-        if config['odr']['padenc']['enable'] == 'true':
-            if os.path.exists(config['odr']['padenc']['pad_fifo']) and stat.S_ISFIFO(os.stat(config['odr']['padenc']['pad_fifo']).st_mode):
-                command += ' --pad=%s' % (config['odr']['padenc']['pad'])
-                command += ' --pad-fifo=%s' % (config['odr']['padenc']['pad_fifo'])
-                # Write icy-text only for stream input type
-                if config['odr']['source']['type'] == 'stream' :
-                    command += ' --write-icy-text=%s' % (config['odr']['padenc']['dls_file'])
+                # PAD encoder
+                if odr['padenc']['enable'] == 'true':
+                    if os.path.exists(odr['padenc']['pad_fifo']) and stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
+                        command += ' --pad=%s' % (odr['padenc']['pad'])
+                        command += ' --pad-fifo=%s' % (odr['padenc']['pad_fifo'])
+                        # Write icy-text only for stream input type
+                        if odr['source']['type'] == 'stream' :
+                            command += ' --write-icy-text=%s' % (odr['padenc']['dls_file'])
 
-        # AVT input type specific option
-        if config['odr']['source']['type'] == 'avt':
-            command += ' --input-uri=%s' % (config['odr']['source']['avt_input_uri'])
-            command += ' --control-uri=%s' % (config['odr']['source']['avt_control_uri'])
-            command += ' --timeout=%s' % (config['odr']['source']['avt_timeout'])
-            command += ' --jitter-size=%s' % (config['odr']['source']['avt_jitter_size'])
-            if config['odr']['padenc']['enable'] == 'true':
-                command += ' --pad-port=%s' % (config['odr']['source']['avt_pad_port'])
+                # AVT input type specific option
+                if odr['source']['type'] == 'avt':
+                    command += ' --input-uri=%s' % (odr['source']['avt_input_uri'])
+                    command += ' --control-uri=%s' % (odr['source']['avt_control_uri'])
+                    command += ' --timeout=%s' % (odr['source']['avt_timeout'])
+                    command += ' --jitter-size=%s' % (odr['source']['avt_jitter_size'])
+                    if odr['padenc']['enable'] == 'true':
+                        command += ' --pad-port=%s' % (odr['source']['avt_pad_port'])
 
-        # Output
-        for out in config['odr']['output']['zmq_output']:
-            if out['enable'] == 'true':
-                command += ' -o tcp://%s:%s' % (out['host'], out['port'])
+                # Output
+                for out in odr['output']['zmq_output']:
+                    if out['enable'] == 'true':
+                        command += ' -o tcp://%s:%s' % (out['host'], out['port'])
 
-        supervisorConfig = ""
-        supervisorConfig += "[program:ODR-audioencoder]\n"
-        supervisorConfig += "command=%s\n" % (command)
-        supervisorConfig += "autostart=true\n"
-        supervisorConfig += "autorestart=true\n"
-        supervisorConfig += "priority=10\n"
-        supervisorConfig += "user=odr\n"
-        supervisorConfig += "group=odr\n"
-        supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-audioencoder.log\n"
-        supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-audioencoder.log\n"
+                supervisorConfig += "# %s\n" % (odr['name'])
+                supervisorConfig += "[program:ODR-audioencoder-%s]\n" % (odr['uniq_id'])
+                supervisorConfig += "command=%s\n" % (command)
+                supervisorConfig += "autostart=true\n"
+                supervisorConfig += "autorestart=true\n"
+                supervisorConfig += "priority=10\n"
+                supervisorConfig += "user=odr\n"
+                supervisorConfig += "group=odr\n"
+                supervisorConfig += "stderr_logfile=/var/log/supervisor/ODR-audioencoder-%s.log\n" % (odr['uniq_id'])
+                supervisorConfig += "stdout_logfile=/var/log/supervisor/ODR-audioencoder-%s.log\n" % (odr['uniq_id'])
+                supervisorConfig += "\n"
 
         try:
             with open(config['global']['supervisor_file'], 'w') as supfile:
                 supfile.write(supervisorConfig)
-                if config['odr']['padenc']['enable'] == 'true':
-                    supfile.write('\n')
-                    supfile.write(supervisorPadEncConfig)
         except Exception as e:
             raise ValueError('Error when writing supervisor file: {}'.format(e))

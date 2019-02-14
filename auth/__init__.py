@@ -1,8 +1,26 @@
-# -*- encoding: UTF-8 -*-
-#
-# Form based authentication for CherryPy. Requires the
-# Session tool to be loaded.
-#
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+"""
+Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+"""
+
+"""
+This file is part of ODR-EncoderManager.
+
+ODR-EncoderManager is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ODR-EncoderManager is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import json
 import cherrypy
@@ -17,6 +35,9 @@ from config import Config
 
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('templates'))
+
+from html import escape
+
 
 SESSION_KEY = '_cp_username'
 
@@ -41,7 +62,7 @@ def check_auth(*args, **kwargs):
         if username:
             cherrypy.request.login = username
             for condition in conditions:
-                # A condition is just a callable that returns true orfalse
+                # A condition is just a callable that returns true or false
                 if not condition():
                     # Send old page as from_page parameter
                     raise cherrypy.HTTPRedirect("/auth/login?from_page=%s" % get_parmas)
@@ -70,7 +91,7 @@ def is_login():
         return True
     else:
         return False
-        
+
 # Conditions are callables that return True
 # if the user fulfills the conditions they define, False otherwise
 #
@@ -78,36 +99,36 @@ def is_login():
 #
 # Define those at will however suits the application.
 
-def member_of(groupname):
-    def check():
-        # replace with actual check if <username> is in <groupname>
-        return cherrypy.request.login == 'joe' and groupname == 'admin'
-    return check
+#def member_of(groupname):
+#    def check():
+#        # replace with actual check if <username> is in <groupname>
+#        return cherrypy.request.login == 'joe' and groupname == 'admin'
+#    return check
 
-def name_is(reqd_username):
-    return lambda: reqd_username == cherrypy.request.login
+#def name_is(reqd_username):
+#    return lambda: reqd_username == cherrypy.request.login
 
 # These might be handy
 
-def any_of(*conditions):
-    """Returns True if any of the conditions match"""
-    def check():
-        for c in conditions:
-            if c():
-                return True
-        return False
-    return check
+#def any_of(*conditions):
+#    """Returns True if any of the conditions match"""
+#    def check():
+#        for c in conditions:
+#            if c():
+#                return True
+#        return False
+#    return check
 
 # By default all conditions are required, but this might still be
 # needed if you want to use it inside of an any_of(...) condition
-def all_of(*conditions):
-    """Returns True if all of the conditions match"""
-    def check():
-        for c in conditions:
-            if not c():
-                return False
-        return True
-    return check
+#def all_of(*conditions):
+#    """Returns True if all of the conditions match"""
+#    def check():
+#        for c in conditions:
+#            if not c():
+#                return False
+#        return True
+#    return check
 
 
 # Controller to provide login and logout actions
@@ -122,29 +143,27 @@ class AuthController(object):
     def on_logout(self, username):
         """Called on logout"""
 
-    def get_loginform(self, username, msg="Enter login information", from_page="/"):
-        return """<html><body>
-            <form method="post" action="/auth/login">
-            <input type="hidden" name="from_page" value="%(from_page)s" />
-            %(msg)s<br />
-            Username: <input type="text" name="username" value="%(username)s" /><br />
-            Password: <input type="password" name="password" /><br />
-            <input type="submit" value="Log in" />
-        </body></html>""" % locals()
-
     @cherrypy.expose
-    def login(self, username=None, password=None, from_page="/"):
+    def login(self, username=None, password=None, from_page="/", **params):
+        encode_username=escape(str(username), True)
+        encode_from_page=escape(str(from_page[0]), True)
         if username is None or password is None:
             tmpl = env.get_template("login.html")
-            return tmpl.render(username="", msg="Enter login information", from_page=from_page)
-            #return self.get_loginform("", from_page=from_page)
+            if from_page.startswith('api', 1):
+                cherrypy.response.headers['content-type'] = "application/json"
+                return json.dumps( {'status': '-401', 'statusText': 'Unauthorized'} ).encode()
+            else:
+                return tmpl.render(username="", msg="Enter login information", from_page=encode_from_page)
 
         conf = Config(self.config_file)
         error_msg = check_credentials(conf.config['auth'], username, password)
         if error_msg:
             tmpl = env.get_template("login.html")
-            return tmpl.render(username=username, msg=error_msg, from_page=from_page)
-            #return self.get_loginform(username, error_msg, from_page)
+            if from_page.startswith('api', 1):
+                cherrypy.response.headers['content-type'] = "application/json"
+                return json.dumps( {'status': '-401', 'statusText': 'Unauthorized'} ).encode()
+            else:
+                return tmpl.render(username=encode_username, msg=error_msg, from_page=encode_from_page)
         else:
             cherrypy.session[SESSION_KEY] = cherrypy.request.login = username
             self.on_login(username)

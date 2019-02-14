@@ -1,5 +1,5 @@
 {
-    "odr": {
+    "odr": [{
         "path": {
             "zmq_key_tmp_file": "/tmp/zmq.key",
             "padenc_path": "/usr/local/bin/odr-padenc",
@@ -63,7 +63,7 @@
                 }
             ]
         }
-    },
+    }],
     "global": {
         "daemon": false,
         "logs_directory": "/home/odr/ODR-EncoderManager/logs/",

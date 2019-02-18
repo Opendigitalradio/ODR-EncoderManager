@@ -167,8 +167,9 @@ if __name__ == '__main__':
         'environment': 'production',
         'log.access_file' : os.path.join(config.config['global']['logs_directory'], 'access.log'),
         'log.error_file' : os.path.join(config.config['global']['logs_directory'], 'error.log'),
-        #'log.screen': False,
+        'log.screen': False,
         'tools.sessions.on': True,
+        'tools.sessions.name': "ODR-Encoder-Manager",
         'tools.encode.on': True,
         'tools.encode.encoding': "utf-8"
         })

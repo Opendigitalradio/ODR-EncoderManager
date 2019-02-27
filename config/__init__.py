@@ -227,27 +227,49 @@ class Config():
 
                 # Write supervisor audioencoder section
                 # Encoder path
-                if odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream':
+                if odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67':
                     command = odr['path']['encoder_path']
                 if odr['source']['type'] == 'avt':
                     command = odr['path']['sourcecompanion_path']
 
                 # Input stream
                 if odr['source']['type'] == 'alsa':
-                    command += ' --device %s' % (odr['source']['device'])
+                    command += ' --device %s' % (odr['source']['alsa_device'])
                 if odr['source']['type'] == 'stream':
-                    command += ' --vlc-uri=%s' % (odr['source']['url'])
-                # driftcomp for alsa or stream input type only
-                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' ) and odr['source']['driftcomp'] == 'true':
+                    command += ' --vlc-uri=%s' % (odr['source']['stream_url'])
+                if odr['source']['type'] == 'aes67':
+                    command += ' --vlc-uri=file://%s' % (odr['source']['aes67_sdp_file'])
+                    # Write SDP file
+                    # Check if config.source.aes67_sdp_file exist and create it if needed.
+                    if not os.path.isfile(odr['source']['aes67_sdp_file']):
+                        try:
+                            f = open(odr['source']['aes67_sdp_file'], 'w')
+                            f.close()
+                            os.chmod(odr['source']['aes67_sdp_file'], 0o775)
+                        except Exception as e:
+                            raise ValueError('Error when create SDP file: {}'.format(e))
+                    # Write SDP file
+                    try:
+                        with open(odr['source']['aes67_sdp_file'], 'w') as f:
+                            f.write(odr['source']['aes67_sdp'])
+                    except Exception as e:
+                        raise ValueError('Error when writing SDP file: {}'.format(e))
+
+                # driftcomp for alsa or stream or aes input type only
+                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['source']['driftcomp'] == 'true':
                     command += ' --drift-comp'
+
+                # silence restart for alsa or stream or aes input type only
+                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['source']['silence_detect'] == 'true' and odr['source']['silence_duration'] != '' and int(odr['source']['silence_duration']) >> 0:
+                    command += ' --silence=%s' % (odr['source']['silence_duration'])
 
                 # bitrate, samplerate, channels for all input type
                 command += ' --bitrate=%s' % (odr['output']['bitrate'])
                 command += ' --rate=%s' % (odr['output']['samplerate'])
                 command += ' --channels=%s' % (odr['output']['channels'])
 
-                # DAB specific option only for alsa or stream input type
-                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' ) and odr['output']['type'] == 'dab':
+                # DAB specific option only for alsa or stream or aes input type
+                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['output']['type'] == 'dab':
                     command += ' --dab'
                     command += ' --dabmode=%s' % (odr['output']['dab_dabmode'])
                     command += ' --dabpsy=%s' % (odr['output']['dab_dabpsy'])
@@ -260,8 +282,8 @@ class Config():
                         command += ' --ps'
                     if odr['output']['dabp_sbr'] == 'false' and config['odr']['output']['dabp_ps'] == 'false':
                         command += ' --aaclc'
-                    # Disable afterburner only for alsa or stream input type
-                    if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' ) and odr['output']['dabp_afterburner'] == 'false':
+                    # Disable afterburner only for alsa or stream or aes input type
+                    if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['output']['dabp_afterburner'] == 'false':
                         command += ' --no-afterburner'
 
                 # PAD encoder
@@ -269,8 +291,8 @@ class Config():
                     if os.path.exists(odr['padenc']['pad_fifo']) and stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
                         command += ' --pad=%s' % (odr['padenc']['pad'])
                         command += ' --pad-fifo=%s' % (odr['padenc']['pad_fifo'])
-                        # Write icy-text only for stream input type
-                        if odr['source']['type'] == 'stream' :
+                        # Write icy-text only for stream input type and if writeicytext is true
+                        if odr['source']['type'] == 'stream' and odr['source']['stream_writeicytext'] == 'true':
                             command += ' --write-icy-text=%s' % (odr['padenc']['dls_file'])
 
                 # AVT input type specific option

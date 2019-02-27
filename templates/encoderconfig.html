@@ -34,7 +34,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         <h1>Manage encoder</h1>
                 </div>
 
-                <!-- Modal -->
+                <!-- Modal Info -->
                 <div class="modal fade" id="InfoModal" role="dialog">
                 <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -49,6 +49,143 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 </div>
                 </div>
+                </div>
+
+                <!-- Modal AES67 wizard -->
+                <div class="modal fade" id="AES67WizardModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">AES67 SDP file wizard</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#wizard_livewireplus">Livewire+ (axia)</a></li>
+                                    <li><a data-toggle="tab" href="#wizard_dante">Dante</a></li>
+                                    <li><a data-toggle="tab" href="#wizard_ravenna">Ravenna</a></li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="wizard_livewireplus" class="tab-pane fade in active">
+                                        <h4>Livewire+ SDP Generator</h4>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <div class="col-sm-7">
+                                                    <div class="form-group">
+                                                        <label class="control-label" for="wizard_livewireplus_srcnodeip">Source node IP address:</label>
+                                                        <input type="text" class="form-control" id="wizard_livewireplus_srcnodeip" placeholder="Enter source node IP address" value="172.16.235.155">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label" for="wizard_livewireplus_channel">Livewire channel number:</label>
+                                                        <input type="text" class="form-control" id="wizard_livewireplus_channel" placeholder="Enter livewire channel [1-32767]" value="1">
+                                                    </div>
+                                                    <button type="button" class="btn btn-info" id="btn_wizard_livewireplus_copy">Copy SDP preview to SDP content</button>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <div class="form-group">
+                                                        <label class="control-label" for="wizard_livewireplus_sdp">SDP preview:</label>
+                                                        <textarea class="form-control" rows="8" cols="80" id="wizard_livewireplus_sdp"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="wizard_dante" class="tab-pane fade">
+                                        <h4>Dante SDP Generator</h4>
+                                        <p>Work in progress ...</p>
+                                    </div>
+
+                                    <div id="wizard_ravenna" class="tab-pane fade">
+                                        <h4>Ravenna SDP Generator</h4>
+                                        <p>Work in progress ...</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal AVT SNMP Get status -->
+                <div class="modal fade" id="AVTViewModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">AVT SNMP Get status</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#AVTViewGlobal">Global</a></li>
+                                    <li><a data-toggle="tab" href="#AVTViewEncoder">Encoder</a></li>
+                                    <li><a data-toggle="tab" href="#AVTViewAlarms">Alarms</a></li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="AVTViewGlobal" class="tab-pane fade in active">
+                                        <div class="table-responsive">
+                                            <table id="AVTViewTableGlobal" class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="hidden">Key</th>
+                                                        <th class="col-md-4">Description</th>
+                                                        <th class="col-md-4">Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div id="AVTViewEncoder" class="tab-pane fade">
+                                        <div class="table-responsive">
+                                            <table id="AVTViewTableEncoder" class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="hidden">Key</th>
+                                                        <th class="col-md-4">Description</th>
+                                                        <th class="col-md-4">Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div id="AVTViewAlarms" class="tab-pane fade">
+                                        <div class="table-responsive">
+                                            <table id="AVTViewTableAlarms" class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="hidden">Key</th>
+                                                        <th class="col-md-4">Name</th>
+                                                        <th class="col-md-4">State</th>
+                                                        <th class="col-md-4">Date</th>
+                                                        <th class="col-md-4">Count</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <span class="col-md-8 text-left" id="AVTViewInfo"></span>
+                                <button type="button" class="btn btn-info" id="btn_avt_view_refresh">Refresh</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Long form -->
@@ -77,75 +214,134 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="source_type">Input type:</label>
                                                 <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="source_type">
-                                                        <option value="alsa">alsa</option>
-                                                        <option value="stream">stream</option>
-                                                        <option value="avt">avt</option>
-                                                    </select>
+                                                    <div class="input-group">
+                                                        <select type="select" class="form-control" id="source_type">
+                                                            <option value="alsa">alsa</option>
+                                                            <option value="stream">stream</option>
+                                                            <option value="avt">avt</option>
+                                                            <option value="aes67">aes67 (experimental)</option>
+                                                        </select>
+                                                        <span class="input-group-addon"><input type="checkbox" id="source_display" data-toggle="tooltip" data-placement="top" title="Display all parameters."></span>
+                                                    </div>
                                                 </div>
                                                 <label class="control-label col-sm-2" for="source_driftcomp">Drift compensation:</label>
                                                 <div class="col-sm-3">
-                                                <select type="select" class="form-control" id="source_driftcomp">
-                                                    <option value="true">true</option>
-                                                    <option value="false">false</option>
-                                                </select>
-                                                </div>
-                                            </div>
-                                            <hr />
-
-                                            <h4>Source alsa</h4>
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="source_device">Device:</label>
-                                                <div class="col-sm-3">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" id="source_device" placeholder="Enter audio device (ex: hw:1,0)">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" id="btn_list_alsa_devices" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">List devices</button>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr />
-
-                                            <h4>Source stream</h4>
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="source_url">Stream URL:</label>
-                                                <div class="col-sm-8">
-                                                    <input type="text" class="form-control" id="source_url" placeholder="Enter streaming url">
-                                                </div>
-                                            </div>
-                                            <hr />
-
-                                            <h4>Source avt</h4>
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="source_avt_input_uri">input URI:</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="source_avt_input_uri" placeholder="Enter Input URI. (udp://:32010)" data-toggle="tooltip" data-placement="top" title="Input URI. (Supported: 'udp://...')">
-                                                </div>
-                                                <label class="control-label col-sm-2" for="source_avt_pad_port">pad port:</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="source_avt_pad_port" placeholder="Enter pad port" data-toggle="tooltip" data-placement="top" title="Port opened for PAD Frame requests (def=0 not opened)">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="source_avt_control_uri">control URI:</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="source_avt_control_uri" placeholder="Enter Control URI. (udp://192.168.128.111:9325)" data-toggle="tooltip" data-placement="top" title="Output control URI (Supported: 'udp://...')">
-                                                </div>
-                                                <label class="control-label col-sm-2" for="source_avt_jitter_size">jitter size:</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="source_avt_jitter_size" placeholder="Enter jitter size" data-toggle="tooltip" data-placement="top" title="Jitter buffer size, in 24ms frames (def=40)">
+                                                    <select type="select" class="form-control" id="source_driftcomp">
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for=""></label>
+                                                <div class="col-sm-3"></div>
+                                                <label class="control-label col-sm-2" for="source_silence_detect">Silence detect</label>
                                                 <div class="col-sm-3">
-                                                </div>
-                                                <label class="control-label col-sm-2" for="source_avt_timeout">timeout:</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="source_avt_timeout" placeholder="Enter timeout" data-toggle="tooltip" data-placement="top" title="Maximum frame waiting time, in milliseconds (def=2000)">
+                                                    <select type="select" class="form-control" id="source_silence_detect" data-toggle="tooltip" data-placement="top" title="Abort encoding after silence.">
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
                                                 </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for=""></label>
+                                                <div class="col-sm-3"></div>
+                                                <label class="control-label col-sm-2" for="source_silence_duration">Silence duration:</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" id="source_silence_duration" placeholder="Enter silence duration" data-toggle="tooltip" data-placement="top" title="Duration to wait in seconds before restart encoding.">
+                                                </div>
+                                            </div>
+                                            <hr />
+
+                                            <div id="source_type_alsa" class="source_type">
+                                                <h4>Source alsa</h4>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_alsa_device">Device:</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" id="source_alsa_device" placeholder="Enter audio device (ex: plughw:1,0)">
+                                                            <span class="input-group-btn">
+                                                                <button type="button" id="btn_list_alsa_devices" class="btn btn-info" data-toggle="modal" data-target="#InfoModal">List devices</button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+
+                                            <div id="source_type_stream" class="source_type">
+                                                <h4>Source stream</h4>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_stream_url">Stream URL:</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text" class="form-control" id="source_stream_url" placeholder="Enter streaming url">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_stream_writeicytext">Write ICY Text:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="source_stream_writeicytext" data-toggle="tooltip" data-placement="top" title="Write the ICY Text into DLS file">
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+
+                                            <div id="source_type_avt" class="source_type">
+                                                <h4>Source avt</h4>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_avt_input_uri">input URI:</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_input_uri" placeholder="Enter Input URI. (udp://:32010)" data-toggle="tooltip" data-placement="top" title="Input URI. (Supported: 'udp://...')">
+                                                    </div>
+                                                    <label class="control-label col-sm-2" for="source_avt_pad_port">pad port:</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_pad_port" placeholder="Enter pad port" data-toggle="tooltip" data-placement="top" title="Port opened for PAD Frame requests (def=0 not opened)">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_avt_control_uri">control URI:</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_control_uri" placeholder="Enter Control URI. (udp://192.168.128.111:9325)" data-toggle="tooltip" data-placement="top" title="Output control URI (Supported: 'udp://...')">
+                                                    </div>
+                                                    <label class="control-label col-sm-2" for="source_avt_jitter_size">jitter size:</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_jitter_size" placeholder="Enter jitter size" data-toggle="tooltip" data-placement="top" title="Jitter buffer size, in 24ms frames (def=40)">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for=""></label>
+                                                    <div class="col-sm-3">
+                                                        <button type="button" id="btn_avt_view" class="btn btn-info" data-toggle="modal" data-target="#AVTViewModal"><span class="glyphicon glyphicon-eye-open"></span> AVT SNMP Get status</button>
+                                                    </div>
+                                                    <label class="control-label col-sm-2" for="source_avt_timeout">timeout:</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_avt_timeout" placeholder="Enter timeout" data-toggle="tooltip" data-placement="top" title="Maximum frame waiting time, in milliseconds (def=2000)">
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+
+                                            <div id="source_type_aes67" class="source_type">
+                                                <h4>AES67</h4>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_aes67_sdp">SDP content:</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <textarea class="form-control" rows="10" cols="80" id="source_aes67_sdp" placeholder="Enter SDP configuration or use Wizard"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <label class="control-label col-sm-2" for="source_aes67_sdp_file">SDP file:</label>
+                                                    <div class="col-sm-3">
+                                                        <input type="text" class="form-control" id="source_aes67_sdp_file" placeholder="Enter SDP file"><br />
+                                                        <button type="button" id="btn_aes67_wizard" class="btn btn-info" data-toggle="modal" data-target="#AES67WizardModal"><span class="glyphicon glyphicon-flash"></span> AES67 SDP Wizard</button>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -209,7 +405,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                 <div class="col-sm-3">
                                                     <select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrates which are a multiple of 8kbps and under 56 kbps.">
                                                         <option value="true">true</option>
-                                                        <option value="false">false</option>
+                                                        <option value="false">false</option>source_device
                                                     </select>
                                                 </div>
                                             </div>

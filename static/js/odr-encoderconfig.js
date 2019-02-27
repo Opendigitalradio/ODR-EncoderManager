@@ -46,6 +46,10 @@ function requestCoder() {
                 });
             } else
             if ( data['status'] == '0' ) {
+                if ( data['data'].length == 0) {
+                    console.log('00000000000000')
+                    $('.page-header').append( 'No encoder configured. Go to <a href="/encodermanage">Encoder > Manage</a> to add one.' );
+                }
                 $('#tab_coder li').remove();
                 $.each(data['data'], function (key, val) {
                     $('<li><p class="coder_uniq_id hidden">'+val['uniq_id']+'</p><a href="#coder" data-toggle="tab">'+val['name']+'</a></li>').appendTo('#tab_coder');
@@ -53,7 +57,7 @@ function requestCoder() {
                 $('#tab_coder a:first').tab('show');
 
                 // Handler when tab focus change
-                $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                $('#tab_coder').on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
                     requestConfiguration();
                 });
 
@@ -103,13 +107,18 @@ function requestConfiguration(reload=false) {
                 // Set default value
                 $('#source_type option[value="stream"]').prop('selected', true);
                 $('#source_driftcomp option[value="true"]').prop('selected', true);
-                $('#source_device').val('plughw:1,0');
-                $('#source_url').val('');
+                $('#source_silence_detect option[value="true"]').prop('selected', true);
+                $('#source_silence_duration').val('60');
+                $('#source_alsa_device').val('plughw:1,0');
+                $('#source_stream_url').val('');
+                $('#source_stream_writeicytext option[value="true"]').prop('selected', true);
                 $('#source_avt_input_uri').val('udp://:32010');
                 $('#source_avt_control_uri').val('udp://192.168.128.111:9325');
                 $('#source_avt_pad_port').val('9405');
                 $('#source_avt_jitter_size').val('80');
                 $('#source_avt_timeout').val('2000');
+                $('#source_aes67_sdp_file').val('/var/tmp/'+coder_uniq_id+'.sdp');
+                $('#source_aes67_sdp').text('');
 
                 $('#output_type').val('dabp');
                 $('#output_bitrate').val('88');
@@ -124,10 +133,10 @@ function requestConfiguration(reload=false) {
                 $('#output_zmq_key').val('');
 
                 $('#padenc_enable option[value="true"]').prop('selected', true);
-                $('#padenc_slide_sleeping').val('20');
-                $('#padenc_slide_directory').val('/tmp/slide/');
-                $('#padenc_pad_fifo').val('/tmp/metadata.pad');
-                $('#padenc_dls_file').val('/tmp/metadata.dls');
+                $('#padenc_slide_sleeping').val('0');
+                $('#padenc_slide_directory').val('/var/tmp/slide-'+coder_uniq_id+'/');
+                $('#padenc_pad_fifo').val('/var/tmp/metadata-'+coder_uniq_id+'.pad');
+                $('#padenc_dls_file').val('/var/tmp/metadata-'+coder_uniq_id+'.dls');
                 $('#padenc_pad').val('34');
                 $('#padenc_slide_once option[value="true"]').prop('selected', true);
                 $('#padenc_raw_dls option[value="false"]').prop('selected', true);
@@ -139,7 +148,7 @@ function requestConfiguration(reload=false) {
                 $('#path_encoder_path').val('/usr/local/bin/odr-audioenc');
                 $('#path_padenc_path').val('/usr/local/bin/odr-padenc');
                 $('#path_sourcecompanion_path').val('/usr/local/bin/odr-sourcecompanion');
-                $('#path_zmq_key_tmp_file').val('/tmp/zmq.key');
+                $('#path_zmq_key_tmp_file').val('/var/tmp/zmq-'+coder_uniq_id+'.key');
 
                 // Set value from configuration if available
                 $.each( data['data'], function( section_key, section_val ) {
@@ -152,12 +161,17 @@ function requestConfiguration(reload=false) {
                             // -- To keep compatibility
                             if ( form_key == 'padenc_pad_fifo_file') { form_key='padenc_pad_fifo' }
                             if ( form_key == 'padenc_dls_fifo_file') { form_key='padenc_dls_file' }
+                            if ( form_key == 'source_device') { form_key='source_alsa_device' }
+                            if ( form_key == 'source_url') { form_key='source_stream_url' }
 
                             if ( $('#'+form_key).prop('tagName') == 'INPUT' ) {
                                 $('#'+form_key).val(param_val);
                             }
                             else if ( $('#'+form_key).prop('tagName') == 'SELECT' ) {
                                 $('#'+form_key+' option[value="'+param_val+'"]').prop('selected', true);
+                            }
+                            else if ( $('#'+form_key).prop('tagName') == 'TEXTAREA' ) {
+                                $('#'+form_key).text(param_val);
                             }
                             else if ( $('#'+form_key).prop('tagName') == 'DIV' ) {
 
@@ -227,14 +241,19 @@ function setConfiguration() {
                     },
             "source" : {
                         "type": $('#source_type').val(),
-                        "url": $('#source_url').val(),
-                        "device": $('#source_device').val(),
+                        "stream_url": $('#source_stream_url').val(),
+                        "stream_writeicytext": $('#source_stream_writeicytext').val(),
+                        "alsa_device": $('#source_alsa_device').val(),
                         "driftcomp": $('#source_driftcomp').val(),
+                        "silence_detect": $('#source_silence_detect').val(),
+                        "silence_duration": $('#source_silence_duration').val(),
                         "avt_input_uri": $('#source_avt_input_uri').val(),
                         "avt_control_uri": $('#source_avt_control_uri').val(),
                         "avt_pad_port": $('#source_avt_pad_port').val(),
                         "avt_jitter_size": $('#source_avt_jitter_size').val(),
                         "avt_timeout": $('#source_avt_timeout').val(),
+                        "aes67_sdp_file": $('#source_aes67_sdp_file').val(),
+                        "aes67_sdp": $('#source_aes67_sdp').val(),
                     },
             "output" : {
                         "type": $('#output_type').val(),
@@ -311,15 +330,29 @@ function setConfiguration() {
 }
 
 function setEnableDisable(){
+    if ($('#source_display').is(':checked')) {
+        $('.source_type').show();
+    } else {
+        $('.source_type').hide();
+    }
+
     if ($('#source_type').val() == 'stream') {
-        $('#source_url').prop('disabled', false);
-        $('#source_device').prop('disabled', true);
+        $('#source_type_stream').show();
+        $('#source_stream_url').prop('disabled', false);
+        $('#source_stream_writeicytext').prop('disabled', false);
+        $('#source_alsa_device').prop('disabled', true);
+        $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
+        $('#source_silence_detect').prop('disabled', false);
+        $('#source_silence_duration').prop('disabled', false);
         $('#source_avt_input_uri').prop('disabled', true);
         $('#source_avt_control_uri').prop('disabled', true);
         $('#source_avt_pad_port').prop('disabled', true);
         $('#source_avt_jitter_size').prop('disabled', true);
         $('#source_avt_timeout').prop('disabled', true);
+        $('#source_aes67_sdp').prop('disabled', true);
+        $('#source_aes67_sdp_file').prop('disabled', true);
+        $('#btn_aes67_wizard').prop('disabled', true);
         $('#output_type').prop('disabled', false);
         $('#output_zmq_host').prop('disabled', false);
         $('#output_zmq_key').prop('disabled', false);
@@ -347,14 +380,22 @@ function setEnableDisable(){
     }
 
     if ($('#source_type').val() == 'alsa') {
-        $('#source_url').prop('disabled', true);
-        $('#source_device').prop('disabled', false);
+        $('#source_type_alsa').show();
+        $('#source_stream_url').prop('disabled', true);
+        $('#source_stream_writeicytext').prop('disabled', true);
+        $('#source_alsa_device').prop('disabled', false);
+        $('#btn_list_alsa_devices').prop('disabled', false);
         $('#source_driftcomp').prop('disabled', false);
+        $('#source_silence_detect').prop('disabled', false);
+        $('#source_silence_duration').prop('disabled', false);
         $('#source_avt_input_uri').prop('disabled', true);
         $('#source_avt_control_uri').prop('disabled', true);
         $('#source_avt_pad_port').prop('disabled', true);
         $('#source_avt_jitter_size').prop('disabled', true);
         $('#source_avt_timeout').prop('disabled', true);
+        $('#source_aes67_sdp').prop('disabled', true);
+        $('#source_aes67_sdp_file').prop('disabled', true);
+        $('#btn_aes67_wizard').prop('disabled', true);
         $('#output_type').prop('disabled', false);
         $('#output_zmq_host').prop('disabled', false);
         $('#output_zmq_key').prop('disabled', false);
@@ -378,14 +419,22 @@ function setEnableDisable(){
     }
 
     if ($('#source_type').val() == 'avt') {
-        $('#source_url').prop('disabled', true);
-        $('#source_device').prop('disabled', true);
+        $('#source_type_avt').show();
+        $('#source_stream_url').prop('disabled', true);
+        $('#source_stream_writeicytext').prop('disabled', true);
+        $('#source_alsa_device').prop('disabled', true);
+        $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', true);
+        $('#source_silence_detect').prop('disabled', true);
+        $('#source_silence_duration').prop('disabled', true);
         $('#source_avt_input_uri').prop('disabled', false);
         $('#source_avt_control_uri').prop('disabled', false);
         $('#source_avt_pad_port').prop('disabled', false);
         $('#source_avt_jitter_size').prop('disabled', false);
         $('#source_avt_timeout').prop('disabled', false);
+        $('#source_aes67_sdp').prop('disabled', true);
+        $('#source_aes67_sdp_file').prop('disabled', true);
+        $('#btn_aes67_wizard').prop('disabled', true);
         $('#output_type').prop('disabled', false);
         $('#output_zmq_host').prop('disabled', false);
         $('#output_zmq_key').prop('disabled', false);
@@ -407,6 +456,157 @@ function setEnableDisable(){
             $('#output_dab_dabpsy').prop('disabled', true);
         }
     }
+
+    if ($('#source_type').val() == 'aes67') {
+        $('#source_type_aes67').show();
+        $('#source_stream_url').prop('disabled', true);
+        $('#source_stream_writeicytext').prop('disabled', true);
+        $('#source_alsa_device').prop('disabled', true);
+        $('#btn_list_alsa_devices').prop('disabled', true);
+        $('#source_driftcomp').prop('disabled', false);
+        $('#source_silence_detect').prop('disabled', false);
+        $('#source_silence_duration').prop('disabled', false);
+        $('#source_avt_input_uri').prop('disabled', true);
+        $('#source_avt_control_uri').prop('disabled', true);
+        $('#source_avt_pad_port').prop('disabled', true);
+        $('#source_avt_jitter_size').prop('disabled', true);
+        $('#source_avt_timeout').prop('disabled', true);
+        $('#source_aes67_sdp').prop('disabled', false);
+        $('#source_aes67_sdp_file').prop('disabled', false);
+        $('#btn_aes67_wizard').prop('disabled', false);
+        $('#output_type').prop('disabled', false);
+        $('#output_zmq_host').prop('disabled', false);
+        $('#output_zmq_key').prop('disabled', false);
+        $('#output_bitrate').prop('disabled', false);
+        $('#output_samplerate').prop('disabled', false);
+        $('#output_channels').prop('disabled', false);
+        if ($('#output_type').val() == 'dab') {
+            $('#output_dabp_sbr').prop('disabled', true);
+            $('#output_dabp_ps').prop('disabled', true);
+            $('#output_dabp_afterburner').prop('disabled', true);
+            $('#output_dab_dabmode').prop('disabled', false);
+            $('#output_dab_dabpsy').prop('disabled', false);
+        }
+        if ($('#output_type').val() == 'dabp') {
+            $('#output_dabp_sbr').prop('disabled', false);
+            $('#output_dabp_ps').prop('disabled', false);
+            $('#output_dabp_afterburner').prop('disabled', false);
+            $('#output_dab_dabmode').prop('disabled', true);
+            $('#output_dab_dabpsy').prop('disabled', true);
+        }
+    }
+
+}
+
+function mk_livewireplus_sdp(srcnode, chan) {
+    console.log('ip: '+srcnode+', chan: '+chan)
+    var b2, b3, mcastip, sdp;
+    b2 = Math.floor(chan / 256);
+    b3 = chan - b2 * 256;
+    mcastip = "239.192." + b2 + "." + b3;
+
+    sdp = "v=0\n";
+    sdp += "o=Node 1 1 IN IP4 " + srcnode + "\n";
+    sdp += "s=TestSine" + "\n";
+    sdp += "t=0 0" + "\n";
+    sdp += "a=type:multicast" + "\n";
+    sdp += "c=IN IP4 " + mcastip + "\n";
+    sdp += "m=audio 5004 RTP/AVP 97" + "\n";
+    sdp += "a=rtpmap:97 L24/48000/2" + "\n";
+    return sdp;
+}
+
+function updateAVTView(interval) {
+
+    uri = $('#source_avt_control_uri').val()
+    var r = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
+    ip = uri.match(r)[0]
+
+    $('#btn_avt_view_refresh').prop('disabled', true);
+    $("#AVTViewInfo").text("SNMP request in progress on "+ip+" ...");
+
+    $.ajax({
+        type: "GET",
+        url: "/api/getAVTStatus?ip="+ip,
+        contentType: 'application/json',
+        dataType: 'json',
+
+        error: function(data) {
+                $.gritter.add({
+                    title: 'AVT get status',
+                    text: "ERROR",
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+        },
+        success: function(data) {
+            if (data['status'] == '-401') {
+                console.log('Session timeout. Please login again.')
+                $.gritter.add({
+                    title: 'Session timeout',
+                    text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            } else
+            if (data['status'] != '0') {
+                $("#AVTViewInfo").text("SNMP ERROR : " + data['statusText'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+            } else {
+                // ADD or UPDATE ROW
+                $.each( data['data'], function( key, val ) {
+                    if (key == 'Encoder') {
+                        $.each( data['data'][key][0], function( keyE, valE ) {
+                            cl=''
+                            if ((keyE == 'State') && (valE != 'running')) { cl='danger' }
+                            if ((keyE == 'OnAir') && (valE != 'true')) { cl='danger' }
+                            if ((keyE == 'LvlRight') && (valE <= -40)) { cl='danger' }
+                            if ((keyE == 'LvlLeft') && (valE <= -40)) { cl='danger' }
+                            if ((keyE == 'PadRate') && (valE == 0)) { cl='warning' }
+                            tr = $('#AVTViewTableEncoder tr:contains('+keyE+')')
+                            // if key already exist on table, update
+                            if ( typeof tr[0] === 'undefined') {
+                                $('#AVTViewTableEncoder > tbody:last').append('<tr class="'+cl+'"><td class="hidden">'+keyE+'</td><td>'+keyE+'</td><td>'+valE+'</td></tr>');
+                            } else {
+                                tr.find('td:eq(2)').html(valE);
+                                tr.attr( "class", cl );
+                            }
+                        });
+                    } else if (key == 'Alarms') {
+                        $.each( data['data'][key], function( keyA, valA ) {
+                            cl=''
+                            if (valA['AlarmState'] == 'true') { cl='danger' }
+                            tr = $('#AVTViewTableAlarms tr:contains('+valA['AlarmName']+')')
+                            // if key already exist on table, update
+                            if ( typeof tr[0] === 'undefined') {
+                                $('#AVTViewTableAlarms > tbody:last').append('<tr class="'+cl+'"><td class="hidden">'+valA['AlarmName']+'</td><td>'+valA['AlarmName']+'</td><td>'+valA['AlarmState']+'</td><td>'+valA['AlarmDateTime']+'</td><td>'+valA['AlarmCount']+'</td></tr>');
+                            } else {
+                                tr.find('td:eq(2)').html(valA['AlarmState']);
+                                tr.find('td:eq(3)').html(valA['AlarmDateTime']);
+                                tr.find('td:eq(4)').html(valA['AlarmCount']);
+                                tr.attr( "class", cl );
+                            }
+                        });
+                    } else {
+                        cl=''
+                        if ((key == 'MainboardDsp1Workload') && (val >= 99)) { cl='danger' }
+                        if ((key == 'MainboardTemperature') && (val >= 60)) { cl='danger' }
+                        tr = $('#AVTViewTableGlobal tr:contains('+key+')')
+                        // if key already exist on table, update
+                        if ( typeof tr[0] === 'undefined') {
+                            $('#AVTViewTableGlobal > tbody:last').append('<tr class="'+cl+'"><td class="hidden">'+key+'</td><td>'+key+'</td><td>'+val+'</td></tr>');
+                        } else {
+                            tr.find('td:eq(2)').html(val);
+                            tr.attr( "class", cl );
+                        }
+                    }
+                });
+                $("#AVTViewInfo").text("SNMP Ok");
+            }
+
+            $('#btn_avt_view_refresh').prop('disabled', false);
+        }
+    });
+
 }
 
 // Button handler
@@ -420,6 +620,10 @@ $(function(){
     });
 
     $("#source_type").change(function() {
+        setEnableDisable();
+    });
+
+    $('#source_display').click(function () {
         setEnableDisable();
     });
 
@@ -468,6 +672,37 @@ $(function(){
         });
     });
 
+    // Modal AVT View
+    $('#btn_avt_view').click(function () {
+        $('#AVTViewTableGlobal tbody > tr').remove()
+        $('#AVTViewTableEncoder tbody > tr').remove()
+        $('#AVTViewTableAlarms tbody > tr').remove()
+        updateAVTView()
+    });
+
+    $('#btn_avt_view_refresh').click(function () {
+        updateAVTView()
+    });
+
+
+    // Modal Wizard AES67
+    $('#btn_aes67_wizard').click(function () {
+        $("#wizard_livewireplus_sdp").html( mk_livewireplus_sdp( $("#wizard_livewireplus_srcnodeip").val(), $("#wizard_livewireplus_channel").val() ) )
+    });
+
+    // Wizard livewireplus
+    $("#wizard_livewireplus_srcnodeip").on('keyup change', function (){
+        $("#wizard_livewireplus_sdp").val( mk_livewireplus_sdp( $("#wizard_livewireplus_srcnodeip").val(), $("#wizard_livewireplus_channel").val() ) )
+    });
+    $("#wizard_livewireplus_channel").on('keyup change', function (){
+        $("#wizard_livewireplus_sdp").val( mk_livewireplus_sdp( $("#wizard_livewireplus_srcnodeip").val(), $("#wizard_livewireplus_channel").val() ) )
+    });
+    $('#btn_wizard_livewireplus_copy').click(function () {
+        $("#source_aes67_sdp").val( $("#wizard_livewireplus_sdp").val() )
+        $('#AES67WizardModal').modal('hide');
+    });
+
+    // Add ZMQ output
     $('#btn_output_zmq_add').click(function () {
         if ( $('#add_output_zmq_enable').is(":checked") ) {
             output_zmq_enable=' checked="checked"';
@@ -484,7 +719,7 @@ $(function(){
 
 // ToolTip init
 $(function(){
-    $('[data-toggle="tooltip"]').tooltip();   
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 // Onload

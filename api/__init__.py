@@ -38,6 +38,7 @@ else:
 
 from config import Config
 from auth import AuthController, require, is_login
+from avt import AVT
 
 import subprocess
 import io
@@ -47,7 +48,7 @@ import shutil
 
 import hashlib
 import codecs
-
+import re
 import uuid
 
 class API():
@@ -65,6 +66,29 @@ class API():
     def index(self):
         cherrypy.response.headers['content-type'] = "text/plain"
         return """This is the api area."""
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @require()
+    def getAVTStatus(self, **params):
+        def is_valid_ip(ip):
+            m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", ip)
+            return bool(m) and all(map(lambda n: 0 <= int(n) <= 255, m.groups()))
+
+        query = parse_query_string(cherrypy.request.query_string)
+
+        if 'ip' in query:
+            if is_valid_ip(query['ip']):
+                avt = AVT(snmp_host=query['ip'])
+                avt_get = avt.getAll()
+                if avt_get['status'] == 0:
+                    return {'status': '0', 'statusText': 'Ok', 'data': avt_get['data']}
+                else:
+                    return {'status': avt_get['status'], 'statusText': avt_get['statusText'], 'data': avt_get['data']}
+            else:
+                return {'status': '-241', 'statusText': 'Invalid AVT IP parameter', 'data': ''}
+        else:
+            return {'status': '-242', 'statusText': 'Missing AVT IP parameter', 'data': ''}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

@@ -1,7 +1,7 @@
 {
     "odr": [{
         "path": {
-            "zmq_key_tmp_file": "/tmp/zmq.key",
+            "zmq_key_tmp_file": "/var/tmp/sample.key",
             "padenc_path": "/usr/local/bin/odr-padenc",
             "sourcecompanion_path": "/usr/local/bin/odr-sourcecompanion",
             "encoder_path": "/usr/local/bin/odr-audioenc"
@@ -13,10 +13,10 @@
             "uniform_label_ins": "1200",
             "uniform_init_burst": "12",
             "raw_dls": "false",
-            "slide_directory": "/tmp/slide/",
+            "slide_directory": "/var/tmp/sample/",
             "slide_once": "true",
-            "pad_fifo_file": "/tmp/metadata.pad",
-            "dls_fifo_file": "/tmp/metadata.dls",
+            "pad_fifo_file": "/var/tmp/metadata-sample.pad",
+            "dls_fifo_file": "/var/tmp/metadata-sample.dls",
             "pad": "34",
             "slide_sleeping": "20"
         },
@@ -24,11 +24,14 @@
             "avt_pad_port": "9405",
             "avt_timeout": "2000",
             "driftcomp": "true",
-            "url": "http://ice.stream.frequence3.net/frequence3-128.mp3",
+            "stream_url": "http://ice.stream.frequence3.net/frequence3-128.mp3",
+            "stream_writeicytext": "true",
             "avt_jitter_size": "80",
             "avt_control_uri": "udp://192.168.128.111:9325",
             "avt_input_uri": "udp://:32010",
-            "device": "hw:1,0",
+            "alsa_device": "hw:1,0",
+            "aes67_sdp": "",
+            "aes67_sdp_file": "/var/tmp/sample.sdp",
             "type": "stream"
         },
         "output": {

@@ -147,9 +147,11 @@ class AuthController(object):
     def login(self, username=None, password=None, from_page="/", **params):
         encode_username=escape(str(username), True)
         encode_from_page=escape(str(from_page[0]), True)
+        if not isinstance(from_page, (list, tuple)):
+            from_page = [from_page]
         if username is None or password is None:
             tmpl = env.get_template("login.html")
-            if from_page.startswith('api', 1):
+            if from_page[0].startswith('api', 1):
                 cherrypy.response.headers['content-type'] = "application/json"
                 return json.dumps( {'status': '-401', 'statusText': 'Unauthorized'} ).encode()
             else:
@@ -159,7 +161,7 @@ class AuthController(object):
         error_msg = check_credentials(conf.config['auth'], username, password)
         if error_msg:
             tmpl = env.get_template("login.html")
-            if from_page.startswith('api', 1):
+            if from_page[0].startswith('api', 1):
                 cherrypy.response.headers['content-type'] = "application/json"
                 return json.dumps( {'status': '-401', 'statusText': 'Unauthorized'} ).encode()
             else:

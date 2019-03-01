@@ -350,6 +350,7 @@ function setEnableDisable(){
         $('#source_avt_pad_port').prop('disabled', true);
         $('#source_avt_jitter_size').prop('disabled', true);
         $('#source_avt_timeout').prop('disabled', true);
+        $('#btn_avt_view').prop('disabled', true);
         $('#source_aes67_sdp').prop('disabled', true);
         $('#source_aes67_sdp_file').prop('disabled', true);
         $('#btn_aes67_wizard').prop('disabled', true);
@@ -393,6 +394,7 @@ function setEnableDisable(){
         $('#source_avt_pad_port').prop('disabled', true);
         $('#source_avt_jitter_size').prop('disabled', true);
         $('#source_avt_timeout').prop('disabled', true);
+        $('#btn_avt_view').prop('disabled', true);
         $('#source_aes67_sdp').prop('disabled', true);
         $('#source_aes67_sdp_file').prop('disabled', true);
         $('#btn_aes67_wizard').prop('disabled', true);
@@ -432,6 +434,7 @@ function setEnableDisable(){
         $('#source_avt_pad_port').prop('disabled', false);
         $('#source_avt_jitter_size').prop('disabled', false);
         $('#source_avt_timeout').prop('disabled', false);
+        $('#btn_avt_view').prop('disabled', false);
         $('#source_aes67_sdp').prop('disabled', true);
         $('#source_aes67_sdp_file').prop('disabled', true);
         $('#btn_aes67_wizard').prop('disabled', true);
@@ -471,6 +474,7 @@ function setEnableDisable(){
         $('#source_avt_pad_port').prop('disabled', true);
         $('#source_avt_jitter_size').prop('disabled', true);
         $('#source_avt_timeout').prop('disabled', true);
+        $('#btn_avt_view').prop('disabled', true);
         $('#source_aes67_sdp').prop('disabled', false);
         $('#source_aes67_sdp_file').prop('disabled', false);
         $('#btn_aes67_wizard').prop('disabled', false);

@@ -158,7 +158,7 @@ function requestConfiguration(reload=false) {
                         $.each( section_val, function( param_key, param_val ) {
                             form_key = section_key + '_' + param_key
 
-                            // -- To keep compatibility
+                            // -- To keep compatibility - can be removed ?
                             if ( form_key == 'padenc_pad_fifo_file') { form_key='padenc_pad_fifo' }
                             if ( form_key == 'padenc_dls_fifo_file') { form_key='padenc_dls_file' }
                             if ( form_key == 'source_device') { form_key='source_alsa_device' }

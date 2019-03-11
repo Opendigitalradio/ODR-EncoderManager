@@ -156,16 +156,18 @@ if __name__ == '__main__':
             print ( 'Error when writing configuration file: ' + str(e) )
             sys.exit(2)
 
-        # Check if configuration file need to be updated with new key
-        config.checkConfigurationFile()
-        config.checkSupervisorProcess()
-
-
     # Check if configuration file need to be updated with new key
     try:
         config.checkConfigurationFile()
-    except:
+    except Exception as e:
         print ( 'Error when configuration file check: ' + str(e) )
+        sys.exit(2)
+        
+    # Check supervisor process and add or remove it if necessary
+    try:
+        config.checkSupervisorProcess()
+    except Exception as e:
+        print ( 'Error during supervisor process check: ' + str(e) )
         sys.exit(2)
 
     # Start cherrypy

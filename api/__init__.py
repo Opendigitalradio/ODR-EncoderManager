@@ -174,27 +174,11 @@ class API():
                 return {'status': '-222', 'statusText': 'Error when writing network file: ' + str(e)}
 
 
-            # Check if ODR program availaible in supervisor ProcessInfo and try to add it
+            # Check configuration file
+            self.conf.checkConfigurationFile()
 
-            # Retreive supervisor process
-            server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
-            programs = server.supervisor.getAllProcessInfo()
-
-            # Check for ODR-audioencoder
-            if not self.is_program_exist(programs, 'ODR-audioencoder'):
-                try:
-                    server.supervisor.reloadConfig()
-                    server.supervisor.addProcessGroup('ODR-audioencoder')
-                except:
-                    return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
-
-            # Check for ODR-padencoder
-            if not self.is_program_exist(programs, 'ODR-padencoder'):
-                try:
-                    server.supervisor.reloadConfig()
-                    server.supervisor.addProcessGroup('ODR-padencoder')
-                except:
-                    return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
+            # Check process and add/remove if necessary
+            self.conf.checkSupervisorProcess()
 
             return {'status': '0', 'statusText': 'Ok'}
         else:

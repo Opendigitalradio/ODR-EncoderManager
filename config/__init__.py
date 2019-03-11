@@ -109,28 +109,24 @@ class Config():
         except Exception as e:
             return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
 
-        # Remove old ODR-audioencoder & ODR-padencoder
-        service = 'ODR-audioencoder'
-        if self.is_program_exist(programs, service):
-            try:
-                if self.is_program_running(programs, service):
-                    server.supervisor.stopProcess(service)
-                    server.supervisor.reloadConfig()
-                server.supervisor.removeProcessGroup(service)
-                server.supervisor.reloadConfig()
-            except Exception as e:
-                raise ValueError ( 'Error when removing old format ODR-audioencoder (XMLRPC): ' + str(e) )
+        # Remove unused ODR-audioencoder & ODR-padencoder
+        for process in programs:
+            if process['name'].startswith('ODR-audioencoder') or process['name'].startswith('ODR-padencoder'):
+                if process['name'].startswith('ODR-audioencoder'):
+                    uuid = process['name'][17:]
 
-        service = 'ODR-padencoder'
-        if self.is_program_exist(programs, service):
-            try:
-                if self.is_program_running(programs, service):
-                    server.supervisor.stopProcess(service)
-                    server.supervisor.reloadConfig()
-                server.supervisor.removeProcessGroup(service)
-                server.supervisor.reloadConfig()
-            except Exception as e:
-                raise ValueError( 'Error when removing old format ODR-padencoder (XMLRPC): ' + str(e) )
+                if process['name'].startswith('ODR-padencoder'):
+                    uuid = process['name'][15:]
+
+                if not any(c['uniq_id'] == uuid for c in self.config['odr']):
+                    try:
+                        if self.is_program_running(programs, process['name']):
+                            server.supervisor.stopProcess(process['name'])
+                            server.supervisor.reloadConfig()
+                        server.supervisor.removeProcessGroup(process['name'])
+                        server.supervisor.reloadConfig()
+                    except Exception as e:
+                        raise ValueError( 'Error when removing process %s (XMLRPC): %s' % (process['name'], str(e)) )
 
         # Add new ODR-audioencoder & ODR-padencoder
         try:

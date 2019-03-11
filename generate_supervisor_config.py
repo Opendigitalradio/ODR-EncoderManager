@@ -48,6 +48,8 @@ if __name__ == '__main__':
 
         # Check if configuration file need to be updated with new key
         config.checkConfigurationFile()
+
+        # Check supervisor process and add or remove it if necessary
         config.checkSupervisorProcess()
 
     # Generate supervisor files

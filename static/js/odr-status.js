@@ -67,17 +67,32 @@ function requestDLS(interval) {
                     }
 
                     coder_tr = $('#dls tr:contains('+val['coder_uniq_id']+')')
-                    // if UUID already exist on table, update DLS and dlplus
+                    // if UUID not exist in table, insert new row
                     if ( typeof coder_tr[0] === 'undefined') {
                         //console.log('UUID not found')
-                        $('#dls > tbody:last').append('<tr><td data-toggle="tooltip" data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+val['dls']+'</td><td>'+dlplus+'</td><td><button type="button" class="btn btn-xs btn-info dls_edit" id="dls_edit" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td></tr>');
-                    // else (coder not exist in table), insert new row
+                        if (val['status'] != '0') {
+                            dls = val['statusText'];
+                            dlplus = '';
+                            cl = 'disabled';
+                        } else {
+                            dls = val['dls'];
+                            cl = '';
+                        }
+                        $('#dls > tbody:last').append('<tr><td data-toggle="tooltip" data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+dls+'</td><td>'+dlplus+'</td><td><button type="button" class="btn btn-xs btn-info dls_edit '+cl+'" id="dls_edit" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td></tr>');
+                    // else (coder exist in table), update
                     } else {
                         //console.log('UUID found, update')
                         coder_tr.find('td:eq(0)').html(val['coder_name']);
                         coder_tr.find('td:eq(0)').prop('title', val['coder_description']);
-                        coder_tr.find('td:eq(2)').html(val['dls']);
-                        coder_tr.find('td:eq(3)').html(dlplus);
+                        if (val['status'] != '0') {
+                            coder_tr.find('td:eq(2)').html(val['statusText']);
+                            coder_tr.find('td:eq(3)').html('');
+                            coder_tr.find('td:eq(4) #dls_edit').addClass("disabled");
+                        } else {
+                            coder_tr.find('td:eq(2)').html(val['dls']);
+                            coder_tr.find('td:eq(3)').html(dlplus);
+                            coder_tr.find('td:eq(4) #dls_edit').removeClass("disabled");
+                        }
                     }
                 });
 

@@ -753,13 +753,13 @@ class API():
                                 dlplus= {}
                                 for d in dlplus_data:
                                     dlplus[d['name']] = dls[d['start']:d['start']+d['len']+1]
-                                output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': str(dls), 'dlplus': dlplus})
+                                output.append({'status': '0', 'statusText': 'Ok', 'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': str(dls), 'dlplus': dlplus})
                             else:
-                                output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': str(dls)})
+                                output.append({'status': '0', 'statusText': 'Ok', 'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': str(dls)})
                     else:
-                        output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': 'DLS is disabled'})
+                        output.append({'status': '-10', 'statusText': 'DLS is disabled', 'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': ''})
                 else:
-                        output.append({'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': 'Encoder is not configured'})
+                        output.append({'status': '-20', 'statusText': 'Encoder is not configured', 'coder_uniq_id': odr['uniq_id'], 'coder_name': odr['name'], 'coder_description': odr['description'], 'dls': ''})
 
         if ('uniq_id' in query) and (len(output) == 0):
             return {'status': '0', 'statusText': 'uniq_id not found', 'data': output}

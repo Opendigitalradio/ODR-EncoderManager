@@ -9,6 +9,8 @@
 import os
 import argparse
 from config import Config
+import sys
+import uuid
 
 if __name__ == '__main__':
 
@@ -27,9 +29,29 @@ if __name__ == '__main__':
     # Load configuration
     config = Config(cli_args.config)
 
+    # Check if configuration file need to be updated to support multi encoder
+    if isinstance(config.config['odr'], dict):
+        print ( 'Convert configuration file to support multi encoder ...' )
+
+        odr = config.config['odr']
+        odr['name'] = 'default coder'
+        odr['uniq_id'] = str(uuid.uuid4())
+        odr['description'] = 'This is the default coder converted from previous version'
+        output = { 'global': config.config['global'], 'auth': config.config['auth'], 'odr': [ odr ] }
+
+        # Write configuration file
+        try:
+            config.write(output)
+        except Exception as e:
+            print ( 'Error when writing configuration file: ' + str(e) )
+            sys.exit(2)
+
+        # Check if configuration file need to be updated with new key
+        config.checkConfigurationFile()
+        config.checkSupervisorProcess()
+
     # Generate supervisor files
     try:
         config.generateSupervisorFiles(config.config)
-        print('Wrote supervisor config')
     except Exception as e:
-        print('Error generating supervisor files: {}'.format(e))
+        print('Error generating supervisor files: ' + str(e))

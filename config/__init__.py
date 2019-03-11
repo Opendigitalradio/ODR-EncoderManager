@@ -28,6 +28,13 @@ import sys
 import json
 import stat
 
+if sys.version_info >= (3, 0):
+    from xmlrpc import client as xmlrpc_client
+else:
+    import xmlrpclib as xmlrpc_client
+
+
+
 def is_network(config_file):
     conf = Config(config_file)
     if ('network' in conf.config['global']) and ('networkInterfaces_file' in conf.config['global']):
@@ -51,6 +58,103 @@ class Config():
                 outfile.write(data)
         except Exception as e:
             raise ValueError(str(e))
+
+    def is_program_exist(self, json, program):
+        return any(p['name'] == program for p in json)
+
+    def is_program_running(self, json, program):
+        return any(p['name'] == program and p['statename'] == 'RUNNING' for p in json)
+
+    def checkConfigurationFile(self):
+        self.load(self.config_file)
+        odr = []
+        for coder in self.config['odr']:
+            if 'padenc' in coder:
+                if not 'uniform' in coder['padenc']:
+                    coder['padenc']['uniform'] = 'false'
+                if 'pad_fifo_file' in coder['padenc']:
+                    coder['padenc']['pad_fifo'] = coder['padenc']['pad_fifo_file']
+                    del coder['padenc']['pad_fifo_file']
+                if 'dls_fifo_file' in coder['padenc']:
+                    coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
+                    del coder['padenc']['dls_fifo_file']
+            if 'source' in coder:
+                if not 'stream_writeicytext' in coder['source']:
+                    coder['source']['stream_writeicytext'] = 'true'
+                if not 'silence_detect' in coder['source']:
+                    coder['source']['silence_detect'] = 'false'
+                if not 'silence_duration' in coder['source']:
+                    coder['source']['silence_duration'] = '30'
+                if 'device' in coder['source']:
+                    coder['source']['alsa_device'] = coder['source']['device']
+                    del coder['source']['device']
+                if 'url' in coder['source']:
+                    coder['source']['stream_url'] = coder['source']['url']
+                    del coder['source']['url']
+            odr.append(coder)
+        # Write configuration file
+        output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr }
+        self.write(output)
+        self.load(self.config_file)
+
+    def checkSupervisorProcess(self):
+        self.load(self.config_file)
+        try:
+            server = xmlrpc_client.ServerProxy(self.config['global']['supervisor_xmlrpc'])
+        except Exception as e:
+            return {'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)}
+
+        try:
+            programs = server.supervisor.getAllProcessInfo()
+        except Exception as e:
+            return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
+
+        # Remove old ODR-audioencoder & ODR-padencoder
+        service = 'ODR-audioencoder'
+        if self.is_program_exist(programs, service):
+            try:
+                if self.is_program_running(programs, service):
+                    server.supervisor.stopProcess(service)
+                    server.supervisor.reloadConfig()
+                server.supervisor.removeProcessGroup(service)
+                server.supervisor.reloadConfig()
+            except Exception as e:
+                raise ValueError ( 'Error when removing old format ODR-audioencoder (XMLRPC): ' + str(e) )
+
+        service = 'ODR-padencoder'
+        if self.is_program_exist(programs, service):
+            try:
+                if self.is_program_running(programs, service):
+                    server.supervisor.stopProcess(service)
+                    server.supervisor.reloadConfig()
+                server.supervisor.removeProcessGroup(service)
+                server.supervisor.reloadConfig()
+            except Exception as e:
+                raise ValueError( 'Error when removing old format ODR-padencoder (XMLRPC): ' + str(e) )
+
+        # Add new ODR-audioencoder & ODR-padencoder
+        try:
+            self.generateSupervisorFiles(self.config)
+        except Exception as e:
+            raise ValueError( 'Error when generating new supervisor files: ' + str(e) )
+
+        # Add new supervisor configuration
+        for coder in self.config['odr']:
+            if all (k in coder for k in ("source","output","padenc","path")):
+                if coder['padenc']['enable'] == 'true':
+                    if not self.is_program_exist(programs, 'ODR-padencoder-%s'  % (coder['uniq_id'])):
+                        try:
+                            server.supervisor.reloadConfig()
+                            server.supervisor.addProcessGroup('ODR-padencoder-%s' % (coder['uniq_id']))
+                        except Exception as e:
+                            return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
+
+                if not self.is_program_exist(programs, 'ODR-audioencoder-%s' % (coder['uniq_id'])):
+                    try:
+                        server.supervisor.reloadConfig()
+                        server.supervisor.addProcessGroup('ODR-audioencoder-%s' % (coder['uniq_id']))
+                    except Exception as e:
+                        return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
 
     def generateNetworkFiles(self, config):
         # Write network/interfaces file

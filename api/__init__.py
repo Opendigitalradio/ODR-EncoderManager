@@ -431,14 +431,14 @@ class API():
             for odr in odr_to_remove:
                 if all (k in odr for k in ("source","output","padenc","path")):
                     # Remove DLS fifo / PAD file
-                    if os.path.exists(data['padenc']['dls_file']):
+                    if os.path.exists(odr['padenc']['dls_file']):
                         try:
-                            os.remove(data['padenc']['dls_file'])
+                            os.remove(odr['padenc']['dls_file'])
                         except:
                             pass
-                    if os.path.exists(data['padenc']['pad_fifo']):
+                    if os.path.exists(odr['padenc']['pad_fifo']):
                         try:
-                            os.remove(data['padenc']['pad_fifo'])
+                            os.remove(odr['padenc']['pad_fifo'])
                         except:
                             pass
 
@@ -446,23 +446,25 @@ class API():
                     service = 'ODR-audioencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
                         try:
-                            server.supervisor.stopProcess(service)
-                            server.supervisor.reloadConfig()
+                            if self.is_program_running(programs, service):
+                                server.supervisor.stopProcess(service)
+                                server.supervisor.reloadConfig()
                             server.supervisor.removeProcessGroup(service)
                             server.supervisor.reloadConfig()
                         except Exception as e:
-                            return {'status': '-206', 'statusText': 'Error when removing ODR-audioencoder (XMLRPC): ' + str(e)}
+                            return {'status': '-206', 'statusText': 'Error when removing ODR-audioencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
 
                     # Remove service ODR-padencoder
                     service = 'ODR-padencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
                         try:
-                            server.supervisor.stopProcess(service)
-                            server.supervisor.reloadConfig()
+                            if self.is_program_running(programs, service):
+                                server.supervisor.stopProcess(service)
+                                server.supervisor.reloadConfig()
                             server.supervisor.removeProcessGroup(service)
                             server.supervisor.reloadConfig()
                         except Exception as e:
-                            return {'status': '-206', 'statusText': 'Error when removing ODR-padencoder (XMLRPC): ' + str(e)}
+                            return {'status': '-206', 'statusText': 'Error when removing ODR-padencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
 
         return {'status': '0', 'statusText': 'Ok', 'data': 'ok'}
 
@@ -562,16 +564,17 @@ class API():
             try:
                 server.supervisor.reloadConfig()
                 server.supervisor.addProcessGroup('ODR-audioencoder-%s' % (param['uniq_id']))
-            except:
+            except Exception as e:
                 return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
 
         # Check for ODR-padencoder
-        if not self.is_program_exist(programs, 'ODR-padencoder-%s'  % (param['uniq_id'])):
-            try:
-                server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup('ODR-padencoder-%s' % (param['uniq_id']))
-            except:
-                return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
+        if param['padenc']['enable'] == 'true':
+            if not self.is_program_exist(programs, 'ODR-padencoder-%s'  % (param['uniq_id'])):
+                try:
+                    server.supervisor.reloadConfig()
+                    server.supervisor.addProcessGroup('ODR-padencoder-%s' % (param['uniq_id']))
+                except Exception as e:
+                    return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
 
         return {'status': '0', 'statusText': 'Ok'}
 
@@ -782,6 +785,9 @@ class API():
     def is_program_exist(self, json, program):
         return any(p['name'] == program for p in json)
 
+    def is_program_running(self, json, program):
+        return any(p['name'] == program and p['statename'] == 'RUNNING' for p in json)
+
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @require()
@@ -886,12 +892,18 @@ class API():
         try:
             for data in self.conf.config['odr']:
                 if all (k in data for k in ("source","output","padenc","path")):
-                    for p in ('ODR-audioencoder', 'ODR-padencoder'):
-                        pn = server.supervisor.getProcessInfo('%s-%s' % (p, data['uniq_id']) )
+                    if data['padenc']['enable'] == 'true':
+                        pn = server.supervisor.getProcessInfo('ODR-padencoder-%s' % (data['uniq_id']) )
                         pn['coder_name'] = data['name']
                         pn['coder_description'] = data['description']
                         pn['coder_uniq_id'] = data['uniq_id']
                         output.append( pn )
+                    pn = server.supervisor.getProcessInfo('ODR-audioencoder-%s' % (data['uniq_id']) )
+                    pn['coder_name'] = data['name']
+                    pn['coder_description'] = data['description']
+                    pn['coder_uniq_id'] = data['uniq_id']
+                    output.append( pn )
+
                 else:
                     output.append({
                         'now': 0,

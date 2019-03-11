@@ -156,34 +156,16 @@ if __name__ == '__main__':
             print ( 'Error when writing configuration file: ' + str(e) )
             sys.exit(2)
 
+        # Check if configuration file need to be updated with new key
+        config.checkConfigurationFile()
+        config.checkSupervisorProcess()
+
+
     # Check if configuration file need to be updated with new key
-    odr = []
-    for coder in config.config['odr']:
-        if 'padenc' in coder:
-            if 'pad_fifo_file' in coder['padenc']:
-                print('Rename KEY pad_fifo_file to pad_fifo ...')
-                coder['padenc']['pad_fifo'] = coder['padenc']['pad_fifo_file']
-                del coder['padenc']['pad_fifo_file']
-            if 'dls_fifo_file' in coder['padenc']:
-                print('Rename KEY dls_fifo_file to dls_file ...')
-                coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
-                del coder['padenc']['dls_fifo_file']
-        if 'source' in coder:
-            if 'device' in coder['source']:
-                print('Rename KEY device to alsa_device ...')
-                coder['source']['alsa_device'] = coder['source']['device']
-                del coder['source']['device']
-            if 'url' in coder['source']:
-                print('Rename KEY url to stream_url ...')
-                coder['source']['stream_url'] = coder['source']['url']
-                del coder['source']['url']
-        odr.append(coder)
-    # Write configuration file
-    output = { 'global': config.config['global'], 'auth': config.config['auth'], 'odr': odr }
     try:
-        config.write(output)
-    except Exception as e:
-        print ( 'Error when writing configuration file: ' + str(e) )
+        config.checkConfigurationFile()
+    except:
+        print ( 'Error when configuration file check: ' + str(e) )
         sys.exit(2)
 
     # Start cherrypy

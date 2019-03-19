@@ -6,7 +6,7 @@
 
 
 from pysnmp.hlapi import *
-from pysnmp.smi.view import MibViewController
+#from pysnmp.smi.view import MibViewController
 import sys
 import argparse
 import json

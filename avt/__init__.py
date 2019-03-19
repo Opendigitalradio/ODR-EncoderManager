@@ -62,6 +62,7 @@ class AVT():
                         ObjectType(ObjectIdentity('1.3.6.1.4.1.26196.10.3.11.10.20.11.1.4')),
                         ObjectType(ObjectIdentity('1.3.6.1.4.1.26196.10.3.11.10.20.11.1.5')),
                         ObjectType(ObjectIdentity('1.3.6.1.4.1.26196.10.3.11.10.20.11.1.6')),
+                        lookupMib=False,
                         lexicographicMode=False):
 
             if errorIndication:
@@ -115,6 +116,7 @@ class AVT():
                         ObjectType(ObjectIdentity('1.3.6.1.4.1.26196.10.3.11.10.50.11.1.31')),
                         ObjectType(ObjectIdentity('1.3.6.1.4.1.26196.10.3.11.10.50.11.1.40')),
                         ObjectType(ObjectIdentity('1.3.6.1.4.1.26196.10.3.11.10.50.11.1.50')),
+                        lookupMib=False,
                         lexicographicMode=False):
 
             if errorIndication:

@@ -140,7 +140,7 @@ class LcdMatrix( object ):
 		#for i in range(0, len(commandlist)):
 			#self.__serial.write(chr(commandlist[i]))
 			
-        self.__serial.write(bytes(commandlist))
+		self.__serial.write(bytes(commandlist))
 			
 		self.__serial.flush()
 		time.sleep( 0.05 ) # toujours attendre un peu après une commande

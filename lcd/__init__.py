@@ -137,8 +137,11 @@ class LcdMatrix( object ):
 		"""
 		commandlist.insert(0, CMD_START_COMMAND )
 
-		for i in range(0, len(commandlist)):
-			self.__serial.write(chr(commandlist[i]))
+		#for i in range(0, len(commandlist)):
+			#self.__serial.write(chr(commandlist[i]))
+			
+        self.__serial.write(bytes(commandlist))
+			
 		self.__serial.flush()
 		time.sleep( 0.05 ) # toujours attendre un peu après une commande
 		
@@ -164,7 +167,7 @@ class LcdMatrix( object ):
 				Plusieurs appels à write() avec autoscroll = True insère
 				des saut de lignes entre les appels :-)
 		"""
-		self.__serial.write( str )
+		self.__serial.write( str.encode() )
 		self.__serial.flush()
 		#for i in range( 0, len( str )):
 		#	self.__serial_file.write( chr(ord(str[i])) )

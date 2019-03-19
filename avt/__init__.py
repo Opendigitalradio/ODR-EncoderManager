@@ -152,10 +152,11 @@ class AVT():
         for (errorIndication,
             errorStatus,
             errorIndex,
-            varBinds) in nextCmd(SnmpEngine(),
+            varBinds) in bulkCmd(SnmpEngine(),
                                 CommunityData(self.snmp_community, mpModel=self.snmp_version),
                                 UdpTransportTarget((self.snmp_host, self.snmp_port), timeout=self.snmp_timeout, retries=self.snmp_retries),
                                 ContextData(),
+                                0, 25,
                                 ObjectType(ObjectIdentity(oid)),
                                 lookupMib=False,
                                 lexicographicMode=False):

@@ -8,7 +8,6 @@ import os
 import socket
 import argparse
 
-from api import API
 from config import Config
 from lcd import LcdMatrix
 

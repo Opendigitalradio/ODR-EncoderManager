@@ -797,7 +797,7 @@ class API():
 
         user_exists = any(u['username'] == param['username'] for u in output['auth']['users'])
         if not user_exists:
-            output['auth']['users'].append({'username': param['username'], 'password': hashlib.md5(param['password']).hexdigest()});
+            output['auth']['users'].append({'username': param['username'], 'password': hashlib.md5(param['password'].encode('utf-8')).hexdigest()});
         else:
             return {'status': '-201', 'statusText': 'User already exists'}
 

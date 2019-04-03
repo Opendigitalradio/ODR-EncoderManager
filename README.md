@@ -1,6 +1,9 @@
 # ODR-EncoderManager
 OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder easly with a WebGUI.
 
+# Note about version V4.0.1
+  * resolve 500 Internal server error when adding user
+
 # Note about version V4.0.0
 From version V4.0.0, python2 that will be deprecated on January 1st 2020 is no longer supported. Use python3.
 

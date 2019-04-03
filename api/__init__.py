@@ -70,6 +70,18 @@ class API():
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @require()
+    def info(self):
+        encodermanager_version = subprocess.check_output(["git", "describe"]).strip().decode('UTF-8')
+        python_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+
+        return { 'status': '0', 'statusText': 'Ok',
+                 'version': { 'odr-encodermanager': encodermanager_version,
+                              'python': python_version
+                              }}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @require()
     def getAVTStatus(self, **params):
         def is_valid_ip(ip):
             m = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", ip)

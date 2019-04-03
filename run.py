@@ -162,7 +162,7 @@ if __name__ == '__main__':
     except Exception as e:
         print ( 'Error when configuration file check: ' + str(e) )
         sys.exit(2)
-        
+
     # Check supervisor process and add or remove it if necessary
     try:
         config.checkSupervisorProcess()

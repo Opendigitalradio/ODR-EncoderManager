@@ -43,21 +43,25 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <b>Set DLS / DL+ for all encoder</b>
-                    <p>To set a text metadata used for DLS, use http GET or POST on the Encoder Manager API from your automation software.</p>
+                    <b>Set DLS for all encoder</b>
+                    <p>To set text metadata used for DLS, use http GET or POST (Form data) on the Encoder Manager API from your automation software.</p>
                     <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}</pre>
+                    <pre>curl -X POST -F 'dls={artist}-{title}' http://{ip}:8080/api/setDLS</pre>
 
-                    <p>As an alternative DLS+ tags are automatically activated if you use artist & title parameters:</p>
+                    <b>Set DLS for specific encoder</b>
+                    <p>If you want to update DLS / DL+ for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
+                    <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}&uniq_id={00000000-0000-0000-0000-000000000000}</pre>
+                    <pre>curl -X POST -F 'dls={artist}-{title}' -F 'uniq_id={00000000-0000-0000-0000-000000000000}' http://{ip}:8080/api/setDLS</pre>
+
+                    <b>Set DL+</b>
+                    <p>As an alternative DL+ tags are automatically activated if you use artist & title parameters:</p>
                     <pre>http://{ip}:8080/api/setDLS?artist={artist}&title={title}</pre>
+                    <pre>curl -X POST -F 'artist={artist}' -F 'title={title}' http://{ip}:8080/api/setDLS</pre>
 
                     <p>Many radio automation software can send this information to Encoder Manager API by using a call of this type (for example)</p>
                     <pre>http://{ip}:8080/api/setDLS?dls=%%artist%% - %%title%%</pre>
                     <p>%%artist%% - %%title%% should be replaced with the expression expected from your radio automation software.</p>
                     <p>At each events on your playlist (when a track start) the radio automation software will send via this url the appropriate metadata to  Encoder Manager API. It will be reflected on the DAB signal.</p>
-
-                    <b>Set DLS / DL+ for specific encoder</b>
-                    <p>If you want to update DLS / DL+ for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
-                    <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}&uniq_id={00000000-0000-0000-0000-000000000000}</pre>
                 </div>
                 </div>
             </div>

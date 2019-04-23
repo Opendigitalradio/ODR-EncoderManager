@@ -189,7 +189,13 @@ function requestStatus(callback) {
                         action = action + '<button type="button" class="btn btn-xs btn-danger" id="service_stop"><span class="glyphicon glyphicon-stop"></span> Stop</button> '
                         action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart"><span class="glyphicon glyphicon-repeat"></span> Restart</button> '
                     }
-                    service=val['name'].split('-')[0] + '-' + val['name'].split('-')[1];
+
+                    if ( val['coder_name'] == 'Other process' ) {
+                        service=val['name']
+                    } else {
+                        service=val['name'].split('-')[0] + '-' + val['name'].split('-')[1];
+                    }
+
                     $('#status > tbody:last').append('<tr><td data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+service+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+action+'</td></tr>');
 
                 });
@@ -212,8 +218,14 @@ function sleep(delay) {
 
 function serviceAction(action, service, uniq_id, coder) {
     console.log(action+' '+service+' '+uniq_id+' '+coder)
-    var param = {
-        'service': service+'-'+uniq_id
+    if (uniq_id == '') {
+        var param = {
+        'service': service
+        }
+    } else {
+        var param = {
+            'service': service+'-'+uniq_id
+        }
     }
     $.ajax({
         type: "POST",

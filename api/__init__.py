@@ -941,15 +941,32 @@ class API():
             return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): {}'.format(e)}
 
         if 'supervisor_additional_processes' in self.conf.config['global']:
-            try:
-                for proc in self.conf.config['global']['supervisor_additional_processes']:
+            for proc in self.conf.config['global']['supervisor_additional_processes']:
+                try:
                     pn = server.supervisor.getProcessInfo(proc)
                     pn['coder_name'] = 'Other process'
                     pn['coder_description'] = 'It\'s an additional supervisor process'
                     pn['coder_uniq_id'] = ''
                     output.append( pn )
-            except Exception as e:
-                return {'status': '-301', 'statusText': 'Error when getting additional supervisor process status (XMLRPC): {}'.format(e)}
+                except Exception as e:
+                    output.append({
+                        'now': 0,
+                        'group': '%s' % (proc),
+                        'description': 'PROCESS is not available',
+                        'pid': 0,
+                        'stderr_logfile': '',
+                        'stop': 0,
+                        'statename': 'UNKNOWN',
+                        'start': 0,
+                        'state': 1000,
+                        'stdout_logfile': '',
+                        'logfile': '',
+                        'existstatus': 0,
+                        'name': '%s' % (proc),
+                        'coder_name': 'Other process',
+                        'coder_description': 'It\'s an additional supervisor process',
+                        'coder_uniq_id': ''
+                    })
 
         return {'status': '0', 'statusText': 'Ok', 'data': output}
 

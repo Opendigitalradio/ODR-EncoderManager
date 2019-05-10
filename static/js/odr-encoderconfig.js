@@ -559,21 +559,30 @@ function updateAVTView(interval) {
                 // ADD or UPDATE ROW
                 $.each( data['data'], function( key, val ) {
                     if (key == 'Encoder') {
-                        $.each( data['data'][key][0], function( keyE, valE ) {
-                            cl=''
-                            if ((keyE == 'State') && (valE != 'running')) { cl='danger' }
-                            if ((keyE == 'OnAir') && (valE != 'true')) { cl='danger' }
-                            if ((keyE == 'LvlRight') && (valE <= -40)) { cl='danger' }
-                            if ((keyE == 'LvlLeft') && (valE <= -40)) { cl='danger' }
-                            if ((keyE == 'PadRate') && (valE == 0)) { cl='warning' }
-                            tr = $('#AVTViewTableEncoder tr:contains('+keyE+')')
-                            // if key already exist on table, update
-                            if ( typeof tr[0] === 'undefined') {
-                                $('#AVTViewTableEncoder > tbody:last').append('<tr class="'+cl+'"><td class="hidden">'+keyE+'</td><td>'+keyE+'</td><td>'+valE+'</td></tr>');
-                            } else {
-                                tr.find('td:eq(2)').html(valE);
-                                tr.attr( "class", cl );
-                            }
+                        console.log( data['data'][key].length )
+
+                        $.each( data['data'][key], function( keyEM, valEM ) {
+                            $.each( data['data'][key][keyEM], function( keyE, valE ) {
+//                                 console.log(keyE + ':' + valE)
+                                cl=''
+                                if ((keyE == 'State') && (valE != 'running')) { cl='danger' }
+                                if ((keyE == 'OnAir') && (valE != 'true')) { cl='danger' }
+                                if ((keyE == 'AudioLevelRight') && (valE <= -40)) { cl='danger' }
+                                if ((keyE == 'AudioLevelLeft') && (valE <= -40)) { cl='danger' }
+                                if ((keyE == 'PadRate') && (valE == 0)) { cl='warning' }
+                                tr = $('#AVTViewTableEncoder tr:contains('+keyE+')')
+                                // if key already exist on table, update
+                                if ( typeof tr[0] === 'undefined') {
+                                    //$('#AVTViewTableEncoder > tbody:last').append('<tr class="'+cl+'"><td class="hidden">'+keyE+'</td><td>'+keyE+'</td><td>'+valE+'</td></tr>');
+                                    $('#AVTViewTableEncoder > tbody:last').append('<tr><td class="hidden">'+keyE+'</td><td>'+keyE+'</td><td></td><td></td><td></td><td></td></tr>');
+                                    tr = $('#AVTViewTableEncoder tr:contains('+keyE+')')
+                                    tr.find('td:eq('+ (2+keyEM) +')').html(valE);
+                                    tr.find('td:eq('+ (2+keyEM) +')').attr( "class", cl );
+                                } else {
+                                    tr.find('td:eq('+ (2+keyEM) +')').html(valE);
+                                    tr.find('td:eq('+ (2+keyEM) +')').attr( "class", cl );
+                                }
+                            });
                         });
                     } else if (key == 'Alarms') {
                         $.each( data['data'][key], function( keyA, valA ) {
@@ -593,6 +602,7 @@ function updateAVTView(interval) {
                     } else {
                         cl=''
                         if ((key == 'MainboardDsp1Workload') && (val >= 99)) { cl='danger' }
+                        if ((key == 'MainboardDsp2Workload') && (val >= 99)) { cl='danger' }
                         if ((key == 'MainboardTemperature') && (val >= 60)) { cl='danger' }
                         tr = $('#AVTViewTableGlobal tr:contains('+key+')')
                         // if key already exist on table, update

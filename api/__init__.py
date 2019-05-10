@@ -344,10 +344,75 @@ class API():
         self.conf = Config(self.config_file)
 
         if 'uniq_id' in query:
+            output = {}
             for data in self.conf.config['odr']:
                 if data['uniq_id'] == query['uniq_id']:
-                    return {'status': '0', 'statusText': 'Ok', 'data': data}
-            return {'status': '-299', 'statusText': 'coder not found', 'data': {}}
+                    output = data
+            if 'uniq_id' in output:
+                # Set default value
+                if 'source' not in output:
+                    output['source'] = {
+                        'type': 'stream',
+                        'driftcomp': 'true',
+                        'silence_detect': 'true',
+                        'silence_duration': '60',
+                        'alsa_device': 'plughw:1,0',
+                        'stream_url': '',
+                        'stream_writeicytext': 'true',
+                        'avt_input_uri': 'udp://:32010',
+                        'avt_control_uri': 'udp://192.168.128.111:9325',
+                        'avt_pad_port': '9405',
+                        'avt_jitter_size': '80',
+                        'avt_timeout': '4000',
+                        'aes67_sdp_file': '/var/tmp/'+output['uniq_id']+'.sdp',
+                        'aes67_sdp': ''
+                        }
+                if 'output' not in output:
+                    output['output'] = {
+                        'type': 'dabp',
+                        'bitrate': '88',
+                        'channels': '2',
+                        'samplerate': '48000',
+                        'dabp_sbr': 'true',
+                        'dabp_afterburner': 'true',
+                        'dabp_ps': 'false',
+                        'dab_dabmode': 'j',
+                        'dab_dabpsy': '1',
+                        'zmq_output': [],
+                        'zmq_key': ''
+                        }
+                if 'padenc' not in output:
+                    output['padenc'] = {
+                        'enable': 'true',
+                        'slide_sleeping': '0',
+                        'slide_directory': '/var/tmp/slide-'+output['uniq_id']+'/',
+                        'pad_fifo': '/var/tmp/metadata-'+output['uniq_id']+'.pad',
+                        'dls_file': '/var/tmp/metadata-'+output['uniq_id']+'.dls',
+                        'pad': '34',
+                        'slide_once': 'true',
+                        'raw_dls': 'false',
+                        'uniform': 'true',
+                        'uniform_init_burst': '12',
+                        'uniform_label': '12',
+                        'uniform_label_ins': '1200'
+                        }
+                    if os.path.exists('/pad/metadata'):
+                        output['padenc']['dls_file'] = '/pad/metadata-'+output['uniq_id']+'.dls'
+
+                    if os.path.exists('/pad/slide'):
+                        output['padenc']['slide_directory'] = '/pad/slide/'+output['uniq_id']+'/live/'
+
+                if 'path' not in output:
+                    output['path'] = {
+                        'encoder_path': '/usr/local/bin/odr-audioenc',
+                        'padenc_path': '/usr/local/bin/odr-padenc',
+                        'sourcecompanion_path': '/usr/local/bin/odr-sourcecompanion',
+                        'zmq_key_tmp_file': '/var/tmp/zmq-'+output['uniq_id']+'.key'
+                        }
+
+                return {'status': '0', 'statusText': 'Ok', 'data': output}
+            else:
+                return {'status': '-299', 'statusText': 'coder not found', 'data': {}}
         else:
             return {'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr'][0]}
 

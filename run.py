@@ -170,6 +170,9 @@ if __name__ == '__main__':
         print ( 'Error during supervisor process check: ' + str(e) )
         sys.exit(2)
 
+    # init configuration changed
+    config.initConfigurationChanged()
+
     # Start cherrypy
     if config.config['global']['daemon']:
         cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()

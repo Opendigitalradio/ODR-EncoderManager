@@ -190,13 +190,19 @@ function requestStatus(callback) {
                         action = action + '<button type="button" class="btn btn-xs btn-warning" id="service_restart"><span class="glyphicon glyphicon-repeat"></span> Restart</button> '
                     }
 
+                    if (val['configuration_changed'] == true) {
+                        info = '<div class="text-right"><button type="button" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="left" title="The configuration has changed. Restart required."><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></button></div>'
+                    } else {
+                        info = ''
+                    }
+
                     if ( val['coder_name'] == 'Other process' ) {
                         service=val['name']
                     } else {
                         service=val['name'].split('-')[0] + '-' + val['name'].split('-')[1];
                     }
 
-                    $('#status > tbody:last').append('<tr><td data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+service+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+action+'</td></tr>');
+                    $('#status > tbody:last').append('<tr><td data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+service+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+info+'</td><td>'+action+'</td></tr>');
 
                 });
             } else {
@@ -218,15 +224,19 @@ function sleep(delay) {
 
 function serviceAction(action, service, uniq_id, coder) {
     console.log(action+' '+service+' '+uniq_id+' '+coder)
-    if (uniq_id == '') {
+//     if (uniq_id == '') {
+//         var param = {
+//         'service': service,
+//         'uniq_id': uniq_id,
+//         'coder': coder
+//         }
+//     } else {
         var param = {
-        'service': service
+            'service': service,
+            'uniq_id': uniq_id,
+            'coder': coder
         }
-    } else {
-        var param = {
-            'service': service+'-'+uniq_id
-        }
-    }
+//     }
     $.ajax({
         type: "POST",
         url: "/api/"+action,

@@ -527,6 +527,9 @@ class API():
                         except Exception as e:
                             return {'status': '-206', 'statusText': 'Error when removing ODR-padencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
 
+                    # Remove configuration_changed information
+                    self.conf.delConfigurationChanged(odr['uniq_id'])
+
         return {'status': '0', 'statusText': 'Ok', 'data': 'ok'}
 
     @cherrypy.expose
@@ -958,11 +961,13 @@ class API():
                         pn['coder_name'] = data['name']
                         pn['coder_description'] = data['description']
                         pn['coder_uniq_id'] = data['uniq_id']
+                        pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-padencoder')
                         output.append( pn )
                     pn = server.supervisor.getProcessInfo('ODR-audioencoder-%s' % (data['uniq_id']) )
                     pn['coder_name'] = data['name']
                     pn['coder_description'] = data['description']
                     pn['coder_uniq_id'] = data['uniq_id']
+                    pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-audioencoder')
                     output.append( pn )
 
                 else:
@@ -982,7 +987,8 @@ class API():
                         'name': 'ODR-audioencoder-%s' % (data['uniq_id']),
                         'coder_name': data['name'],
                         'coder_description': data['description'],
-                        'coder_uniq_id': data['uniq_id']
+                        'coder_uniq_id': data['uniq_id'],
+                        'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-audioencoder')
                         })
                     output.append({
                         'now': 0,
@@ -1000,7 +1006,8 @@ class API():
                         'name': 'ODR-padencoder-%s' % (data['uniq_id']),
                         'coder_name': data['name'],
                         'coder_description': data['description'],
-                        'coder_uniq_id': data['uniq_id']
+                        'coder_uniq_id': data['uniq_id'],
+                        'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-padencoder')
                         })
         except Exception as e:
             return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): {}'.format(e)}
@@ -1036,29 +1043,37 @@ class API():
         return {'status': '0', 'statusText': 'Ok', 'data': output}
 
 
-    def serviceAction(self, action, service):
+    def serviceAction(self, action, service, uniq_id):
         self.conf = Config(self.config_file)
+        if uniq_id != '':
+            process = '%s-%s' % (service, uniq_id)
+        else:
+            process = service
 
         server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         try:
             if action == 'start':
                 server.supervisor.reloadConfig()
-                server.supervisor.removeProcessGroup(service)
+                server.supervisor.removeProcessGroup(process)
                 server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup(service)
+                server.supervisor.addProcessGroup(process)
                 server.supervisor.reloadConfig()
-                #server.supervisor.startProcess(service)
+                #server.supervisor.startProcess(process)
+                if uniq_id != '':
+                    self.conf.setConfigurationChanged(uniq_id, service, False)
             elif action == 'stop':
-                server.supervisor.stopProcess(service)
+                server.supervisor.stopProcess(process)
             elif action == 'restart':
-                server.supervisor.stopProcess(service)
+                server.supervisor.stopProcess(process)
 
                 server.supervisor.reloadConfig()
-                server.supervisor.removeProcessGroup(service)
+                server.supervisor.removeProcessGroup(process)
                 server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup(service)
+                server.supervisor.addProcessGroup(process)
                 server.supervisor.reloadConfig()
-                #server.supervisor.startProcess(service)
+                #server.supervisor.startProcess(process)
+                if uniq_id != '':
+                    self.conf.setConfigurationChanged(uniq_id, service, False)
         except Exception as e:
             return { 'status': '-401', 'statusText': str(e) }
         else:
@@ -1072,7 +1087,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         data = json.loads(rawbody.decode('utf-8'))
 
-        return self.serviceAction('start', data['service'])
+        return self.serviceAction('start', data['service'], data['uniq_id'])
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -1082,7 +1097,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         data = json.loads(rawbody.decode('utf-8'))
 
-        return self.serviceAction('stop', data['service'])
+        return self.serviceAction('stop', data['service'], data['uniq_id'])
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -1092,4 +1107,4 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         data = json.loads(rawbody.decode('utf-8'))
 
-        return self.serviceAction('restart', data['service'])
+        return self.serviceAction('restart', data['service'], data['uniq_id'])

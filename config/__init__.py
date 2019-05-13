@@ -51,7 +51,174 @@ class Config():
         with open(self.config_file) as data_file:
             self.config = json.load(data_file)
 
-    def write(self, config):
+    def initConfigurationChanged(self):
+        global configurationChanged
+        configurationChanged = {}
+        for coder in self.config['odr']:
+            #configurationChanged[coder['uniq_id']] = {'ODR-audioencoder': False, 'ODR-padencoder': False}
+            self.addConfigurationChanged(coder['uniq_id'])
+
+    def addConfigurationChanged(self, uniq_id):
+        configurationChanged[uniq_id] = {'ODR-audioencoder': False, 'ODR-padencoder': False}
+
+    def delConfigurationChanged(self, uniq_id):
+        del configurationChanged[uniq_id]
+
+    def getConfigurationChanged(self, uniq_id, process):
+        if uniq_id in configurationChanged:
+            return configurationChanged[uniq_id][process]
+        else:
+            return None
+
+    def setConfigurationChanged(self, uniq_id, service, status):
+        configurationChanged[uniq_id][service] = status
+
+    def applyConfigurationChanged(self, config):
+        def isOutputNotEqual(new, old, ignore_keys = []):
+            newTemp = []
+            oldTemp = []
+
+            for l in new:
+                v = {}
+                for dk, dv in l.items():
+                    if dk in ignore_keys:
+                        pass
+                    else:
+                        v[dk] = dv
+                newTemp.append(v)
+            for l in old:
+                v = {}
+                for dk, dv in l.items():
+                    if dk in ignore_keys:
+                        pass
+                    else:
+                        v[dk] = dv
+                oldTemp.append(v)
+
+            return newTemp != oldTemp
+
+        for coderNew in config['odr']:
+            for coderOld in self.config['odr']:
+                if coderNew['uniq_id'] == coderOld['uniq_id']:
+                    if all (k in coderOld for k in ("source","output","padenc","path")):
+
+                        if coderNew['uniq_id'] not in configurationChanged:
+                            self.addConfigurationChanged(coderNew['uniq_id'])
+
+                        if coderNew['source']['type'] != coderOld['source']['type']:
+                            self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                        else:
+                            if coderNew['source']['type'] == 'stream':
+                                if coderNew['source']['driftcomp'] != coderOld['source']['driftcomp']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['silence_detect'] != coderOld['source']['silence_detect']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['silence_duration'] != coderOld['source']['silence_duration']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['stream_url'] != coderOld['source']['stream_url']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['stream_writeicytext'] != coderOld['source']['stream_writeicytext']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                            if coderNew['source']['type'] == 'alsa':
+                                if coderNew['source']['driftcomp'] != coderOld['source']['driftcomp']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['silence_detect'] != coderOld['source']['silence_detect']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['silence_duration'] != coderOld['source']['silence_duration']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['alsa_device'] != coderOld['source']['alsa_device']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                            if coderNew['source']['type'] == 'avt':
+                                if coderNew['source']['avt_input_uri'] != coderOld['source']['avt_input_uri']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['avt_control_uri'] != coderOld['source']['avt_control_uri']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['avt_pad_port'] != coderOld['source']['avt_pad_port']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['avt_jitter_size'] != coderOld['source']['avt_jitter_size']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['avt_timeout'] != coderOld['source']['avt_timeout']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                            if coderNew['source']['type'] == 'aes67':
+                                if coderNew['source']['aes67_sdp'] != coderOld['source']['aes67_sdp']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['source']['aes67_sdp_file'] != coderOld['source']['aes67_sdp_file']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                        if coderNew['output']['type'] != coderOld['output']['type']:
+                            self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                        else:
+                            if coderNew['output']['type'] == 'dabp':
+                                if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['channels'] != coderOld['output']['channels']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                                if coderNew['output']['dabp_sbr'] != coderOld['output']['dabp_sbr']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['dabp_ps'] != coderOld['output']['dabp_ps']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['dabp_afterburner'] != coderOld['output']['dabp_afterburner']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                                # check output
+                                if isOutputNotEqual(coderNew['output']['zmq_output'], coderOld['output']['zmq_output'], ['name']):
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                            if coderNew['output']['type'] == 'dab':
+                                if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['channels'] != coderOld['output']['channels']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                                if coderNew['output']['dab_dabmode'] != coderOld['output']['dab_dabmode']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                if coderNew['output']['dab_dabpsy'] != coderOld['output']['dab_dabpsy']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                                # check output
+                                if isOutputNotEqual(coderNew['output']['zmq_output'], coderOld['output']['zmq_output'], ['name']):
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+
+                        if coderNew['padenc']['enable'] != coderOld['padenc']['enable']:
+                            self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                            self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                        else:
+                            if coderNew['padenc']['slide_sleeping'] != coderOld['padenc']['slide_sleeping']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['slide_directory'] != coderOld['padenc']['slide_directory']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['slide_once'] != coderOld['padenc']['slide_once']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['raw_dls'] != coderOld['padenc']['raw_dls']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['uniform'] != coderOld['padenc']['uniform']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['uniform_init_burst'] != coderOld['padenc']['uniform_init_burst']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['uniform_label'] != coderOld['padenc']['uniform_label']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['uniform_label_ins'] != coderOld['padenc']['uniform_label_ins']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['pad'] != coderOld['padenc']['pad']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['pad_fifo'] != coderOld['padenc']['pad_fifo']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+                            if coderNew['padenc']['dls_file'] != coderOld['padenc']['dls_file']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-padencoder', True)
+
+
+    def write(self, config, checkConfigurationChanged=True):
+        if checkConfigurationChanged:
+            self.applyConfigurationChanged(config)
+
         try:
             with open(self.config_file, 'w') as outfile:
                 data = json.dumps(config, indent=4, separators=(',', ': '))
@@ -94,7 +261,7 @@ class Config():
             odr.append(coder)
         # Write configuration file
         output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr }
-        self.write(output)
+        self.write(output, False)
         self.load(self.config_file)
 
     def checkSupervisorProcess(self):

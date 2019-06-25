@@ -397,10 +397,10 @@ class API():
                         'uniform_label_ins': '1200'
                         }
                     if os.path.exists('/pad/metadata'):
-                        output['padenc']['dls_file'] = '/pad/metadata-'+output['uniq_id']+'.dls'
+                        output['padenc']['dls_file'] = '/pad/metadata/'+output['uniq_id']+'.dls'
 
                     if os.path.exists('/pad/slide'):
-                        output['padenc']['slide_directory'] = '/pad/slide/'+output['uniq_id']+'/live/'
+                        output['padenc']['slide_directory'] = '/pad/slide/live/'+output['uniq_id']+'/'
 
                 if 'path' not in output:
                     output['path'] = {
@@ -503,6 +503,19 @@ class API():
                         except:
                             pass
 
+                    if os.path.exists(odr['padenc']['slide_directory']):
+                        try:
+                            shutil.rmtree(odr['padenc']['slide_directory'])
+                        except:
+                            pass
+
+                        # If config.mot_slide_directory start with /pad/slide/live/, try to remove carousel directory
+                        if odr['padenc']['slide_directory'].startswith('/pad/slide/live/'):
+                            try:
+                                shutil.rmtree('/pad/slide/carousel/'+odr['padenc']['slide_directory'].replace('/pad/slide/live/', ''))
+                            except:
+                                pass
+
                     # Remove service ODR-audioencoder
                     service = 'ODR-audioencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
@@ -571,6 +584,19 @@ class API():
                                 os.remove(data['padenc']['pad_fifo'])
                             except:
                                 pass
+                    if data['padenc']['slide_directory'] != param['padenc']['slide_directory']:
+                        if os.path.exists(data['padenc']['slide_directory']):
+                            try:
+                                shutil.rmtree(data['padenc']['slide_directory'])
+                            except:
+                                pass
+
+                            # If config.mot_slide_directory start with /pad/slide/live/, try to remove carousel directory
+                            if data['padenc']['slide_directory'].startswith('/pad/slide/live/'):
+                                try:
+                                    shutil.rmtree('/pad/slide/carousel/'+data['padenc']['slide_directory'].replace('/pad/slide/live/', ''))
+                                except:
+                                    pass
 
         # Check if PAD fifo & DLS file are already used by other encoder
         for data in self.conf.config['odr']:

@@ -404,6 +404,20 @@ class Config():
                             command += ' --dir=%s' % (odr['padenc']['slide_directory'])
                             if odr['padenc']['slide_once'] == 'true':
                                 command += ' --erase'
+                        else:
+                            # Try to create slide_directory
+                            try:
+                                os.makedirs(odr['padenc']['slide_directory'])
+                            except Exception as e:
+                                raise ValueError('Error when creating slide directory: {}'.format(e))
+
+                            # If config.mot_slide_directory start with /pad/slide/live/, try to create carousel directory if not exist
+                            # Ideally check if /pad/slide/live/ is tmfs
+                            if odr['padenc']['slide_directory'].startswith('/pad/slide/live/'):
+                                try:
+                                    os.makedirs('/pad/slide/carousel/'+odr['padenc']['slide_directory'].replace('/pad/slide/live/', ''))
+                                except Exception as e:
+                                    raise ValueError('Error when creating slide directory: {}'.format(e))
 
                     # Check if config.mot_dls_file exist and create it if needed.
                     if not os.path.isfile(odr['padenc']['dls_file']):

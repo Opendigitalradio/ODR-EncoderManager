@@ -55,7 +55,6 @@ class Config():
         global configurationChanged
         configurationChanged = {}
         for coder in self.config['odr']:
-            #configurationChanged[coder['uniq_id']] = {'ODR-audioencoder': False, 'ODR-padencoder': False}
             self.addConfigurationChanged(coder['uniq_id'])
 
     def addConfigurationChanged(self, uniq_id):
@@ -104,6 +103,9 @@ class Config():
 
                         if coderNew['uniq_id'] not in configurationChanged:
                             self.addConfigurationChanged(coderNew['uniq_id'])
+
+                        if coderNew['source']['stats_socket'] != coderOld['source']['stats_socket']:
+                            self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
 
                         if coderNew['source']['type'] != coderOld['source']['type']:
                             self.setConfigurationChanged(coderNew['uniq_id'], 'ODR-audioencoder', True)
@@ -246,6 +248,8 @@ class Config():
                     coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
                     del coder['padenc']['dls_fifo_file']
             if 'source' in coder:
+                if not 'stats_socket' in coder['source']:
+                    coder['source']['stats_socket'] = '/var/tmp/'+coder['uniq_id']+'.stats'
                 if not 'stream_writeicytext' in coder['source']:
                     coder['source']['stream_writeicytext'] = 'true'
                 if not 'silence_detect' in coder['source']:
@@ -589,6 +593,10 @@ class Config():
                 for out in odr['output']['zmq_output']:
                     if out['enable'] == 'true':
                         command += ' -o tcp://%s:%s' % (out['host'], out['port'])
+
+                # Stats socket
+                if odr['source']['stats_socket'] != '':
+                    command += ' --stats=%s' % (odr['source']['stats_socket'])
 
                 supervisorConfig += "# %s\n" % (odr['name'])
                 supervisorConfig += "[program:ODR-audioencoder-%s]\n" % (odr['uniq_id'])

@@ -78,7 +78,7 @@ function requestDLS(interval) {
                             dls = val['dls'];
                             cl = '';
                         }
-                        $('#dls > tbody:last').append('<tr><td data-toggle="tooltip" data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+dls+'</td><td>'+dlplus+'</td><td><button type="button" class="btn btn-xs btn-info dls_edit '+cl+'" id="dls_edit" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td></tr>');
+                        $('#dls > tbody:last').append('<tr><td data-toggle="tooltip" data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+dls+'</td><td>'+dlplus+'</td><td><button type="button" class="btn btn-xs btn-info dls_edit '+cl+'" id="dls_edit" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-pencil"></span> Edit</button> <button type="button" class="btn btn-xs btn-info" id="audio_level" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-stats"></span> Audio levels</button></td></tr>');
                     // else (coder exist in table), update
                     } else {
                         //console.log('UUID found, update')
@@ -323,6 +323,116 @@ function updateDLS(coder_uniq_id, dls) {
     });
 }
 
+function refreshAudioLevel(uniq_id, interval) {
+    $.ajax({
+        type: "GET",
+        url: "/api/getAudioLevel?uniq_id=" + uniq_id,
+        contentType: 'application/json',
+        dataType: 'json',
+
+        error: function(data) {
+            $('#lLevel').html('error');
+            $('#rLevel').html('error');
+        },
+        success: function(data) {
+
+                // CALCULATE VALUE
+
+                    if (data['status'] != 0) {
+                        l=0
+                        r=0
+                        $('#lLevel').html(data['statusText']);
+                        $('#rLevel').html(data['statusText']);
+                    }
+                    else if (data['data']['state'] != 20) {
+                        l=0
+                        r=0
+                        $('#lLevel').html('not running');
+                        $('#rLevel').html('not running');
+                    }
+                    else {
+                        l=data['data']['audio']['audio_l']
+                        r=data['data']['audio']['audio_r']
+
+                        $('#lLevel').html(l+' dB');
+                        $('#rLevel').html(r+' dB');
+                    }
+
+                    // Bar Graph
+                    if (data['data']['audio']['audio_l'] <= -40) { l=0 }
+                    if ((data['data']['audio']['audio_l'] > -40) && (data['data']['audio']['audio_l'] <= -30)) { l=1 }
+                    if ((data['data']['audio']['audio_l'] > -30) && (data['data']['audio']['audio_l'] <= -20)) { l=2 }
+                    if ((data['data']['audio']['audio_l'] > -20) && (data['data']['audio']['audio_l'] <= -12)) { l=3 }
+                    if ((data['data']['audio']['audio_l'] > -12) && (data['data']['audio']['audio_l'] <= -11)) { l=4 }
+                    if ((data['data']['audio']['audio_l'] > -11) && (data['data']['audio']['audio_l'] <= -10)) { l=5 }
+                    if ((data['data']['audio']['audio_l'] > -10) && (data['data']['audio']['audio_l'] <= -9)) { l=6 }
+                    if ((data['data']['audio']['audio_l'] > -9) && (data['data']['audio']['audio_l'] <= -8)) { l=7 }
+                    if ((data['data']['audio']['audio_l'] > -8) && (data['data']['audio']['audio_l'] <= -7)) { l=8 }
+                    if ((data['data']['audio']['audio_l'] > -7) && (data['data']['audio']['audio_l'] <= -6)) { l=9 }
+                    if ((data['data']['audio']['audio_l'] > -6) && (data['data']['audio']['audio_l'] <= -5)) { l=10 }
+                    if ((data['data']['audio']['audio_l'] > -5) && (data['data']['audio']['audio_l'] <= -4)) { l=11 }
+                    if ((data['data']['audio']['audio_l'] > -4) && (data['data']['audio']['audio_l'] <= -3)) { l=12 }
+                    if ((data['data']['audio']['audio_l'] > -3) && (data['data']['audio']['audio_l'] <= -2)) { l=13 }
+                    if ((data['data']['audio']['audio_l'] > -2) && (data['data']['audio']['audio_l'] <= -1)) { l=14 }
+                    if ((data['data']['audio']['audio_l'] > -1) && (data['data']['audio']['audio_l'] <= 0)) { l=15 }
+                    if (data['data']['audio']['audio_l'] >= 0) { l=16 }
+
+                    if (data['data']['audio']['audio_r'] <= -40) { r=0 }
+                    if ((data['data']['audio']['audio_r'] > -40) && (data['data']['audio']['audio_r'] <= -30)) { r=1 }
+                    if ((data['data']['audio']['audio_r'] > -30) && (data['data']['audio']['audio_r'] <= -20)) { r=2 }
+                    if ((data['data']['audio']['audio_r'] > -20) && (data['data']['audio']['audio_r'] <= -12)) { r=3 }
+                    if ((data['data']['audio']['audio_r'] > -12) && (data['data']['audio']['audio_r'] <= -11)) { r=4 }
+                    if ((data['data']['audio']['audio_r'] > -11) && (data['data']['audio']['audio_r'] <= -10)) { r=5 }
+                    if ((data['data']['audio']['audio_r'] > -10) && (data['data']['audio']['audio_r'] <= -9)) { r=6 }
+                    if ((data['data']['audio']['audio_r'] > -9) && (data['data']['audio']['audio_r'] <= -8)) { r=7 }
+                    if ((data['data']['audio']['audio_r'] > -8) && (data['data']['audio']['audio_r'] <= -7)) { r=8 }
+                    if ((data['data']['audio']['audio_r'] > -7) && (data['data']['audio']['audio_r'] <= -6)) { r=9 }
+                    if ((data['data']['audio']['audio_r'] > -6) && (data['data']['audio']['audio_r'] <= -5)) { r=10 }
+                    if ((data['data']['audio']['audio_l'] > -5) && (data['data']['audio']['audio_r'] <= -4)) { r=11 }
+                    if ((data['data']['audio']['audio_r'] > -4) && (data['data']['audio']['audio_r'] <= -3)) { r=12 }
+                    if ((data['data']['audio']['audio_r'] > -3) && (data['data']['audio']['audio_r'] <= -2)) { r=13 }
+                    if ((data['data']['audio']['audio_r'] > -2) && (data['data']['audio']['audio_r'] <= -1)) { r=14 }
+                    if ((data['data']['audio']['audio_r'] > -1) && (data['data']['audio']['audio_r'] <= 0)) { r=15 }
+                    if (data['data']['audio']['audio_r'] >= 0) { r=16 }
+                
+
+                // AUDIO LEVEL DISPLAY
+                for (var iter = 1; iter <= 16; iter++) {
+                    if (iter <= l) {
+                        if (iter == 15) { $( "#l"+iter ).addClass( "led-y-on" ); }
+                        else if (iter == 16) { $( "#l"+iter ).addClass( "led-r-on" ); }
+                        else { $( "#l"+iter ).addClass( "led-g-on" );}
+                    }
+                    if (iter > l) {
+                        if (iter == 15) { $( "#l"+iter ).removeClass( "led-y-on" ); }
+                        else if (iter == 16) { $( "#l"+iter ).removeClass( "led-r-on" ); }
+                        else { $( "#l"+iter ).removeClass( "led-g-on" ); }
+                    }
+                }
+
+                for (var iter = 1; iter <= 16; iter++) {
+                    if (iter <= r) {
+                        if (iter == 15) { $( "#r"+iter ).addClass( "led-y-on" ); }
+                        else if (iter == 16) { $( "#r"+iter ).addClass( "led-r-on" ); }
+                        else { $( "#r"+iter ).addClass( "led-g-on" );}
+                    }
+                    if (iter > r) {
+                        if (iter == 15) { $( "#r"+iter ).removeClass( "led-y-on" ); }
+                        else if (iter == 16) { $( "#r"+iter ).removeClass( "led-r-on" ); }
+                        else { $( "#r"+iter ).removeClass( "led-g-on" ); }
+                    }
+                }
+            
+
+        }
+    });
+
+    if  (interval > 0) {
+        console.log('refreshAudioLevel interval ' + interval)
+        refreshAudioLevelInterval = setTimeout(function() { refreshAudioLevel(uniq_id, interval); }, interval);
+    }
+};
+
 $(function(){
     requestDLS(1000);
     requestStatus();
@@ -338,6 +448,90 @@ $(function(){
 
         $('#modal .modal-title').html('Edit '+coder_name)
         $('#modal .modal-body').html('<form><div class="form-group"><label for="dls_content">DLS:</label><input type="hidden" id="edit_dls_coder_uniq_id" value="'+ coder_uniq_id +'"><input type="text" class="form-control" id="edit_dls_content" value="'+ dls +'"></div><button type="button" id="edit_btn_dls" class="btn btn-default">Submit</button></form>')
+    });
+
+    $('#dls tbody').on( 'click', '#audio_level', function () {
+        coder_name = $(this).parents('tr').find("td:eq(0)").html();
+        coder_uniq_id = $(this).parents('tr').find("td:eq(1)").html();
+        dls = $(this).parents('tr').find("td:eq(2)").html();
+
+        $('#modal .modal-title').html(coder_name+' DAB audio levels')
+        $('#modal .modal-body').html('')
+        const html_graph = `<div class="panel panel-primary">
+            <div class="panel-heading">Audio level</div>
+            <div class="panel-body">
+                    <div class="ui-bar" style="font-weight:normal;text-shadow:none;text-align:center">
+                    <div style="position:absolute;left:0">L</div>
+                    <div class="led-meter led-g-off" id="l1">-40</div>
+                    <div class="led-meter led-g-off" id="l2">-30</div>
+                    <div class="led-meter led-g-off" id="l3">-20</div>
+                    <div class="led-meter led-g-off" id="l4">-12</div>
+                    <div class="led-meter led-g-off" id="l5">-11</div>
+                    <div class="led-meter led-g-off" id="l6">-10</div>
+                    <div class="led-meter led-g-off" id="l7">-9</div>
+                    <div class="led-meter led-g-off" id="l8">-8</div>
+                    <div class="led-meter led-g-off" id="l9">-7</div>
+                    <div class="led-meter led-g-off" id="l10">-6</div>
+                    <div class="led-meter led-g-off" id="l11">-5</div>
+                    <div class="led-meter led-g-off" id="l12">-4</div>
+                    <div class="led-meter led-g-off" id="l13">-3</div>
+                    <div class="led-meter led-g-off" id="l14">-2</div>
+                    <div class="led-meter led-y-off" id="l15">-1</div>
+                    <div class="led-meter led-r-off" id="l16">0</div>
+                    <div style="position:absolute;right:0" id="lLevel"></div>
+                </div>
+                <div class="ui-bar" style="font-weight:normal;text-shadow:none;text-align:center">
+                    <div style="position:absolute;left:0">R</div>
+                    <div class="led-meter led-g-off" id="r1">-40</div>
+                    <div class="led-meter led-g-off" id="r2">-30</div>
+                    <div class="led-meter led-g-off" id="r3">-20</div>
+                    <div class="led-meter led-g-off" id="r4">-12</div>
+                    <div class="led-meter led-g-off" id="r5">-11</div>
+                    <div class="led-meter led-g-off" id="r6">-10</div>
+                    <div class="led-meter led-g-off" id="r7">-9</div>
+                    <div class="led-meter led-g-off" id="r8">-8</div>
+                    <div class="led-meter led-g-off" id="r9">-7</div>
+                    <div class="led-meter led-g-off" id="r10">-6</div>
+                    <div class="led-meter led-g-off" id="r11">-5</div>
+                    <div class="led-meter led-g-off" id="r12">-4</div>
+                    <div class="led-meter led-g-off" id="r13">-3</div>
+                    <div class="led-meter led-g-off" id="r14">-2</div>
+                    <div class="led-meter led-y-off" id="r15">-1</div>
+                    <div class="led-meter led-r-off" id="r16">0</div>
+                    <div style="position:absolute;right:0" id="rLevel"></div>
+                </div>
+                <div class="ui-bar-legend" style="font-weight:normal;text-shadow:none;text-align:center">
+                    <div class="led-legend">-40</div>
+                    <div class="led-legend">-30</div>
+                    <div class="led-legend">-20</div>
+                    <div class="led-legend">-12</div>
+                    <div class="led-legend">-11</div>
+                    <div class="led-legend">-10</div>
+                    <div class="led-legend">-9</div>
+                    <div class="led-legend">-8</div>
+                    <div class="led-legend">-7</div>
+                    <div class="led-legend">-6</div>
+                    <div class="led-legend">-5</div>
+                    <div class="led-legend">-4</div>
+                    <div class="led-legend">-3</div>
+                    <div class="led-legend">-2</div>
+                    <div class="led-legend">-1</div>
+                    <div class="led-legend">0</div>
+                    <div class="led-legend">dB</div>
+                </div>
+            </div>
+        </div>`
+        $('#modal .modal-body').html(html_graph)
+        refreshAudioLevel(coder_uniq_id, 400);
+    });
+
+    // Modal - close
+    $('#modal').on('hidden.bs.modal', function () {
+        if( typeof refreshAudioLevelInterval === 'undefined' || refreshAudioLevelInterval === null ){
+
+        } else {
+            clearInterval(refreshAudioLevelInterval);
+        }
     });
 
     $('#modal').on( 'click', '#edit_btn_dls', function () {

@@ -81,7 +81,8 @@ class Root():
     def status(self):
         tmpl = env.get_template("status.html")
         js = ['/js/odr-status.js']
-        return tmpl.render(tab='status', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        css = ['/css/bars.css']
+        return tmpl.render(tab='status', js=js, css=css, is_login=is_login(), is_network=is_network(self.config_file))
 
     @cherrypy.expose
     @require()

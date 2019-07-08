@@ -24,7 +24,7 @@ New features from version V4.0.0 :
 
 # INSTALLATION
 
-  * (root) Install requirement : `apt install python3-cherrypy3 python3-jinja2 python3-serial python3-pysnmp supervisor `
+  * (root) Install requirement : `apt install python3-cherrypy3 python3-jinja2 python3-serial python3-pysnmp python3-yaml supervisor `
   * (root) Add odr user to dialout group : `usermod -a -G dialout odr`
   * (root) Add odr user to audio group : `usermod -a -G audio odr`
   * (user) Got to odr user home : `cd /home/odr/`

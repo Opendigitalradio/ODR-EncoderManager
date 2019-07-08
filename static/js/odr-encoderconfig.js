@@ -119,6 +119,7 @@ function requestConfiguration(reload=false) {
                 $('#source_avt_timeout').val('2000');
                 $('#source_aes67_sdp_file').val('/var/tmp/'+coder_uniq_id+'.sdp');
                 $('#source_aes67_sdp').text('');
+                $('#source_stats_socket').val('/var/tmp/'+coder_uniq_id+'.stats');
 
                 $('#output_type').val('dabp');
                 $('#output_bitrate').val('88');
@@ -241,6 +242,7 @@ function setConfiguration() {
                     },
             "source" : {
                         "type": $('#source_type').val(),
+                        "stats_socket": $('#source_stats_socket').val(),
                         "stream_url": $('#source_stream_url').val(),
                         "stream_writeicytext": $('#source_stream_writeicytext').val(),
                         "alsa_device": $('#source_alsa_device').val(),

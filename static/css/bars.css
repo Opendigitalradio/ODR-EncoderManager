@@ -1,0 +1,86 @@
+.ui-block { width: 33%; }
+
+.ui-bar {
+    position: relative;
+    padding: .4em 1em;
+    overflow: hidden;
+    display: block;
+    clear: both;
+}
+
+div.led-g-on {
+    color: black;
+    background: #00FF00 !important;
+}
+div.led-g-off {
+    color: white;
+    background: #004600 !important;
+}
+
+.led-meter{
+    width:5%;
+    float:left;
+    padding:.7em 0em;
+    margin-right: 1px;
+    font-size:.8em;
+    line-height:0;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.led-g-off{
+    color:white;
+    background:#004600 !important;
+}
+div.led-g-on{
+    color:black;
+    background:#00FF00 !important;
+}
+.led-y-off{
+    color:white;
+    background:#464600 !important;
+}
+div.led-y-on{
+    color:black;
+    background:#FFFF00 !important;
+}
+.led-r-off{
+    color:white;
+    background:#460000 !important;
+}
+div.led-r-on{
+    color:black;
+    background:#FF0000 !important;
+}
+.led{
+    float: left;
+    margin:.4em 1em;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+}
+
+
+.ui-bar-legend {
+    position: relative;
+    padding: .4em 1em;
+    overflow: hidden;
+    display: block;
+    clear: both;
+/*     -webkit-transform: translateX(-20px); */
+/*     -moz-transform: translateX(-20px); */
+/*     -ms-transform: translateX(-20px); */
+/*     transform: translateX(-20px); */
+}
+.led-legend{
+    width:5%;
+    float:left;
+    padding:.7em 0em;
+    margin-right: 1px;
+    font-size:.8em;
+    line-height:0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: black;
+}

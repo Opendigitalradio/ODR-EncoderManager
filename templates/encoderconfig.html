@@ -62,31 +62,30 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                             <div class="modal-body">
 
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a data-toggle="tab" href="#wizard_livewireplus">Livewire+ (axia)</a></li>
+                                    <li class="active"><a data-toggle="tab" href="#wizard_aes67">AES67 (Livewire, Axia, Ravenna)</a></li>
                                     <li><a data-toggle="tab" href="#wizard_dante">Dante</a></li>
-                                    <li><a data-toggle="tab" href="#wizard_ravenna">Ravenna</a></li>
                                 </ul>
 
                                 <div class="tab-content">
-                                    <div id="wizard_livewireplus" class="tab-pane fade in active">
-                                        <h4>Livewire+ SDP Generator</h4>
+                                    <div id="wizard_aes67" class="tab-pane fade in active">
+                                        <h4>AES67 SDP Generator</h4>
                                         <div class="panel-body">
                                             <div class="form-group">
                                                 <div class="col-sm-7">
                                                     <div class="form-group">
-                                                        <label class="control-label" for="wizard_livewireplus_srcnodeip">Source node IP address:</label>
-                                                        <input type="text" class="form-control" id="wizard_livewireplus_srcnodeip" placeholder="Enter source node IP address" value="172.16.235.155">
+                                                        <label class="control-label" for="wizard_aes67_srcnodeip">Source node IP address:</label>
+                                                        <input type="text" class="form-control" id="wizard_aes67_srcnodeip" placeholder="Enter source node IP address" value="172.16.235.155">
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="control-label" for="wizard_livewireplus_channel">Livewire channel number:</label>
-                                                        <input type="text" class="form-control" id="wizard_livewireplus_channel" placeholder="Enter livewire channel [1-32767]" value="1">
+                                                        <label class="control-label" for="wizard_aes67_channel">Livewire channel number:</label>
+                                                        <input type="text" class="form-control" id="wizard_aes67_channel" placeholder="Enter livewire channel [1-32767]" value="1">
                                                     </div>
-                                                    <button type="button" class="btn btn-info" id="btn_wizard_livewireplus_copy">Copy SDP preview to SDP content</button>
+                                                    <button type="button" class="btn btn-info" id="btn_wizard_aes67_copy">Copy SDP preview to SDP content</button>
                                                 </div>
                                                 <div class="col-sm-5">
                                                     <div class="form-group">
-                                                        <label class="control-label" for="wizard_livewireplus_sdp">SDP preview:</label>
-                                                        <textarea class="form-control" rows="8" cols="80" id="wizard_livewireplus_sdp"></textarea>
+                                                        <label class="control-label" for="wizard_aes67_sdp">SDP preview:</label>
+                                                        <textarea class="form-control" rows="8" cols="80" id="wizard_aes67_sdp"></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -94,13 +93,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
 
                                     <div id="wizard_dante" class="tab-pane fade">
-                                        <h4>Dante SDP Generator</h4>
-                                        <p>Work in progress ...</p>
-                                    </div>
-
-                                    <div id="wizard_ravenna" class="tab-pane fade">
-                                        <h4>Ravenna SDP Generator</h4>
-                                        <p>Work in progress ...</p>
+                                        <p>To use a Dante source, you need to use a Dante AVIO USB IO Adapter 2x2 and alsa input type</p>
                                     </div>
                                 </div>
 

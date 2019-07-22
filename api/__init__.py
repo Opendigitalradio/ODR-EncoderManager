@@ -810,7 +810,6 @@ class API():
 
         return build_response(output)
 
-
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @require()
@@ -818,38 +817,59 @@ class API():
         if not uniq_id:
             return {'status': '-201', 'statusText': 'missing uniq_id parameters', 'data': ''}
 
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-        sock.settimeout(1)
+        conf = Config(self.config_file)
+        data = conf.getAudioSocket(uniq_id)
 
-        output = None
-        for odr in self.conf.config['odr']:
-            if (uniq_id == odr['uniq_id']):
-                if os.path.exists(odr['source']['stats_socket']):
-                    try:
-                        os.unlink(odr['source']['stats_socket'])
-                    except OSError:
-                        return {'status': '-502', 'statusText': 'Could not unlink socket', 'data': {}}
+        if data['status'] == '0':
+            int16_max = 0x7FFF
+            dB_l = round(float(20*math.log10(float(data['data']['audiolevels']['left']) / int16_max)), 2)
+            dB_r = round(float(20*math.log10(float(data['data']['audiolevels']['right']) / int16_max)), 2)
 
-                try:
-                    sock.bind(odr['source']['stats_socket'])
-                    data, addr = sock.recvfrom(256)
-                except socket.timeout as err:
-                    return {'status': '-502', 'statusText': 'socket timeout', 'data': {}}
-                except socket.error as err:
-                    return {'status': '-502', 'statusText': 'socket error', 'data': {}}
-                data = yaml.load(data)
-
-                int16_max = 0x7FFF
-                dB_l = int(20*math.log10(float(data['audiolevels']['left']) / int16_max))
-                dB_r = int(20*math.log10(float(data['audiolevels']['right']) / int16_max))
-
-                output = {'state': 20, 'audio': { 'audio_l': dB_l, 'audio_r': dB_r}, 'driftcompensation': {'underruns': data['driftcompensation']['underruns'], 'overruns': data['driftcompensation']['overruns']}}
-                sock.close()
-
-        if not output:
-            return {'status': '-201', 'statusText': 'unknown uniq_id', 'data': ''}
+            output = {'state': 20, 'audio': { 'audio_l': dB_l, 'audio_r': dB_r}, 'driftcompensation': {'underruns': data['data']['driftcompensation']['underruns'], 'overruns': data['data']['driftcompensation']['overruns']}}
         else:
-            return {'status': '0', 'statusText': 'Ok', 'data': output}
+            output = {}
+
+        return {'status': data['status'], 'statusText': data['statusText'], 'data': output}
+
+    #@cherrypy.expose
+    #@cherrypy.tools.json_out()
+    #@require()
+    #def getAudioLevel(self, uniq_id=None, **params):
+        #if not uniq_id:
+            #return {'status': '-201', 'statusText': 'missing uniq_id parameters', 'data': ''}
+
+        #sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        #sock.settimeout(1)
+
+        #output = None
+        #for odr in self.conf.config['odr']:
+            #if (uniq_id == odr['uniq_id']):
+                #if os.path.exists(odr['source']['stats_socket']):
+                    #try:
+                        #os.unlink(odr['source']['stats_socket'])
+                    #except OSError:
+                        #return {'status': '-502', 'statusText': 'Could not unlink socket', 'data': {}}
+
+                #try:
+                    #sock.bind(odr['source']['stats_socket'])
+                    #data, addr = sock.recvfrom(256)
+                #except socket.timeout as err:
+                    #return {'status': '-502', 'statusText': 'socket timeout', 'data': {}}
+                #except socket.error as err:
+                    #return {'status': '-502', 'statusText': 'socket error', 'data': {}}
+                #data = yaml.load(data)
+
+                #int16_max = 0x7FFF
+                #dB_l = int(20*math.log10(float(data['audiolevels']['left']) / int16_max))
+                #dB_r = int(20*math.log10(float(data['audiolevels']['right']) / int16_max))
+
+                #output = {'state': 20, 'audio': { 'audio_l': dB_l, 'audio_r': dB_r}, 'driftcompensation': {'underruns': data['driftcompensation']['underruns'], 'overruns': data['driftcompensation']['overruns']}}
+                #sock.close()
+
+        #if not output:
+            #return {'status': '-201', 'statusText': 'unknown uniq_id', 'data': ''}
+        #else:
+            #return {'status': '0', 'statusText': 'Ok', 'data': output}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

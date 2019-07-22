@@ -228,5 +228,8 @@ if __name__ == '__main__':
     cherrypy.engine.start()
     #cherrypy.engine.block()
 
+    config.initAudioSocket()
     while True:
-        time.sleep(5)
+        config.addAudioSocket()
+        config.retreiveAudioSocket()
+        #time.sleep(5)

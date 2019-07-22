@@ -224,19 +224,12 @@ function sleep(delay) {
 
 function serviceAction(action, service, uniq_id, coder) {
     console.log(action+' '+service+' '+uniq_id+' '+coder)
-//     if (uniq_id == '') {
-//         var param = {
-//         'service': service,
-//         'uniq_id': uniq_id,
-//         'coder': coder
-//         }
-//     } else {
-        var param = {
-            'service': service,
-            'uniq_id': uniq_id,
-            'coder': coder
-        }
-//     }
+    var param = {
+        'service': service,
+        'uniq_id': uniq_id,
+        'coder': coder
+    }
+
     $.ajax({
         type: "POST",
         url: "/api/"+action,
@@ -356,45 +349,44 @@ function refreshAudioLevel(uniq_id, interval) {
 
                         $('#lLevel').html(l+' dB');
                         $('#rLevel').html(r+' dB');
+
+                        // Bar Graph
+                        if (data['data']['audio']['audio_l'] <= -80) { l=0 }
+                        if ((data['data']['audio']['audio_l'] > -80) && (data['data']['audio']['audio_l'] <= -40)) { l=1 }
+                        if ((data['data']['audio']['audio_l'] > -40) && (data['data']['audio']['audio_l'] <= -30)) { l=2 }
+                        if ((data['data']['audio']['audio_l'] > -30) && (data['data']['audio']['audio_l'] <= -20)) { l=3 }
+                        if ((data['data']['audio']['audio_l'] > -20) && (data['data']['audio']['audio_l'] <= -12)) { l=4 }
+                        if ((data['data']['audio']['audio_l'] > -12) && (data['data']['audio']['audio_l'] <= -11)) { l=5 }
+                        if ((data['data']['audio']['audio_l'] > -11) && (data['data']['audio']['audio_l'] <= -10)) { l=6 }
+                        if ((data['data']['audio']['audio_l'] > -10) && (data['data']['audio']['audio_l'] <= -9)) { l=7 }
+                        if ((data['data']['audio']['audio_l'] > -9) && (data['data']['audio']['audio_l'] <= -8)) { l=8 }
+                        if ((data['data']['audio']['audio_l'] > -8) && (data['data']['audio']['audio_l'] <= -7)) { l=9 }
+                        if ((data['data']['audio']['audio_l'] > -7) && (data['data']['audio']['audio_l'] <= -6)) { l=10 }
+                        if ((data['data']['audio']['audio_l'] > -6) && (data['data']['audio']['audio_l'] <= -5)) { l=11 }
+                        if ((data['data']['audio']['audio_l'] > -5) && (data['data']['audio']['audio_l'] <= -4)) { l=12 }
+                        if ((data['data']['audio']['audio_l'] > -4) && (data['data']['audio']['audio_l'] <= -3)) { l=13 }
+                        if ((data['data']['audio']['audio_l'] > -3) && (data['data']['audio']['audio_l'] <= -2)) { l=14 }
+                        if ((data['data']['audio']['audio_l'] > -2) && (data['data']['audio']['audio_l'] <= -1)) { l=15 }
+                        if (data['data']['audio']['audio_l'] > -1) { l=16 }
+
+                        if (data['data']['audio']['audio_r'] <= -80) { r=0 }
+                        if ((data['data']['audio']['audio_r'] > -80) && (data['data']['audio']['audio_r'] <= -40)) { r=1 }
+                        if ((data['data']['audio']['audio_r'] > -40) && (data['data']['audio']['audio_r'] <= -30)) { r=2 }
+                        if ((data['data']['audio']['audio_r'] > -30) && (data['data']['audio']['audio_r'] <= -20)) { r=3 }
+                        if ((data['data']['audio']['audio_r'] > -20) && (data['data']['audio']['audio_r'] <= -12)) { r=4 }
+                        if ((data['data']['audio']['audio_r'] > -12) && (data['data']['audio']['audio_r'] <= -11)) { r=5 }
+                        if ((data['data']['audio']['audio_r'] > -11) && (data['data']['audio']['audio_r'] <= -10)) { r=6 }
+                        if ((data['data']['audio']['audio_r'] > -10) && (data['data']['audio']['audio_r'] <= -9)) { r=7 }
+                        if ((data['data']['audio']['audio_r'] > -9) && (data['data']['audio']['audio_r'] <= -8)) { r=8 }
+                        if ((data['data']['audio']['audio_r'] > -8) && (data['data']['audio']['audio_r'] <= -7)) { r=9 }
+                        if ((data['data']['audio']['audio_r'] > -7) && (data['data']['audio']['audio_r'] <= -6)) { r=10 }
+                        if ((data['data']['audio']['audio_l'] > -6) && (data['data']['audio']['audio_r'] <= -5)) { r=11 }
+                        if ((data['data']['audio']['audio_r'] > -5) && (data['data']['audio']['audio_r'] <= -4)) { r=12 }
+                        if ((data['data']['audio']['audio_r'] > -4) && (data['data']['audio']['audio_r'] <= -3)) { r=13 }
+                        if ((data['data']['audio']['audio_r'] > -3) && (data['data']['audio']['audio_r'] <= -2)) { r=14 }
+                        if ((data['data']['audio']['audio_r'] > -2) && (data['data']['audio']['audio_r'] <= -1)) { r=15 }
+                        if (data['data']['audio']['audio_r'] > -1) { r=16 }
                     }
-
-                    // Bar Graph
-                    if (data['data']['audio']['audio_l'] <= -40) { l=0 }
-                    if ((data['data']['audio']['audio_l'] > -40) && (data['data']['audio']['audio_l'] <= -30)) { l=1 }
-                    if ((data['data']['audio']['audio_l'] > -30) && (data['data']['audio']['audio_l'] <= -20)) { l=2 }
-                    if ((data['data']['audio']['audio_l'] > -20) && (data['data']['audio']['audio_l'] <= -12)) { l=3 }
-                    if ((data['data']['audio']['audio_l'] > -12) && (data['data']['audio']['audio_l'] <= -11)) { l=4 }
-                    if ((data['data']['audio']['audio_l'] > -11) && (data['data']['audio']['audio_l'] <= -10)) { l=5 }
-                    if ((data['data']['audio']['audio_l'] > -10) && (data['data']['audio']['audio_l'] <= -9)) { l=6 }
-                    if ((data['data']['audio']['audio_l'] > -9) && (data['data']['audio']['audio_l'] <= -8)) { l=7 }
-                    if ((data['data']['audio']['audio_l'] > -8) && (data['data']['audio']['audio_l'] <= -7)) { l=8 }
-                    if ((data['data']['audio']['audio_l'] > -7) && (data['data']['audio']['audio_l'] <= -6)) { l=9 }
-                    if ((data['data']['audio']['audio_l'] > -6) && (data['data']['audio']['audio_l'] <= -5)) { l=10 }
-                    if ((data['data']['audio']['audio_l'] > -5) && (data['data']['audio']['audio_l'] <= -4)) { l=11 }
-                    if ((data['data']['audio']['audio_l'] > -4) && (data['data']['audio']['audio_l'] <= -3)) { l=12 }
-                    if ((data['data']['audio']['audio_l'] > -3) && (data['data']['audio']['audio_l'] <= -2)) { l=13 }
-                    if ((data['data']['audio']['audio_l'] > -2) && (data['data']['audio']['audio_l'] <= -1)) { l=14 }
-                    if ((data['data']['audio']['audio_l'] > -1) && (data['data']['audio']['audio_l'] <= 0)) { l=15 }
-                    if (data['data']['audio']['audio_l'] >= 0) { l=16 }
-
-                    if (data['data']['audio']['audio_r'] <= -40) { r=0 }
-                    if ((data['data']['audio']['audio_r'] > -40) && (data['data']['audio']['audio_r'] <= -30)) { r=1 }
-                    if ((data['data']['audio']['audio_r'] > -30) && (data['data']['audio']['audio_r'] <= -20)) { r=2 }
-                    if ((data['data']['audio']['audio_r'] > -20) && (data['data']['audio']['audio_r'] <= -12)) { r=3 }
-                    if ((data['data']['audio']['audio_r'] > -12) && (data['data']['audio']['audio_r'] <= -11)) { r=4 }
-                    if ((data['data']['audio']['audio_r'] > -11) && (data['data']['audio']['audio_r'] <= -10)) { r=5 }
-                    if ((data['data']['audio']['audio_r'] > -10) && (data['data']['audio']['audio_r'] <= -9)) { r=6 }
-                    if ((data['data']['audio']['audio_r'] > -9) && (data['data']['audio']['audio_r'] <= -8)) { r=7 }
-                    if ((data['data']['audio']['audio_r'] > -8) && (data['data']['audio']['audio_r'] <= -7)) { r=8 }
-                    if ((data['data']['audio']['audio_r'] > -7) && (data['data']['audio']['audio_r'] <= -6)) { r=9 }
-                    if ((data['data']['audio']['audio_r'] > -6) && (data['data']['audio']['audio_r'] <= -5)) { r=10 }
-                    if ((data['data']['audio']['audio_l'] > -5) && (data['data']['audio']['audio_r'] <= -4)) { r=11 }
-                    if ((data['data']['audio']['audio_r'] > -4) && (data['data']['audio']['audio_r'] <= -3)) { r=12 }
-                    if ((data['data']['audio']['audio_r'] > -3) && (data['data']['audio']['audio_r'] <= -2)) { r=13 }
-                    if ((data['data']['audio']['audio_r'] > -2) && (data['data']['audio']['audio_r'] <= -1)) { r=14 }
-                    if ((data['data']['audio']['audio_r'] > -1) && (data['data']['audio']['audio_r'] <= 0)) { r=15 }
-                    if (data['data']['audio']['audio_r'] >= 0) { r=16 }
-                
 
                 // AUDIO LEVEL DISPLAY
                 for (var iter = 1; iter <= 16; iter++) {
@@ -422,7 +414,6 @@ function refreshAudioLevel(uniq_id, interval) {
                         else { $( "#r"+iter ).removeClass( "led-g-on" ); }
                     }
                 }
-            
 
         }
     });

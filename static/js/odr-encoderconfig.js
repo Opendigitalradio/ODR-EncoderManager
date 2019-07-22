@@ -504,7 +504,7 @@ function setEnableDisable(){
 
 }
 
-function mk_livewireplus_sdp(srcnode, chan) {
+function mk_aes67_sdp(srcnode, chan) {
     console.log('ip: '+srcnode+', chan: '+chan)
     var b2, b3, mcastip, sdp;
     b2 = Math.floor(chan / 256);
@@ -517,8 +517,8 @@ function mk_livewireplus_sdp(srcnode, chan) {
     sdp += "t=0 0" + "\n";
     sdp += "a=type:multicast" + "\n";
     sdp += "c=IN IP4 " + mcastip + "\n";
-    sdp += "m=audio 5004 RTP/AVP 97" + "\n";
-    sdp += "a=rtpmap:97 L24/48000/2" + "\n";
+    sdp += "m=audio 5004 RTP/AVP 96" + "\n";
+    sdp += "a=rtpmap:96 L24/48000/2" + "\n";
     return sdp;
 }
 
@@ -703,18 +703,18 @@ $(function(){
 
     // Modal Wizard AES67
     $('#btn_aes67_wizard').click(function () {
-        $("#wizard_livewireplus_sdp").html( mk_livewireplus_sdp( $("#wizard_livewireplus_srcnodeip").val(), $("#wizard_livewireplus_channel").val() ) )
+        $("#wizard_aes67_sdp").html( mk_aes67_sdp( $("#wizard_aes67_srcnodeip").val(), $("#wizard_aes67_channel").val() ) )
     });
 
-    // Wizard livewireplus
-    $("#wizard_livewireplus_srcnodeip").on('keyup change', function (){
-        $("#wizard_livewireplus_sdp").val( mk_livewireplus_sdp( $("#wizard_livewireplus_srcnodeip").val(), $("#wizard_livewireplus_channel").val() ) )
+    // Wizard aes67
+    $("#wizard_aes67_srcnodeip").on('keyup change', function (){
+        $("#wizard_aes67_sdp").val( mk_aes67_sdp( $("#wizard_aes67_srcnodeip").val(), $("#wizard_aes67_channel").val() ) )
     });
-    $("#wizard_livewireplus_channel").on('keyup change', function (){
-        $("#wizard_livewireplus_sdp").val( mk_livewireplus_sdp( $("#wizard_livewireplus_srcnodeip").val(), $("#wizard_livewireplus_channel").val() ) )
+    $("#wizard_aes67_channel").on('keyup change', function (){
+        $("#wizard_aes67_sdp").val( mk_aes67_sdp( $("#wizard_aes67_srcnodeip").val(), $("#wizard_aes67_channel").val() ) )
     });
-    $('#btn_wizard_livewireplus_copy').click(function () {
-        $("#source_aes67_sdp").val( $("#wizard_livewireplus_sdp").val() )
+    $('#btn_wizard_aes67_copy').click(function () {
+        $("#source_aes67_sdp").val( $("#wizard_aes67_sdp").val() )
         $('#AES67WizardModal').modal('hide');
     });
 

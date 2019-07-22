@@ -27,6 +27,8 @@ import os
 import sys
 import json
 import stat
+import socket
+import yaml
 
 if sys.version_info >= (3, 0):
     from xmlrpc import client as xmlrpc_client
@@ -51,6 +53,102 @@ class Config():
         with open(self.config_file) as data_file:
             self.config = json.load(data_file)
 
+    ## Audio socket Management
+    def initAudioSocket(self):
+        global audioSocket
+        audioSocket = {}
+
+    def addAudioSocket(self):
+        self.load(self.config_file)
+        for coder in self.config['odr']:
+            if all (k in coder for k in ("source","output","padenc","path")):
+                if not coder['uniq_id'] in audioSocket:
+                    #print ('add socket', coder['uniq_id'])
+                    audioSocket[coder['uniq_id']] = {}
+                    audioSocket[coder['uniq_id']]['uniq_id'] = coder['uniq_id']
+                    audioSocket[coder['uniq_id']]['stats_socket'] = coder['source']['stats_socket']
+                    audioSocket[coder['uniq_id']]['status'] = '-504'
+                    audioSocket[coder['uniq_id']]['statusText'] = 'Unknown'
+                    audioSocket[coder['uniq_id']]['data'] = {}
+                    audioSocket[coder['uniq_id']]['socket'] = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+                    audioSocket[coder['uniq_id']]['socket'].settimeout(1)
+                    if os.path.exists(audioSocket[coder['uniq_id']]['stats_socket']):
+                        try:
+                            os.unlink(audioSocket[coder['uniq_id']]['stats_socket'])
+                        except OSError:
+                            audioSocket[coder['uniq_id']]['status'] = '-502'
+                            audioSocket[coder['uniq_id']]['statusText'] = 'Could not unlink socket'
+                            audioSocket[coder['uniq_id']]['data'] = {}
+                        else:
+                            audioSocket[coder['uniq_id']]['status'] = '0'
+                            audioSocket[coder['uniq_id']]['statusText'] = 'Ok'
+                            audioSocket[coder['uniq_id']]['data'] = {}
+                    try:
+                        audioSocket[coder['uniq_id']]['socket'].bind(audioSocket[coder['uniq_id']]['stats_socket'])
+                    except socket.timeout as err:
+                        audioSocket[uniq_id]['status'] = '-503'
+                        audioSocket[uniq_id]['statusText'] = 'socket timeout'
+                        audioSocket[uniq_id]['data'] = {}
+                    except socket.error as err:
+                        audioSocket[uniq_id]['status'] = '-503'
+                        audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
+                        audioSocket[uniq_id]['data'] = {}
+                    else:
+                        audioSocket[coder['uniq_id']]['status'] = '0'
+                        audioSocket[coder['uniq_id']]['statusText'] = 'Ok'
+                        audioSocket[coder['uniq_id']]['data'] = {}
+
+        # Remove old socket #
+        audioSocketToRemove = []
+        for uniq_id in audioSocket:
+            if not any(c['uniq_id'] == uniq_id for c in self.config['odr']):
+                audioSocketToRemove.append(uniq_id)
+
+        for uniq_id in audioSocketToRemove:
+            #print ('del socket', uniq_id)
+            audioSocket[uniq_id]['socket'].close()
+            del audioSocket[uniq_id]
+
+    def retreiveAudioSocket(self):
+        for uniq_id in audioSocket:
+            try:
+                data, addr = audioSocket[uniq_id]['socket'].recvfrom(256)
+            except socket.timeout as err:
+                audioSocket[uniq_id]['status'] = '-502'
+                audioSocket[uniq_id]['statusText'] = 'socket timeout'
+                audioSocket[uniq_id]['data'] = {}
+            except socket.error as err:
+                audioSocket[uniq_id]['status'] = '-502'
+                audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
+                audioSocket[uniq_id]['data'] = {}
+            else:
+                data = yaml.load(data)
+                audioSocket[uniq_id]['status'] = '0'
+                audioSocket[uniq_id]['statusText'] = 'Ok'
+                audioSocket[uniq_id]['data'] = data
+
+    def delAudioSocket(self, uniq_id):
+        audioSocket[uniq_id]['socket'].close()
+        del audioSocket[uniq_id]
+
+    def getAudioSocket(self, uniq_id):
+        if uniq_id in audioSocket:
+            output = {'uniq_id': audioSocket[uniq_id]['uniq_id'],
+                      'stats_socket': audioSocket[uniq_id]['stats_socket'],
+                      'status': audioSocket[uniq_id]['status'],
+                      'statusText': audioSocket[uniq_id]['statusText'],
+                      'data': audioSocket[uniq_id]['data'],
+                      }
+            return output
+        else:
+            output = {'uniq_id': uniq_id,
+                      'status': '-500',
+                      'statusText': 'No running stats socket available for this uniq_id',
+                      'data': {},
+                      }
+            return output
+
+    # Configuration Change Management
     def initConfigurationChanged(self):
         global configurationChanged
         configurationChanged = {}
@@ -61,7 +159,8 @@ class Config():
         configurationChanged[uniq_id] = {'ODR-audioencoder': False, 'ODR-padencoder': False}
 
     def delConfigurationChanged(self, uniq_id):
-        del configurationChanged[uniq_id]
+        if uniq_id in configurationChanged:
+            del configurationChanged[uniq_id]
 
     def getConfigurationChanged(self, uniq_id, process):
         if uniq_id in configurationChanged:

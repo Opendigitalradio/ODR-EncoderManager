@@ -29,6 +29,7 @@ import json
 import stat
 import socket
 import yaml
+import uuid
 
 if sys.version_info >= (3, 0):
     from xmlrpc import client as xmlrpc_client
@@ -334,33 +335,53 @@ class Config():
         return any(p['name'] == program and p['statename'] == 'RUNNING' for p in json)
 
     def checkConfigurationFile(self):
+        print ('Check configuration file ...')
         self.load(self.config_file)
         odr = []
         for coder in self.config['odr']:
+            if not 'name' in coder:
+                coder['name'] = 'my coder'
+                print ('- add coder name in configuration file')
+            if not 'description' in coder:
+                coder['description'] = 'my coder description'
+                print ('- add coder description in configuration file')
+            if not 'uniq_id' in coder:
+                coder['uniq_id'] = str(uuid.uuid4())
+                print ('- add coder uniq_id in configuration file')
+
             if 'padenc' in coder:
                 if not 'uniform' in coder['padenc']:
                     coder['padenc']['uniform'] = 'false'
+                    print ('- add uniform pad in configuration file')
                 if 'pad_fifo_file' in coder['padenc']:
                     coder['padenc']['pad_fifo'] = coder['padenc']['pad_fifo_file']
                     del coder['padenc']['pad_fifo_file']
+                    print ('- rename pad_fifo_file to pad_fifo in configuration file')
                 if 'dls_fifo_file' in coder['padenc']:
                     coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
                     del coder['padenc']['dls_fifo_file']
+                    print ('- rename dls_fifo_file to dls_file in configuration file')
             if 'source' in coder:
                 if not 'stats_socket' in coder['source']:
                     coder['source']['stats_socket'] = '/var/tmp/'+coder['uniq_id']+'.stats'
+                    print ('- add stats_socket in configuration file')
                 if not 'stream_writeicytext' in coder['source']:
                     coder['source']['stream_writeicytext'] = 'true'
+                    print ('- add stream_writeicytext in configuration file')
                 if not 'silence_detect' in coder['source']:
                     coder['source']['silence_detect'] = 'false'
+                    print ('- add silence_detect in configuration file')
                 if not 'silence_duration' in coder['source']:
                     coder['source']['silence_duration'] = '30'
+                    print ('- add silence_duration in configuration file')
                 if 'device' in coder['source']:
                     coder['source']['alsa_device'] = coder['source']['device']
                     del coder['source']['device']
+                    print ('- rename device to alsa_device in configuration file')
                 if 'url' in coder['source']:
                     coder['source']['stream_url'] = coder['source']['url']
                     del coder['source']['url']
+                    print ('- rename url to stream_url in configuration file')
             odr.append(coder)
         # Write configuration file
         output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr }
@@ -368,16 +389,19 @@ class Config():
         self.load(self.config_file)
 
     def checkSupervisorProcess(self):
+        print ('Check supervisor process ...')
         self.load(self.config_file)
         try:
             server = xmlrpc_client.ServerProxy(self.config['global']['supervisor_xmlrpc'])
         except Exception as e:
-            return {'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)}
+            raise ValueError( 'Can not connect to supervisor XMLRPC: ' + str(e) )
+            #return {'status': '-211', 'statusText': 'Error when connect to supervisor XMLRPC: ' + str(e)}
 
         try:
             programs = server.supervisor.getAllProcessInfo()
         except Exception as e:
-            return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
+            raise ValueError( 'Can not retreive supervisor process: ' + str(e) )
+            #return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
 
         # Remove unused ODR-audioencoder & ODR-padencoder
         for process in programs:
@@ -413,14 +437,16 @@ class Config():
                             server.supervisor.reloadConfig()
                             server.supervisor.addProcessGroup('ODR-padencoder-%s' % (coder['uniq_id']))
                         except Exception as e:
-                            return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
+                            raise ValueError( 'Error when starting ODR-padencoder (XMLRPC): ' % (process['name'], str(e)) )
+                            #return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
 
                 if not self.is_program_exist(programs, 'ODR-audioencoder-%s' % (coder['uniq_id'])):
                     try:
                         server.supervisor.reloadConfig()
                         server.supervisor.addProcessGroup('ODR-audioencoder-%s' % (coder['uniq_id']))
                     except Exception as e:
-                        return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
+                        raise ValueError( 'Error when starting ODR-audioencoder (XMLRPC): ' % (process['name'], str(e)) )
+                        #return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
 
     def generateNetworkFiles(self, config):
         # Write network/interfaces file

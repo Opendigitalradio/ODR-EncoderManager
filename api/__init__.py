@@ -187,14 +187,20 @@ class API():
             try:
                 self.conf.generateNetworkFiles(output)
             except Exception as e:
-                return {'status': '-222', 'statusText': 'Error when writing network file: ' + str(e)}
+                return {'status': '-223', 'statusText': 'Error when writing network file: ' + str(e)}
 
 
             # Check configuration file
-            self.conf.checkConfigurationFile()
+            try:
+                self.conf.checkConfigurationFile()
+            except Exception as e:
+                return {'status': '-224', 'statusText': 'Error: ' + str(e)}
 
             # Check process and add/remove if necessary
-            self.conf.checkSupervisorProcess()
+            try:
+                self.conf.checkSupervisorProcess()
+            except Exception as e:
+                return {'status': '-225', 'statusText': 'Error: ' + str(e)}
 
             return {'status': '0', 'statusText': 'Ok'}
         else:

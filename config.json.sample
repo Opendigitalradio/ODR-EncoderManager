@@ -1,5 +1,7 @@
 {
     "odr": [{
+        "name": "my coder",
+        "description": "my description",
         "path": {
             "zmq_key_tmp_file": "/var/tmp/sample.key",
             "padenc_path": "/usr/local/bin/odr-padenc",
@@ -15,8 +17,8 @@
             "raw_dls": "false",
             "slide_directory": "/var/tmp/sample/",
             "slide_once": "true",
-            "pad_fifo_file": "/var/tmp/metadata-sample.pad",
-            "dls_fifo_file": "/var/tmp/metadata-sample.dls",
+            "pad_fifo": "/var/tmp/metadata-sample.pad",
+            "dls_file": "/var/tmp/metadata-sample.dls",
             "pad": "34",
             "slide_sleeping": "20"
         },
@@ -32,7 +34,10 @@
             "alsa_device": "hw:1,0",
             "aes67_sdp": "",
             "aes67_sdp_file": "/var/tmp/sample.sdp",
-            "type": "stream"
+            "type": "stream",
+            "stats_socket": "/var/tmp/stats.socket",
+            "silence_detect": "false",
+            "silence_duration": "30"
         },
         "output": {
             "dab_dabmode": "j",
@@ -70,7 +75,7 @@
     "global": {
         "daemon": false,
         "logs_directory": "/home/odr/ODR-EncoderManager/logs/",
-        "supervisor_xmlrpc": "http://user:pass@127.0.0.1:9001/RPC2",
+        "supervisor_xmlrpc": "http://user:pass@127.0.0.1:8900/RPC2",
         "static_directory": "/home/odr/ODR-EncoderManager/static/",
         "host": "0.0.0.0",
         "supervisor_file": "/home/odr/ODR-EncoderManager/supervisor-encoder.conf",

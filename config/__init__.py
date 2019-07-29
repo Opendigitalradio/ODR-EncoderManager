@@ -354,7 +354,7 @@ class Config():
                     coder['padenc']['uniform'] = 'false'
                     print ('- add uniform pad in configuration file')
                 if not 'uniform_label' in coder['padenc']:
-                    coder['padenc']['uniform_label'] = '1'
+                    coder['padenc']['uniform_label'] = '12'
                     print ('- add uniform_label pad in configuration file')
                 if not 'uniform_label_ins' in coder['padenc']:
                     coder['padenc']['uniform_label_ins'] = '1200'

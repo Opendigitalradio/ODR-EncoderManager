@@ -353,6 +353,15 @@ class Config():
                 if not 'uniform' in coder['padenc']:
                     coder['padenc']['uniform'] = 'false'
                     print ('- add uniform pad in configuration file')
+                if not 'uniform_label' in coder['padenc']:
+                    coder['padenc']['uniform_label'] = '1'
+                    print ('- add uniform_label pad in configuration file')
+                if not 'uniform_label_ins' in coder['padenc']:
+                    coder['padenc']['uniform_label_ins'] = '1200'
+                    print ('- add uniform_label pad in configuration file')
+                if not 'uniform_init_burst' in coder['padenc']:
+                    coder['padenc']['uniform_init_burst'] = '12'
+                    print ('- add uniform_init_burst pad in configuration file')
                 if 'pad_fifo_file' in coder['padenc']:
                     coder['padenc']['pad_fifo'] = coder['padenc']['pad_fifo_file']
                     del coder['padenc']['pad_fifo_file']

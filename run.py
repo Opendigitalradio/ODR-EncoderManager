@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
         # Write configuration file
         try:
-            config.write(output)
+            config.write(output, False)
         except Exception as e:
             print ( 'Error when writing configuration file: ' + str(e) )
             sys.exit(2)

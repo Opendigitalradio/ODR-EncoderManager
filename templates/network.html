@@ -82,6 +82,21 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
 
                         <div class="form-group">
+                            <label class="control-label col-sm-2" for="network_route">Route on this interface:</label>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="network_route"  value="" placeholder="IP/CIDR (ie: 239.0.0.0/8)" disabled="disabled">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-success" id="btn_network_route_add" type="button" disabled="disabled"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="network_route_ips">
+                        </div>
+
+                        <div class="form-group">
                             <label class="control-label col-sm-2" for="btn_save"></label>
                             <div class="col-sm-3">
                                 <button type="button" id="btn_save" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Write network configuration in configuration file." ><span class="glyphicon glyphicon-save"></span> Write changes</button>&nbsp;
@@ -145,6 +160,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                 </div>
                             </div>
                         </div>
+                        
                         <div id="network_dns_servers">
                         </div>
 

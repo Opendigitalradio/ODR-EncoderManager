@@ -328,6 +328,7 @@ class API():
                 output['global']['network']['cards'][i]['ip'] = param['ip']
                 output['global']['network']['cards'][i]['netmask'] = param['netmask']
                 output['global']['network']['cards'][i]['gateway'] = param['gateway']
+                output['global']['network']['cards'][i]['route'] = param['route']
                 change = True
         if not change:
             return {'status': '-231', 'statusText': 'Card not found: ' + str(e)}

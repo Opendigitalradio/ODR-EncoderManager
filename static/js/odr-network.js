@@ -106,12 +106,20 @@ function requestCardInfo(callback) {
                 $('#network_mask').val(data['data']['netmask']);
                 $('#network_gateway').val(data['data']['gateway']);
                 $('#network_dhcp option[value="'+data['data']['dhcp']+'"]').prop('selected', true);
+                $('#network_route_ips').empty();
+                if (data['data']['route']) {
+                  $.each( data['data']['route'], function( section_key, section_val ) {
+                      $('#network_route_ips').append('<div class="form-group"><div class="route_ip"><label class="control-label col-sm-2" for="network_route_ip"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_route_ip"  value="'+ section_val +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_route_del" id="network_route_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
+                  });
+                }
 
                 if (data['data']['manage'] == 'true') {
                     $('#network_dhcp').prop('disabled', false);
                     $('#network_ip').prop('disabled', false);
                     $('#network_mask').prop('disabled', false);
                     $('#network_gateway').prop('disabled', false);
+                    $('#network_route').prop('disabled', false);
+                    $('#btn_network_route_add').prop('disabled', false);
                     $('#btn_save').prop('disabled', false);
                     $("#btn_save").removeClass('disabled');
                     setEnableDisableDHCP();
@@ -120,6 +128,8 @@ function requestCardInfo(callback) {
                     $('#network_ip').prop('disabled', true);
                     $('#network_mask').prop('disabled', true);
                     $('#network_gateway').prop('disabled', true);
+                    $('#network_route').prop('disabled', true);
+                    $('#btn_network_route_add').prop('disabled', true);
                     $("#btn_save").addClass('disabled');
                 }
 
@@ -293,13 +303,20 @@ $(function(){
    });
 
    $('#btn_save').click(function() {
+        var route_param = [];
+        $('#network_route_ips > .form-group > .route_ip').each(function () {
+            var $input = $(this)
+            route_param.push($input.find('#network_route_ip').val());
+        });
         var param = {
             "card": $('#network_card').val(),
             "ip" : $('#network_ip').val(),
             "netmask" : $('#network_mask').val(),
             "gateway" : $('#network_gateway').val(),
-            "dhcp" : $('#network_dhcp').val()
+            "dhcp" : $('#network_dhcp').val(),
+            "route": route_param
         }
+        console.log(param);
         $.ajax({
             type: "POST",
             url: "/api/setNetworkCard",
@@ -334,6 +351,12 @@ $(function(){
             }
         });
    });
+
+   $('#btn_network_route_add').click(function () {
+        $( '#network_route_ips' ).append('<div class="form-group"><div class="route_ip"><label class="control-label col-sm-2" for="network_route_ip"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_route_ip"  value="'+ $('#network_route').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_route_del" id="network_route_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');
+
+        $('#network_route').val('');
+    });
 
    $('#btn_network_ntp_server_add').click(function () {
         $( '#network_ntp_servers' ).append('<div class="form-group"><div class="ntp_server"><label class="control-label col-sm-2" for="network_ntp_server"></label><div class="col-sm-3"><div class="input-group"><input type="text" class="form-control" id="network_ntp_server"  value="'+ $('#network_ntp_server').val().replace(/(['"])/g, "") +'"><span class="input-group-btn"><button class="btn btn-danger btn_network_ntp_del" id="btn_network_ntp_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>');

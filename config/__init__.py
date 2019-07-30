@@ -477,6 +477,9 @@ class Config():
                     networkInterfaces += "    netmask %s\n" % (card['netmask'])
                     if card['gateway'].strip() != "":
                         networkInterfaces += "    gateway %s\n" % (card['gateway'])
+            if 'route' in card:
+              for route in card['route']:
+                networkInterfaces += "    up /bin/ip route add %s dev %s\n" % (route.strip(), card['card'])
             networkInterfaces += "\n"
 
         try:

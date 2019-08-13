@@ -98,6 +98,13 @@ class Config():
                         audioSocket[coder['uniq_id']]['status'] = '0'
                         audioSocket[coder['uniq_id']]['statusText'] = 'Ok'
                         audioSocket[coder['uniq_id']]['data'] = {}
+                else:
+                    if audioSocket[coder['uniq_id']]['stats_socket'] != coder['source']['stats_socket']:
+                        # Stats socket changed - remove entry (recreated next loop)
+                        #print ('socket file changed', coder['uniq_id'])
+                        audioSocket[coder['uniq_id']]['socket'].close()
+                        del audioSocket[coder['uniq_id']]
+
 
         # Remove old socket #
         audioSocketToRemove = []

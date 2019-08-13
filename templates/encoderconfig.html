@@ -353,10 +353,13 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="output_type">Output type:</label>
                                                 <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_type">
-                                                        <option value="dabp">DAB+</option>
-                                                        <option value="dab">DAB</option>
-                                                    </select>
+                                                    <div class="input-group">
+                                                        <select type="select" class="form-control" id="output_type">
+                                                            <option value="dabp">DAB+</option>
+                                                            <option value="dab">DAB</option>
+                                                        </select>
+                                                        <span class="input-group-addon"><input type="checkbox" id="output_display" data-toggle="tooltip" data-placement="top" title="Display all parameters."></span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -387,59 +390,63 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 
                                             <hr />
 
-                                            <h4>DAB+ specific configuration</h4>
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="output_dabp_sbr">SBR:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dabp_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate from 96 kbps.">
-                                                        <option value="true">true</option>
-                                                        <option value="false">false</option>
-                                                    </select>
-                                                </div>
-
-                                                <label class="control-label col-sm-2" for="output_dabp_ps">PS:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrates which are a multiple of 8kbps and under 56 kbps.">
-                                                        <option value="true">true</option>
-                                                        <option value="false">false</option>source_device
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dabp_afterburner">
-                                                        <option value="true">true</option>
-                                                        <option value="false">false</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <hr />
-
-                                            <h4>DAB specific configuration</h4>
+                                            <div id="output_type_dabp" class="output_type">
+                                                <h4>DAB+ specific configuration</h4>
                                                 <div class="form-group">
-                                                <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
-                                                        <option value="s">s - Stereo</option>
-                                                        <option value="d">d - Dual-Channel</option>
-                                                        <option value="j">j - Joint-Stereo (default)</option>
-                                                        <option value="m">m - Mono</option>
-                                                    </select>
+                                                    <label class="control-label col-sm-2" for="output_dabp_sbr">SBR:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_sbr" data-toggle="tooltip" data-placement="top" title="Enable SBR only on bitrate from 96 kbps.">
+                                                            <option value="true">true</option>
+                                                            <option value="false">false</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <label class="control-label col-sm-2" for="output_dabp_ps">PS:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_ps" data-toggle="tooltip" data-placement="top" title="Enable PS only on bitrates which are a multiple of 8kbps and under 56 kbps.">
+                                                            <option value="true">true</option>
+                                                            <option value="false">false</option>source_device
+                                                        </select>
+                                                    </div>
                                                 </div>
 
-                                                <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
-                                                        <option value="0">0</option>
-                                                        <option value="1">1 (default)</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_afterburner">
+                                                            <option value="true">true</option>
+                                                            <option value="false">false</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
+                                                <hr />
                                             </div>
-                                            <hr />
+
+                                            <div id="output_type_dab" class="output_type">
+                                                <h4>DAB specific configuration</h4>
+                                                    <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
+                                                            <option value="s">s - Stereo</option>
+                                                            <option value="d">d - Dual-Channel</option>
+                                                            <option value="j">j - Joint-Stereo (default)</option>
+                                                            <option value="m">m - Mono</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
+                                                            <option value="0">0</option>
+                                                            <option value="1">1 (default)</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
 
                                             <h4>ZMQ configuration</h4>
                                             <div class="form-group">
@@ -515,7 +522,14 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <label class="control-label col-sm-2" for="padenc_raw_dls">Raw DLS:</label>
@@ -530,13 +544,27 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_pad_fifo">PAD fifo:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="padenc_pad_fifo" placeholder="Enter pad fifo">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_pad_fifo" placeholder="Enter pad fifo">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_pad_fifo" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_dls_file">DLS file:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="padenc_dls_file" placeholder="Enter dls file">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_dls_file" placeholder="Enter dls file">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_dls_file" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <hr />
@@ -601,14 +629,28 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_zmq_key_tmp_file">zmq tmp file:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter zmq tmp file path">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="path_zmq_key_tmp_file" placeholder="Enter zmq tmp file path">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_path_zmq_key_tmp_file" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="source_stats_socket">statistics UNIX Datagram socket:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="source_stats_socket" placeholder="Enter statistics UNIX Datagram socket">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="source_stats_socket" placeholder="Enter statistics UNIX Datagram socket">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_source_stats_socket" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 

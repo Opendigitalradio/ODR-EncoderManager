@@ -338,6 +338,12 @@ function setEnableDisable(){
         $('.source_type').hide();
     }
 
+    if ($('#output_display').is(':checked')) {
+        $('.output_type').show();
+    } else {
+        $('.output_type').hide();
+    }
+
     if ($('#source_type').val() == 'stream') {
         $('#source_type_stream').show();
         $('#source_stream_url').prop('disabled', false);
@@ -363,6 +369,7 @@ function setEnableDisable(){
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
+            $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
             $('#output_dabp_ps').prop('disabled', true);
             $('#output_dabp_afterburner').prop('disabled', true);
@@ -372,6 +379,7 @@ function setEnableDisable(){
             $("#output_samplerate option").filter( "[value='32000']" ).prop('disabled', true);
         }
         if ($('#output_type').val() == 'dabp') {
+            $('#output_type_dabp').show();
             $('#output_dabp_sbr').prop('disabled', false);
             $('#output_dabp_ps').prop('disabled', false);
             $('#output_dabp_afterburner').prop('disabled', false);
@@ -643,6 +651,10 @@ $(function(){
         setEnableDisable();
     });
 
+    $('#output_display').click(function () {
+        setEnableDisable();
+    });
+
     $("#output_type").change(function() {
         setEnableDisable();
     });
@@ -716,6 +728,32 @@ $(function(){
     $('#btn_wizard_aes67_copy').click(function () {
         $("#source_aes67_sdp").val( $("#wizard_aes67_sdp").val() )
         $('#AES67WizardModal').modal('hide');
+    });
+
+    // Default value
+    $('#btn_reset_padenc_slide_directory').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#padenc_slide_directory").val('/pad/slide/live/'+coder_uniq_id+'/');
+    });
+
+    $('#btn_reset_padenc_pad_fifo').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#padenc_pad_fifo").val('/var/tmp/metadata-'+coder_uniq_id+'.pad');
+    });
+
+    $('#btn_reset_padenc_dls_file').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#padenc_dls_file").val('/var/tmp/metadata-'+coder_uniq_id+'.dls');
+    });
+
+    $('#btn_reset_path_zmq_key_tmp_file').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#path_zmq_key_tmp_file").val('/var/tmp/zmq-'+coder_uniq_id+'.key');
+    });
+
+    $('#btn_reset_source_stats_socket').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#source_stats_socket").val('/var/tmp/'+coder_uniq_id+'.stats');
     });
 
     // Add ZMQ output

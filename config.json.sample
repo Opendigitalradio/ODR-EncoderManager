@@ -1,91 +1,21 @@
 {
-    "odr": [{
-        "path": {
-            "zmq_key_tmp_file": "/var/tmp/sample.key",
-            "padenc_path": "/usr/local/bin/odr-padenc",
-            "sourcecompanion_path": "/usr/local/bin/odr-sourcecompanion",
-            "encoder_path": "/usr/local/bin/odr-audioenc"
-        },
-        "padenc": {
-            "enable": "true",
-            "uniform": "false",
-            "uniform_label": "1",
-            "uniform_label_ins": "1200",
-            "uniform_init_burst": "12",
-            "raw_dls": "false",
-            "slide_directory": "/var/tmp/sample/",
-            "slide_once": "true",
-            "pad_fifo_file": "/var/tmp/metadata-sample.pad",
-            "dls_fifo_file": "/var/tmp/metadata-sample.dls",
-            "pad": "34",
-            "slide_sleeping": "20"
-        },
-        "source": {
-            "avt_pad_port": "9405",
-            "avt_timeout": "2000",
-            "driftcomp": "true",
-            "stream_url": "http://ice.stream.frequence3.net/frequence3-128.mp3",
-            "stream_writeicytext": "true",
-            "avt_jitter_size": "80",
-            "avt_control_uri": "udp://192.168.128.111:9325",
-            "avt_input_uri": "udp://:32010",
-            "alsa_device": "hw:1,0",
-            "aes67_sdp": "",
-            "aes67_sdp_file": "/var/tmp/sample.sdp",
-            "type": "stream"
-        },
-        "output": {
-            "dab_dabmode": "j",
-            "dabp_afterburner": "true",
-            "dab_dabpsy": "1",
-            "dabp_sbr": "true",
-            "channels": "2",
-            "zmq_key": "",
-            "dabp_ps": "false",
-            "type": "dabp",
-            "samplerate": "48000",
-            "bitrate": "96",
-            "zmq_output": [
-                {
-                    "host": "192.168.40.120",
-                    "enable": "false",
-                    "name": "Mux test 120",
-                    "port": "9002"
-                },
-                {
-                    "host": "192.168.40.116",
-                    "enable": "true",
-                    "name": "Mux test 116",
-                    "port": "9001"
-                },
-                {
-                    "host": "192.168.40.117",
-                    "enable": "true",
-                    "name": "Mux test 117",
-                    "port": "9001"
-                }
-            ]
-        }
-    }],
+    "odr": [
+    ],
     "global": {
         "daemon": false,
-        "logs_directory": "/home/odr/ODR-EncoderManager/logs/",
-        "supervisor_xmlrpc": "http://user:pass@127.0.0.1:9001/RPC2",
-        "static_directory": "/home/odr/ODR-EncoderManager/static/",
+        "logs_directory": "/opt/ODR-EncoderManager/logs/",
+        "supervisor_xmlrpc": "http://admin:admin@127.0.0.1:9001/RPC2",
+        "static_directory": "/opt/ODR-EncoderManager/static/",
         "host": "0.0.0.0",
-        "supervisor_file": "/home/odr/ODR-EncoderManager/supervisor-encoder.conf",
+        "supervisor_file": "/opt/ODR-EncoderManager/supervisor-encoder.conf",
         "supervisor_additional_processes": [],
         "port": 8080
     },
     "auth": {
         "users": [
             {
-                "username": "joe",
-                "password": "secret"
-            },
-            {
-                "username": "yoann",
-                "password": "5ebe2294ecd0e0f08eab7690d2a6ee69"
+                "username": "admin",
+                "password": "admin"
             }
         ]
     }

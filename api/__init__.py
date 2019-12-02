@@ -527,8 +527,8 @@ class API():
                             except:
                                 pass
 
-                    # Remove service ODR-audioencoder
-                    service = 'ODR-audioencoder-%s' % (odr['uniq_id'])
+                    # Remove service odr-audioencoder
+                    service = 'odr-audioencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
                         try:
                             if self.is_program_running(programs, service):
@@ -537,10 +537,10 @@ class API():
                             server.supervisor.removeProcessGroup(service)
                             server.supervisor.reloadConfig()
                         except Exception as e:
-                            return {'status': '-206', 'statusText': 'Error when removing ODR-audioencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
+                            return {'status': '-206', 'statusText': 'Error when removing odr-audioencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
 
-                    # Remove service ODR-padencoder
-                    service = 'ODR-padencoder-%s' % (odr['uniq_id'])
+                    # Remove service odr-padencoder
+                    service = 'odr-padencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
                         try:
                             if self.is_program_running(programs, service):
@@ -549,7 +549,7 @@ class API():
                             server.supervisor.removeProcessGroup(service)
                             server.supervisor.reloadConfig()
                         except Exception as e:
-                            return {'status': '-206', 'statusText': 'Error when removing ODR-padencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
+                            return {'status': '-206', 'statusText': 'Error when removing odr-padencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
 
                     # Remove configuration_changed information
                     self.conf.delConfigurationChanged(odr['uniq_id'])
@@ -660,22 +660,22 @@ class API():
         except Exception as e:
                 return {'status': '-212', 'statusText': 'Error when retreive supervisor process: ' + str(e)}
 
-        # Check for ODR-audioencoder
-        if not self.is_program_exist(programs, 'ODR-audioencoder-%s' % (param['uniq_id'])):
+        # Check for odr-audioencoder
+        if not self.is_program_exist(programs, 'odr-audioencoder-%s' % (param['uniq_id'])):
             try:
                 server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup('ODR-audioencoder-%s' % (param['uniq_id']))
+                server.supervisor.addProcessGroup('odr-audioencoder-%s' % (param['uniq_id']))
             except Exception as e:
-                return {'status': '-206', 'statusText': 'Error when starting ODR-audioencoder (XMLRPC): ' + str(e)}
+                return {'status': '-206', 'statusText': 'Error when starting odr-audioencoder (XMLRPC): ' + str(e)}
 
-        # Check for ODR-padencoder
+        # Check for odr-padencoder
         if param['padenc']['enable'] == 'true':
-            if not self.is_program_exist(programs, 'ODR-padencoder-%s'  % (param['uniq_id'])):
+            if not self.is_program_exist(programs, 'odr-padencoder-%s'  % (param['uniq_id'])):
                 try:
                     server.supervisor.reloadConfig()
-                    server.supervisor.addProcessGroup('ODR-padencoder-%s' % (param['uniq_id']))
+                    server.supervisor.addProcessGroup('odr-padencoder-%s' % (param['uniq_id']))
                 except Exception as e:
-                    return {'status': '-207', 'statusText': 'Error when starting ODR-padencoder (XMLRPC): ' + str(e)}
+                    return {'status': '-207', 'statusText': 'Error when starting odr-padencoder (XMLRPC): ' + str(e)}
 
         return {'status': '0', 'statusText': 'Ok'}
 
@@ -1017,23 +1017,23 @@ class API():
             for data in self.conf.config['odr']:
                 if all (k in data for k in ("source","output","padenc","path")):
                     if data['padenc']['enable'] == 'true':
-                        pn = server.supervisor.getProcessInfo('ODR-padencoder-%s' % (data['uniq_id']) )
+                        pn = server.supervisor.getProcessInfo('odr-padencoder-%s' % (data['uniq_id']) )
                         pn['coder_name'] = data['name']
                         pn['coder_description'] = data['description']
                         pn['coder_uniq_id'] = data['uniq_id']
-                        pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-padencoder')
+                        pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-padencoder')
                         output.append( pn )
-                    pn = server.supervisor.getProcessInfo('ODR-audioencoder-%s' % (data['uniq_id']) )
+                    pn = server.supervisor.getProcessInfo('odr-audioencoder-%s' % (data['uniq_id']) )
                     pn['coder_name'] = data['name']
                     pn['coder_description'] = data['description']
                     pn['coder_uniq_id'] = data['uniq_id']
-                    pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-audioencoder')
+                    pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-audioencoder')
                     output.append( pn )
 
                 else:
                     output.append({
                         'now': 0,
-                        'group': 'ODR-audioencoder-%s' % (data['uniq_id']),
+                        'group': 'odr-audioencoder-%s' % (data['uniq_id']),
                         'description': 'CODER is not configured',
                         'pid': 0,
                         'stderr_logfile': '',
@@ -1044,15 +1044,15 @@ class API():
                         'stdout_logfile': '',
                         'logfile': '',
                         'existstatus': 0,
-                        'name': 'ODR-audioencoder-%s' % (data['uniq_id']),
+                        'name': 'odr-audioencoder-%s' % (data['uniq_id']),
                         'coder_name': data['name'],
                         'coder_description': data['description'],
                         'coder_uniq_id': data['uniq_id'],
-                        'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-audioencoder')
+                        'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'odr-audioencoder')
                         })
                     output.append({
                         'now': 0,
-                        'group': 'ODR-padencoder-%s' % (data['uniq_id']),
+                        'group': 'odr-padencoder-%s' % (data['uniq_id']),
                         'description': 'CODER is not configured',
                         'pid': 0,
                         'stderr_logfile': '',
@@ -1063,14 +1063,14 @@ class API():
                         'stdout_logfile': '',
                         'logfile': '',
                         'existstatus': 0,
-                        'name': 'ODR-padencoder-%s' % (data['uniq_id']),
+                        'name': 'odr-padencoder-%s' % (data['uniq_id']),
                         'coder_name': data['name'],
                         'coder_description': data['description'],
                         'coder_uniq_id': data['uniq_id'],
-                        'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'ODR-padencoder')
+                        'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'odr-padencoder')
                         })
         except Exception as e:
-            return {'status': '-301', 'statusText': 'Error when getting ODR-audioencoder and ODR-padencoder status (XMLRPC): {}'.format(e)}
+            return {'status': '-301', 'statusText': 'Error when getting odr-audioencoder and odr-padencoder status (XMLRPC): {}'.format(e)}
 
         if 'supervisor_additional_processes' in self.conf.config['global']:
             for proc in self.conf.config['global']['supervisor_additional_processes']:

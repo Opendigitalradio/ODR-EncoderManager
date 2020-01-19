@@ -34,7 +34,7 @@ New features from version V4.0.0 :
 
   * (root) Install requirement (debian/jessie) : `apt install python3-cherrypy3 python3-jinja2 python3-serial python3-yaml supervisor python3-pysnmp`
   * (root) Install requirement (debian/stretch) : `apt install python3-cherrypy3 python3-jinja2 python3-serial python3-yaml supervisor python3-pysnmp4`
-  * (root) Add odr user : `useradd odr`
+  * (root) Add odr user : `adduser odr`
   * (root) Add odr user to dialout group : `usermod -a -G dialout odr`
   * (root) Add odr user to audio group : `usermod -a -G audio odr`
   * (user) Got to odr user home : `cd /home/odr/`

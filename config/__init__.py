@@ -709,9 +709,9 @@ class Config():
                         command += ' --sbr'
                     if odr['output']['dabp_ps'] == 'true':
                         command += ' --ps'
-                    if odr['output']['dabp_sbr'] == 'false' and config['odr']['output']['dabp_ps'] == 'false':
+                    if odr['output']['dabp_sbr'] == 'false' and odr['output']['dabp_ps'] == 'false':
                         command += ' --aaclc'
-                    # Disable afterburner only for alsa or stream or aes input type
+                    ## Disable afterburner only for alsa or stream or aes input type
                     if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['output']['dabp_afterburner'] == 'false':
                         command += ' --no-afterburner'
 

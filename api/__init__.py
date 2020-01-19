@@ -449,6 +449,10 @@ class API():
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
+        
+        if 'max_encoder_instance' in self.conf.config['global']:
+            if len(param) >= self.conf.config['global']['max_encoder_instance']+1:
+                return {'status': '-207', 'statusText': 'Maximum encoder instance reached.'}
 
         odr = []
         odr_to_remove = []

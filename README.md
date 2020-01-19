@@ -52,6 +52,7 @@ password = pass ; Auth password
   * (root) Restart supervisor : `/etc/init.d/supervisor restart`
   * (root) Start WEB server : `supervisorctl reread; supervisorctl update ODR-encoderManager`
   * Go to : `http://<ip_address>:8080`
+  * Login with user `joe` and password `secret` 
 
 
 

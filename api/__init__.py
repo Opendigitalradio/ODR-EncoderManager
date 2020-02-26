@@ -331,7 +331,7 @@ class API():
                 output['global']['network']['cards'][i]['route'] = param['route']
                 change = True
         if not change:
-            return {'status': '-231', 'statusText': 'Card not found: ' + str(e)}
+            return {'status': '-231', 'statusText': 'Card not found'}
 
         # Write configuration file
         try:

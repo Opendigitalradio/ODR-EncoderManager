@@ -51,9 +51,11 @@ import codecs
 import re
 import uuid
 
+import queue
 import socket
 import yaml
 import math
+import lameenc
 
 class API():
 
@@ -845,6 +847,46 @@ class API():
             output = {}
 
         return {'status': data['status'], 'statusText': data['statusText'], 'data': output}
+
+    @cherrypy.expose
+    @cherrypy.config(**{'response.stream': True})
+    @require()
+    def getmp3audio(self, uniq_id=None, **params):
+        cherrypy.response.headers['Content-Type'] = "audio/mpeg"
+        cherrypy.response.headers['Cache-Control'] = "no-cache"
+        if not uniq_id:
+            raise cherrypy.HTTPError(404, "uniq_id not given")
+
+        conf = Config(self.config_file)
+        audio_data = conf.getAudioQueue(uniq_id)
+
+        if audio_data is None:
+            raise cherrypy.HTTPError(404, "No audio data for this uniq_id")
+
+        if 'audio_queue' not in audio_data:
+            raise cherrypy.HTTPError(404, "No audio queue for this uniq_id")
+
+        def streamer():
+            enc = lameenc.Encoder()
+            print("Starting mp3 streamer with SR = {}".format(audio_data['samplerate']))
+            enc.set_in_sample_rate(audio_data['samplerate'])
+            enc.set_channels(audio_data['channels'])
+            enc.set_bit_rate(96)
+            try:
+                while True:
+                    data = audio_data['audio_queue'].get(timeout=2)
+                    if len(data) == 0:
+                        return
+                    mp3data = enc.encode(data)
+                    if mp3data:
+                        yield bytes(mp3data)
+                    # the mp3 encoder is allowed to output an empty frame
+            except queue.Empty:
+                try:
+                    yield enc.flush()
+                except RuntimeError:
+                    return
+        return streamer()
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

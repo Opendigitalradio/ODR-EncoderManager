@@ -30,6 +30,9 @@ import stat
 import socket
 import yaml
 import uuid
+import queue
+
+AUDIO_MAX_FRAMES = 4 # one mp3 frame is usually 1152 samples, i.e. 24ms at 48000
 
 if sys.version_info >= (3, 0):
     from xmlrpc import client as xmlrpc_client
@@ -66,6 +69,7 @@ class Config():
                 if not coder['uniq_id'] in audioSocket:
                     #print ('add socket', coder['uniq_id'])
                     audioSocket[coder['uniq_id']] = {}
+                    audioSocket[coder['uniq_id']]['audio_queue'] = queue.Queue(maxsize=AUDIO_MAX_FRAMES)
                     audioSocket[coder['uniq_id']]['uniq_id'] = coder['uniq_id']
                     audioSocket[coder['uniq_id']]['stats_socket'] = coder['source']['stats_socket']
                     audioSocket[coder['uniq_id']]['status'] = '-504'
@@ -117,23 +121,45 @@ class Config():
             audioSocket[uniq_id]['socket'].close()
             del audioSocket[uniq_id]
 
-    def retreiveAudioSocket(self):
+    def retrieveAudioSocket(self):
         for uniq_id in audioSocket:
             try:
-                data, addr = audioSocket[uniq_id]['socket'].recvfrom(256)
+                packet, addr = audioSocket[uniq_id]['socket'].recvfrom(65536)
             except socket.timeout as err:
+                print("socket timeout")
                 audioSocket[uniq_id]['status'] = '-502'
                 audioSocket[uniq_id]['statusText'] = 'socket timeout'
                 audioSocket[uniq_id]['data'] = {}
             except socket.error as err:
+                print("socket err {}".format(err))
                 audioSocket[uniq_id]['status'] = '-502'
                 audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
                 audioSocket[uniq_id]['data'] = {}
             else:
-                data = yaml.load(data)
-                audioSocket[uniq_id]['status'] = '0'
-                audioSocket[uniq_id]['statusText'] = 'Ok'
-                audioSocket[uniq_id]['data'] = data
+                # Audio data is appended after the yaml document end.
+                # Serialising the audio data as yaml !!binary is quite expensive
+                # to decode
+                yaml_end = b'...\n'
+                ix = packet.find(yaml_end)
+                if ix != -1:
+                    yamldata = packet[:ix]
+
+                    data = yaml.safe_load(yamldata)
+                    audioSocket[uniq_id]['status'] = '0'
+                    audioSocket[uniq_id]['statusText'] = 'Ok'
+                    audioSocket[uniq_id]['data'] = data
+
+                    audiodata = packet[ix + len(yaml_end):]
+                    try:
+                        audioSocket[uniq_id]['audio_queue'].put(audiodata, block=False)
+                    except queue.Full:
+                        pass
+                else:
+                    # Assume there is no audio data appended
+                    data = yaml.safe_load(packet)
+                    audioSocket[uniq_id]['status'] = '0'
+                    audioSocket[uniq_id]['statusText'] = 'Ok'
+                    audioSocket[uniq_id]['data'] = data
 
     def delAudioSocket(self, uniq_id):
         audioSocket[uniq_id]['socket'].close()
@@ -155,6 +181,15 @@ class Config():
                       'data': {},
                       }
             return output
+
+    def getAudioQueue(self, uniq_id):
+        if uniq_id in audioSocket:
+            data = {"samplerate": audioSocket[uniq_id]["data"]["samplerate"],
+                    "channels": audioSocket[uniq_id]["data"]["channels"],
+                    "audio_queue": audioSocket[uniq_id]["audio_queue"]}
+            return data
+        else:
+            return None
 
     # Configuration Change Management
     def initConfigurationChanged(self):
@@ -648,8 +683,8 @@ class Config():
                     supervisorConfig += "autostart=true\n"
                     supervisorConfig += "autorestart=true\n"
                     supervisorConfig += "priority=10\n"
-                    supervisorConfig += "user=odr\n"
-                    supervisorConfig += "group=odr\n"
+                    supervisorConfig += "user=bram\n"
+                    supervisorConfig += "group=bram\n"
                     supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
                     supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
                     supervisorConfig += "\n"
@@ -748,8 +783,8 @@ class Config():
                 supervisorConfig += "autostart=true\n"
                 supervisorConfig += "autorestart=true\n"
                 supervisorConfig += "priority=10\n"
-                supervisorConfig += "user=odr\n"
-                supervisorConfig += "group=odr\n"
+                supervisorConfig += "user=bram\n"
+                supervisorConfig += "group=bram\n"
                 supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
                 supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
                 supervisorConfig += "\n"

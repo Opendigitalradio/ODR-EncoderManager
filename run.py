@@ -181,11 +181,11 @@ if __name__ == '__main__':
     cherrypy.config.update({
         'server.socket_host': config.config['global']['host'],
         'server.socket_port': int(config.config['global']['port']),
-        'request.show_tracebacks' : False,
+        'request.show_tracebacks' : True,
         'environment': 'production',
         'log.access_file' : os.path.join(config.config['global']['logs_directory'], 'access.log'),
         'log.error_file' : os.path.join(config.config['global']['logs_directory'], 'error.log'),
-        'log.screen': False,
+        'log.screen': True,
         'tools.sessions.on': True,
         'tools.sessions.name': "ODR-Encoder-Manager",
         'tools.encode.on': True,
@@ -231,5 +231,5 @@ if __name__ == '__main__':
     config.initAudioSocket()
     while True:
         config.addAudioSocket()
-        config.retreiveAudioSocket()
+        config.retrieveAudioSocket()
         #time.sleep(5)

@@ -78,7 +78,12 @@ function requestDLS(interval) {
                             dls = val['dls'];
                             cl = '';
                         }
-                        $('#dls > tbody:last').append('<tr><td data-toggle="tooltip" data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+dls+'</td><td>'+dlplus+'</td><td><button type="button" class="btn btn-xs btn-info dls_edit '+cl+'" id="dls_edit" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-pencil"></span> Edit</button> <button type="button" class="btn btn-xs btn-info" id="audio_level" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-stats"></span> Audio levels</button></td></tr>');
+                        $('#dls > tbody:last').append('<tr><td data-toggle="tooltip" data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td>' +
+                            '<td class="hidden">'+val['coder_uniq_id']+'</td>' +
+                            '<td>'+dls+'</td>' +
+                            '<td>'+dlplus+'</td>' +
+                            '<td><audio controls><source src="api/getmp3audio?uniq_id=' + val['coder_uniq_id'] + '" type="audio/mpeg"></audio></td>' +
+                            '<td><button type="button" class="btn btn-xs btn-info dls_edit '+cl+'" id="dls_edit" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-pencil"></span> Edit</button> <button type="button" class="btn btn-xs btn-info" id="audio_level" data-toggle="modal" data-target="#modal"><span class="glyphicon glyphicon-stats"></span> Audio levels</button></td></tr>');
                     // else (coder exist in table), update
                     } else {
                         //console.log('UUID found, update')

@@ -29,6 +29,11 @@ import json
 import stat
 import socket
 import yaml
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+
 import uuid
 import queue
 
@@ -136,30 +141,42 @@ class Config():
                 audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
                 audioSocket[uniq_id]['data'] = {}
             else:
-                # Audio data is appended after the yaml document end.
-                # Serialising the audio data as yaml !!binary is quite expensive
-                # to decode
-                yaml_end = b'...\n'
-                ix = packet.find(yaml_end)
-                if ix != -1:
-                    yamldata = packet[:ix]
+                if 0:
+                    # Audio data is appended after the yaml document end.
+                    # Serialising the audio data as yaml !!binary is quite expensive
+                    # to decode if CLoader is not used
+                    yaml_end = b'...\n'
+                    ix = packet.find(yaml_end)
+                    if ix != -1:
+                        yamldata = packet[:ix]
 
-                    data = yaml.safe_load(yamldata)
+                        data = yaml.safe_load(yamldata)
+                        audioSocket[uniq_id]['status'] = '0'
+                        audioSocket[uniq_id]['statusText'] = 'Ok'
+                        audioSocket[uniq_id]['data'] = data
+
+                        audiodata = packet[ix + len(yaml_end):]
+                        try:
+                            audioSocket[uniq_id]['audio_queue'].put(audiodata, block=False)
+                        except queue.Full:
+                            pass
+                    else:
+                        # Assume there is no audio data appended
+                        data = yaml.safe_load(packet)
+                        audioSocket[uniq_id]['status'] = '0'
+                        audioSocket[uniq_id]['statusText'] = 'Ok'
+                        audioSocket[uniq_id]['data'] = data
+                else:
+                    # Audio data inside YAML
+                    data = yaml.load(packet, Loader=Loader)
                     audioSocket[uniq_id]['status'] = '0'
                     audioSocket[uniq_id]['statusText'] = 'Ok'
-                    audioSocket[uniq_id]['data'] = data
-
-                    audiodata = packet[ix + len(yaml_end):]
+                    audioSocket[uniq_id]['data'] = dict((k, data[k]) for k in data if k != 'audio')
                     try:
-                        audioSocket[uniq_id]['audio_queue'].put(audiodata, block=False)
+                        audioSocket[uniq_id]['audio_queue'].put(data['audio'], block=False)
                     except queue.Full:
                         pass
-                else:
-                    # Assume there is no audio data appended
-                    data = yaml.safe_load(packet)
-                    audioSocket[uniq_id]['status'] = '0'
-                    audioSocket[uniq_id]['statusText'] = 'Ok'
-                    audioSocket[uniq_id]['data'] = data
+
 
     def delAudioSocket(self, uniq_id):
         audioSocket[uniq_id]['socket'].close()

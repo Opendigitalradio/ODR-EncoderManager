@@ -53,7 +53,6 @@ import uuid
 
 import queue
 import socket
-import yaml
 import math
 import lameenc
 
@@ -885,7 +884,7 @@ class API():
                 try:
                     yield enc.flush()
                 except RuntimeError:
-                    return
+                    print("Streamer lame flush failed")
         return streamer()
 
     @cherrypy.expose

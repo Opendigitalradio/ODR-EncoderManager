@@ -44,6 +44,20 @@ def is_network(config_file):
         return True
     else:
         return False
+    
+def is_adcast(config_file):
+    conf = Config(config_file)
+    if ('adcast' in conf.config['global']) and (conf.config['global']['adcast'] == True or conf.config['global']['adcast'] == 'true'):
+        return True
+    else:
+        return False
+    
+def is_slide_mgnt(config_file):
+    conf = Config(config_file)
+    if ('slide_mgnt' in conf.config['global']) and (conf.config['global']['slide_mgnt'] == True or conf.config['global']['slide_mgnt'] == 'true'):
+        return True
+    else:
+        return False
 
 class Config():
     def __init__(self, config_file):
@@ -164,7 +178,7 @@ class Config():
             self.addConfigurationChanged(coder['uniq_id'])
 
     def addConfigurationChanged(self, uniq_id):
-        configurationChanged[uniq_id] = {'odr-audioencoder': False, 'odr-padencoder': False}
+        configurationChanged[uniq_id] = {'odr-audioencoder': False, 'odr-padencoder': False, 'slide-mgnt': False, 'adcast': False}
 
     def delConfigurationChanged(self, uniq_id):
         if uniq_id in configurationChanged:
@@ -214,6 +228,7 @@ class Config():
                         if coderNew['source']['stats_socket'] != coderOld['source']['stats_socket']:
                             self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
+                        # odr-audioencoder
                         if coderNew['source']['type'] != coderOld['source']['type']:
                             self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                         else:
@@ -227,6 +242,8 @@ class Config():
                                 if coderNew['source']['stream_url'] != coderOld['source']['stream_url']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['source']['stream_writeicytext'] != coderOld['source']['stream_writeicytext']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                if coderNew['source']['stream_lib'] != coderOld['source']['stream_lib']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                             if coderNew['source']['type'] == 'alsa':
                                 if coderNew['source']['driftcomp'] != coderOld['source']['driftcomp']:
@@ -249,6 +266,12 @@ class Config():
                                 if coderNew['source']['avt_timeout'] != coderOld['source']['avt_timeout']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                             if coderNew['source']['type'] == 'aes67':
+                                if coderNew['source']['driftcomp'] != coderOld['source']['driftcomp']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                if coderNew['source']['silence_detect'] != coderOld['source']['silence_detect']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                if coderNew['source']['silence_duration'] != coderOld['source']['silence_duration']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['source']['aes67_sdp'] != coderOld['source']['aes67_sdp']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['source']['aes67_sdp_file'] != coderOld['source']['aes67_sdp_file']:
@@ -273,7 +296,7 @@ class Config():
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                                 # check output
-                                if isOutputNotEqual(coderNew['output']['zmq_output'], coderOld['output']['zmq_output'], ['name']):
+                                if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                             if coderNew['output']['type'] == 'dab':
@@ -290,17 +313,44 @@ class Config():
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                                 # check output
-                                if isOutputNotEqual(coderNew['output']['zmq_output'], coderOld['output']['zmq_output'], ['name']):
+                                if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
+                        # odr-padenc
                         if coderNew['padenc']['enable'] != coderOld['padenc']['enable']:
                             self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                            self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                         else:
                             if coderNew['padenc']['slide_sleeping'] != coderOld['padenc']['slide_sleeping']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['slide_directory'] != coderOld['padenc']['slide_directory']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
+                                if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') ):
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                    
+                            # CHECK ADCAST / SLIDE-MGNT slide directory 
+                            if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                                and 'slide_directory_live' in coderNew['padenc']\
+                                and 'slide_directory_live' in coderOld['padenc']\
+                                and coderNew['padenc']['slide_directory_live'] != coderOld['padenc']['slide_directory_live']:        
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                
+                            if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                                and 'slide_directory_carousel' in coderNew['padenc']\
+                                and 'slide_directory_carousel' in coderOld['padenc']\
+                                and coderNew['padenc']['slide_directory_carousel'] != coderOld['padenc']['slide_directory_carousel']:        
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                
+                            if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                                and 'slide_directory_ads' in coderNew['padenc']\
+                                and 'slide_directory_ads' in coderOld['padenc']\
+                                and coderNew['padenc']['slide_directory_ads'] != coderOld['padenc']['slide_directory_ads']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                if ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') )\
+                                    and 'adcast' in coderNew\
+                                    and 'adcast' in coderOld:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                                
+                            
                             if coderNew['padenc']['slide_once'] != coderOld['padenc']['slide_once']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['raw_dls'] != coderOld['padenc']['raw_dls']:
@@ -322,7 +372,26 @@ class Config():
                             if coderNew['padenc']['dls_file'] != coderOld['padenc']['dls_file']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
-
+                            
+                        # adcast
+                        if ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') ):
+                            if 'adcast' not in coderOld:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                            else:
+                                if coderNew['adcast']['enable'] != coderOld['adcast']['enable']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                if coderNew['adcast']['api_token'] != coderOld['adcast']['api_token']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                                if coderNew['adcast']['uuid'] != coderOld['adcast']['uuid']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                                if coderNew['adcast']['api_url'] != coderOld['adcast']['api_url']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                                if coderNew['adcast']['listen_addr'] != coderOld['adcast']['listen_addr']:
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                
+                                
 
     def write(self, config, checkConfigurationChanged=True):
         if checkConfigurationChanged:
@@ -398,6 +467,14 @@ class Config():
                     coder['source']['stream_url'] = coder['source']['url']
                     del coder['source']['url']
                     print ('- rename url to stream_url in configuration file')
+            if 'output' in coder:
+                if 'zmq_output' in coder['output']:
+                    newOutput = []
+                    for o in coder['output']['zmq_output']:
+                        o['type'] = 'zmq'
+                        newOutput.append(o)
+                    coder['output']['output'] = newOutput
+                    del coder['output']['zmq_output']
             odr.append(coder)
         # Write configuration file
         output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr }
@@ -421,12 +498,8 @@ class Config():
 
         # Remove unused ODR-audioencoder & ODR-padencoder
         for process in programs:
-            if process['name'].startswith('odr-audioencoder') or process['name'].startswith('odr-padencoder'):
-                if process['name'].startswith('odr-audioencoder'):
-                    uuid = process['name'][17:]
-
-                if process['name'].startswith('odr-padencoder'):
-                    uuid = process['name'][15:]
+            if process['name'].startswith('odr-audioencoder-') or process['name'].startswith('odr-padencoder-') or process['name'].startswith('slide-mgnt-') or process['name'].startswith('adcast-'):
+                uuid = process['name'][-36:]
 
                 if not any(c['uniq_id'] == uuid for c in self.config['odr']):
                     try:
@@ -447,6 +520,16 @@ class Config():
         # Add new supervisor configuration
         for coder in self.config['odr']:
             if all (k in coder for k in ("source","output","padenc","path")):
+                
+                # odr-audioencoder
+                if not self.is_program_exist(programs, 'odr-audioencoder-%s' % (coder['uniq_id'])):
+                    try:
+                        server.supervisor.reloadConfig()
+                        server.supervisor.addProcessGroup('odr-audioencoder-%s' % (coder['uniq_id']))
+                    except Exception as e:
+                        raise ValueError( 'Error when starting odr-audioencoder (XMLRPC): ' % (process['name'], str(e)) )
+                
+                # odr-padencoder
                 if coder['padenc']['enable'] == 'true':
                     if not self.is_program_exist(programs, 'odr-padencoder-%s'  % (coder['uniq_id'])):
                         try:
@@ -454,15 +537,34 @@ class Config():
                             server.supervisor.addProcessGroup('odr-padencoder-%s' % (coder['uniq_id']))
                         except Exception as e:
                             raise ValueError( 'Error when starting odr-padencoder (XMLRPC): ' % (process['name'], str(e)) )
-                            #return {'status': '-207', 'statusText': 'Error when starting odr-padencoder (XMLRPC): ' + str(e)}
-
-                if not self.is_program_exist(programs, 'odr-audioencoder-%s' % (coder['uniq_id'])):
-                    try:
-                        server.supervisor.reloadConfig()
-                        server.supervisor.addProcessGroup('odr-audioencoder-%s' % (coder['uniq_id']))
-                    except Exception as e:
-                        raise ValueError( 'Error when starting odr-audioencoder (XMLRPC): ' % (process['name'], str(e)) )
-                        #return {'status': '-206', 'statusText': 'Error when starting odr-audioencoder (XMLRPC): ' + str(e)}
+                    
+                # slide-mgnt
+                if coder['padenc']['enable'] == 'true'\
+                    and 'slide_mgnt' in self.config['global']\
+                    and (self.config['global']['slide_mgnt'] == True or self.config['global']['slide_mgnt'] == 'true')\
+                    and 'slide_directory_live' in coder['padenc']\
+                    and 'slide_directory_carousel' in coder['padenc']\
+                    and 'slide_directory_ads' in coder['padenc']:
+                        
+                    if not self.is_program_exist(programs, 'slide-mgnt-%s'  % (coder['uniq_id'])):
+                        try:
+                            server.supervisor.reloadConfig()
+                            server.supervisor.addProcessGroup('slide-mgnt-%s' % (coder['uniq_id']))
+                        except Exception as e:
+                            raise ValueError( 'Error when starting slide-mgnt (XMLRPC): ' % (process['name'], str(e)) )
+                
+                # adcast
+                if coder['padenc']['enable'] == 'true'\
+                    and ('slide_mgnt' in self.config['global'] and (self.config['global']['slide_mgnt'] == True or self.config['global']['slide_mgnt'] == 'true') )\
+                    and ('adcast' in self.config['global'] and (self.config['global']['adcast'] == True or self.config['global']['adcast'] == 'true') )\
+                    and ('adcast' in coder and coder['adcast']['enable'] == 'true'):
+                        
+                    if not self.is_program_exist(programs, 'adcast-%s'  % (coder['uniq_id'])):
+                        try:
+                            server.supervisor.reloadConfig()
+                            server.supervisor.addProcessGroup('adcast-%s' % (coder['uniq_id']))
+                        except Exception as e:
+                            raise ValueError( 'Error when starting adcast (XMLRPC): ' % (process['name'], str(e)) )
 
     def generateNetworkFiles(self, config):
         # Write network/interfaces file
@@ -544,14 +646,14 @@ class Config():
             if all (k in odr for k in ("source","output","padenc","path")):
                 # Write supervisor pad-encoder section
                 if odr['padenc']['enable'] == 'true':
-                    command = odr['path']['padenc_path']
-                    command += ' -v'
+                    command = '%s\n' % (odr['path']['padenc_path'])
+                    command += ' -v\n'
                     if odr['padenc']['slide_directory'].strip() != '':
                         # Check if config.mot_slide_directory exist
                         if os.path.exists(odr['padenc']['slide_directory']):
-                            command += ' --dir=%s' % (odr['padenc']['slide_directory'])
+                            command += ' --dir=%s\n' % (odr['padenc']['slide_directory'])
                             if odr['padenc']['slide_once'] == 'true':
-                                command += ' --erase'
+                                command += ' --erase\n'
                         else:
                             # Try to create slide_directory
                             try:
@@ -559,13 +661,27 @@ class Config():
                             except Exception as e:
                                 raise ValueError('Error when creating slide directory: {}'.format(e))
 
-                            # If config.mot_slide_directory start with /pad/slide/live/, try to create carousel directory if not exist
-                            # Ideally check if /pad/slide/live/ is tmfs
-                            if odr['padenc']['slide_directory'].startswith('/pad/slide/live/'):
-                                try:
-                                    os.makedirs('/pad/slide/carousel/'+odr['padenc']['slide_directory'].replace('/pad/slide/live/', ''))
-                                except Exception as e:
-                                    raise ValueError('Error when creating slide directory: {}'.format(e))
+                    if 'slide_directory_live' in odr['padenc']:
+                        if not os.path.exists(odr['padenc']['slide_directory_live']):
+                            try:
+                                os.makedirs(odr['padenc']['slide_directory_live'])
+                            except Exception as e:
+                                raise ValueError('Error when creating live slide directory: {}'.format(e))
+                            
+                    if 'slide_directory_carousel' in odr['padenc']:
+                        if not os.path.exists(odr['padenc']['slide_directory_carousel']):
+                            try:
+                                os.makedirs(odr['padenc']['slide_directory_carousel'])
+                            except Exception as e:
+                                raise ValueError('Error when creating carousel slide directory: {}'.format(e))
+                            
+                    if 'slide_directory_ads' in odr['padenc']:
+                        if not os.path.exists(odr['padenc']['slide_directory_ads']):
+                            try:
+                                os.makedirs(odr['padenc']['slide_directory_ads'])
+                            except Exception as e:
+                                raise ValueError('Error when creating ads slide directory: {}'.format(e))
+
 
                     # Check if config.mot_dls_file exist and create it if needed.
                     if not os.path.isfile(odr['padenc']['dls_file']):
@@ -588,18 +704,18 @@ class Config():
                             pass
 
                     if odr['padenc']['slide_sleeping']:
-                        command += ' --sleep=%s' % (odr['padenc']['slide_sleeping'])
+                        command += ' --sleep=%s\n' % (odr['padenc']['slide_sleeping'])
                     else:
-                        command += ' --sleep=10'
+                        command += ' --sleep=10\n'
                     if odr['padenc']['pad']:
-                        command += ' --pad=%s' % (odr['padenc']['pad'])
+                        command += ' --pad=%s\n' % (odr['padenc']['pad'])
                     else:
-                        command += ' --pad=34'
-                    command += ' --dls=%s' % (odr['padenc']['dls_file'])
-                    command += ' --output=%s' % (odr['padenc']['pad_fifo'])
+                        command += ' --pad=34\n'
+                    command += ' --dls=%s\n' % (odr['padenc']['dls_file'])
+                    command += ' --output=%s\n' % (odr['padenc']['pad_fifo'])
 
                     if odr['padenc']['raw_dls'] == 'true':
-                        command += ' --raw-dls'
+                        command += ' --raw-dls\n'
 
                     # UNIFORM
                     if odr['padenc']['uniform'] == 'true':
@@ -608,43 +724,43 @@ class Config():
                             if odr['output']['dabp_sbr'] == 'false':
                                 # AAC_LC
                                 if odr['output']['samplerate'] == '48000':
-                                    command += ' --frame-dur=20'
+                                    command += ' --frame-dur=20\n'
                                 elif odr['output']['samplerate'] == '32000':
-                                    command += ' --frame-dur=30'
+                                    command += ' --frame-dur=30\n'
                             elif odr['output']['dabp_sbr'] == 'true':
                                 # HE_AAC
                                 if odr['output']['samplerate'] == '48000':
-                                    command += ' --frame-dur=40'
+                                    command += ' --frame-dur=40\n'
                                 elif odr['output']['samplerate'] == '32000':
-                                    command += ' --frame-dur=60'
+                                    command += ' --frame-dur=60\n'
 
                         # DAB
                         if odr['output']['type'] == 'dab':
                             if odr['output']['samplerate'] == '48000':
-                                command += ' --frame-dur=24'
+                                command += ' --frame-dur=24\n'
                             elif odr['output']['samplerate'] == '24000':
-                                command += ' --frame-dur=48'
+                                command += ' --frame-dur=48\n'
 
                         # DAB+ / DAB Common
                         if odr['padenc']['uniform_label']:
-                            command += ' --label=%s' % (odr['padenc']['uniform_label'])
+                            command += ' --label=%s\n' % (odr['padenc']['uniform_label'])
                         else:
-                            command += ' --label=12'
+                            command += ' --label=12\n'
 
                         if odr['padenc']['uniform_label_ins']:
-                            command += ' --label-ins=%s' % (odr['padenc']['uniform_label_ins'])
+                            command += ' --label-ins=%s\n' % (odr['padenc']['uniform_label_ins'])
                         else:
-                            command += ' --label-ins=1200'
+                            command += ' --label-ins=1200\n'
 
                         if odr['padenc']['uniform_init_burst']:
-                            command += ' --init-burst=%s' % (odr['padenc']['uniform_init_burst'])
+                            command += ' --init-burst=%s\n' % (odr['padenc']['uniform_init_burst'])
                         else:
-                            command += ' --init-burst=12'
+                            command += ' --init-burst=12\n'
 
 
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:odr-padencoder-%s]\n" % (odr['uniq_id'])
-                    supervisorConfig += "command=%s\n" % (command)
+                    supervisorConfig += "command=%s" % (command)
                     supervisorConfig += "autostart=true\n"
                     supervisorConfig += "autorestart=true\n"
                     supervisorConfig += "priority=10\n"
@@ -657,17 +773,20 @@ class Config():
                 # Write supervisor audioencoder section
                 # Encoder path
                 if odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67':
-                    command = odr['path']['encoder_path']
+                    command = '%s\n' % (odr['path']['encoder_path'])
                 if odr['source']['type'] == 'avt':
-                    command = odr['path']['sourcecompanion_path']
+                    command = '%s\n' % (odr['path']['sourcecompanion_path'])
 
                 # Input stream
                 if odr['source']['type'] == 'alsa':
-                    command += ' --device %s' % (odr['source']['alsa_device'])
+                    command += ' --device %s\n' % (odr['source']['alsa_device'])
                 if odr['source']['type'] == 'stream':
-                    command += ' --vlc-uri=%s' % (odr['source']['stream_url'])
+                    if odr['source']['stream_lib'] == 'vlc':
+                        command += ' --vlc-uri=%s\n' % (odr['source']['stream_url'])
+                    if odr['source']['stream_lib'] == 'gst':
+                        command += ' --gst-uri=%s\n' % (odr['source']['stream_url'])
                 if odr['source']['type'] == 'aes67':
-                    command += ' --vlc-uri=file://%s' % (odr['source']['aes67_sdp_file'])
+                    command += ' --vlc-uri=file://%s\n' % (odr['source']['aes67_sdp_file'])
                     # Write SDP file
                     # Check if config.source.aes67_sdp_file exist and create it if needed.
                     if not os.path.isfile(odr['source']['aes67_sdp_file']):
@@ -686,65 +805,68 @@ class Config():
 
                 # driftcomp for alsa or stream or aes input type only
                 if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['source']['driftcomp'] == 'true':
-                    command += ' --drift-comp'
+                    command += ' --drift-comp\n'
 
                 # silence restart for alsa or stream or aes input type only
                 if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['source']['silence_detect'] == 'true' and odr['source']['silence_duration'] != '' and int(odr['source']['silence_duration']) >> 0:
-                    command += ' --silence=%s' % (odr['source']['silence_duration'])
+                    command += ' --silence=%s\n' % (odr['source']['silence_duration'])
 
                 # bitrate, samplerate, channels for all input type
-                command += ' --bitrate=%s' % (odr['output']['bitrate'])
-                command += ' --rate=%s' % (odr['output']['samplerate'])
-                command += ' --channels=%s' % (odr['output']['channels'])
+                command += ' --bitrate=%s\n' % (odr['output']['bitrate'])
+                command += ' --rate=%s\n' % (odr['output']['samplerate'])
+                command += ' --channels=%s\n' % (odr['output']['channels'])
 
                 # DAB specific option only for alsa or stream or aes input type
                 if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['output']['type'] == 'dab':
-                    command += ' --dab'
-                    command += ' --dabmode=%s' % (odr['output']['dab_dabmode'])
-                    command += ' --dabpsy=%s' % (odr['output']['dab_dabpsy'])
+                    command += ' --dab\n'
+                    command += ' --dabmode=%s\n' % (odr['output']['dab_dabmode'])
+                    command += ' --dabpsy=%s\n' % (odr['output']['dab_dabpsy'])
 
                 # DAB+ specific option for all input type
                 if odr['output']['type'] == 'dabp':
                     if odr['output']['dabp_sbr'] == 'true':
-                        command += ' --sbr'
+                        command += ' --sbr\n'
                     if odr['output']['dabp_ps'] == 'true':
-                        command += ' --ps'
+                        command += ' --ps\n'
                     if odr['output']['dabp_sbr'] == 'false' and odr['output']['dabp_ps'] == 'false':
-                        command += ' --aaclc'
+                        command += ' --aaclc\n'
                     ## Disable afterburner only for alsa or stream or aes input type
                     if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['output']['dabp_afterburner'] == 'false':
-                        command += ' --no-afterburner'
+                        command += ' --no-afterburner\n'
 
                 # PAD encoder
                 if odr['padenc']['enable'] == 'true':
                     if os.path.exists(odr['padenc']['pad_fifo']) and stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
-                        command += ' --pad=%s' % (odr['padenc']['pad'])
-                        command += ' --pad-fifo=%s' % (odr['padenc']['pad_fifo'])
+                        command += ' --pad=%s\n' % (odr['padenc']['pad'])
+                        command += ' --pad-fifo=%s\n' % (odr['padenc']['pad_fifo'])
                         # Write icy-text only for stream input type and if writeicytext is true
                         if odr['source']['type'] == 'stream' and odr['source']['stream_writeicytext'] == 'true':
-                            command += ' --write-icy-text=%s' % (odr['padenc']['dls_file'])
+                            command += ' --write-icy-text=%s\n' % (odr['padenc']['dls_file'])
 
                 # AVT input type specific option
                 if odr['source']['type'] == 'avt':
-                    command += ' --input-uri=%s' % (odr['source']['avt_input_uri'])
-                    command += ' --control-uri=%s' % (odr['source']['avt_control_uri'])
-                    command += ' --timeout=%s' % (odr['source']['avt_timeout'])
-                    command += ' --jitter-size=%s' % (odr['source']['avt_jitter_size'])
+                    command += ' --input-uri=%s\n' % (odr['source']['avt_input_uri'])
+                    command += ' --control-uri=%s\n' % (odr['source']['avt_control_uri'])
+                    command += ' --timeout=%s\n' % (odr['source']['avt_timeout'])
+                    command += ' --jitter-size=%s\n' % (odr['source']['avt_jitter_size'])
                     if odr['padenc']['enable'] == 'true':
-                        command += ' --pad-port=%s' % (odr['source']['avt_pad_port'])
+                        command += ' --pad-port=%s\n' % (odr['source']['avt_pad_port'])
 
                 # Output
-                for out in odr['output']['zmq_output']:
+                for out in odr['output']['output']:
                     if out['enable'] == 'true':
-                        command += ' -o tcp://%s:%s' % (out['host'], out['port'])
+                        if out['type'] == 'zmq':
+                            command += ' -o tcp://%s:%s\n' % (out['host'], out['port'])
+                        if out['type'] == 'editcp':
+                            command += ' -e tcp://%s:%s\n' % (out['host'], out['port'])
 
                 # Stats socket
                 if odr['source']['stats_socket'] != '':
-                    command += ' --stats=%s' % (odr['source']['stats_socket'])
+                    command += ' --stats=%s\n' % (odr['source']['stats_socket'])
 
                 supervisorConfig += "# %s\n" % (odr['name'])
                 supervisorConfig += "[program:odr-audioencoder-%s]\n" % (odr['uniq_id'])
-                supervisorConfig += "command=%s\n" % (command)
+                supervisorConfig += "command=%s" % (command)
                 supervisorConfig += "autostart=true\n"
                 supervisorConfig += "autorestart=true\n"
                 supervisorConfig += "priority=10\n"
@@ -753,6 +875,65 @@ class Config():
                 supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
                 supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
                 supervisorConfig += "\n"
+                
+                # Write supervisor slide_mgnt section
+                # If global.slide_mgnt is true
+                if odr['padenc']['enable'] == 'true'\
+                    and 'slide_mgnt' in config['global']\
+                    and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true')\
+                    and 'slide_directory_live' in odr['padenc']\
+                    and 'slide_directory_carousel' in odr['padenc']\
+                    and 'slide_directory_ads' in odr['padenc']:
+                    
+                    command = 'python3 /usr/local/bin/slide-mgnt.py\n'
+                    command += ' -v\n'
+                    command += ' -w %s\n' % (odr['padenc']['slide_directory'])
+                    command += ' -c %s\n' % (odr['padenc']['slide_directory_carousel'])
+                    command += ' -l %s\n' % (odr['padenc']['slide_directory_live'])
+                    command += ' -t 300\n'
+                    command += ' -i 35\n'
+                    command += ' -I 35\n'
+                    if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
+                        command += ' -a %s\n' % (odr['padenc']['slide_directory_ads'])
+                        command += ' -A 35\n'
+                        command += ' -s %s\n' % (odr['adcast']['listen_addr'])
+                    
+                    supervisorConfig += "# %s\n" % (odr['name'])
+                    supervisorConfig += "[program:slide-mgnt-%s]\n" % (odr['uniq_id'])
+                    supervisorConfig += "command=%s" % (command)
+                    supervisorConfig += "autostart=true\n"
+                    supervisorConfig += "autorestart=true\n"
+                    supervisorConfig += "priority=10\n"
+                    supervisorConfig += "user=odr\n"
+                    supervisorConfig += "group=odr\n"
+                    supervisorConfig += "stderr_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
+                    supervisorConfig += "stdout_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
+                    supervisorConfig += "\n"
+                
+                # Write supervisor adcast section
+                if odr['padenc']['enable'] == 'true'\
+                    and ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                    and ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') ):
+                        
+                    if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
+                        command = '/opt/adcast/bin/adcast-slide-controller run\n'
+                        command += ' --api-token %s\n' % (odr['adcast']['api_token'])
+                        command += ' --uuid %s\n' % (odr['adcast']['uuid'])
+                        command += ' --dst-dir %s\n' % (odr['padenc']['slide_directory_ads'])
+                        command += ' --listen-addr %s\n' % (odr['adcast']['listen_addr'])
+                        
+                        supervisorConfig += "# %s\n" % (odr['name'])
+                        supervisorConfig += "[program:adcast-%s]\n" % (odr['uniq_id'])
+                        supervisorConfig += "command=%s" % (command)
+                        supervisorConfig += "autostart=true\n"
+                        supervisorConfig += "autorestart=true\n"
+                        supervisorConfig += "priority=10\n"
+                        supervisorConfig += "user=odr\n"
+                        supervisorConfig += "group=odr\n"
+                        supervisorConfig += "stderr_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
+                        supervisorConfig += "stdout_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
+                        supervisorConfig += "\n"
+                    
 
         try:
             with open(config['global']['supervisor_file'], 'w') as supfile:

@@ -199,7 +199,7 @@ function requestStatus(callback) {
                     if ( val['coder_name'] == 'Other process' ) {
                         service=val['name']
                     } else {
-                        service=val['name'].split('-')[0] + '-' + val['name'].split('-')[1];
+                        service=val['name'].substring(0, val['name'].length - 37);
                     }
 
                     $('#status > tbody:last').append('<tr><td data-placement="top" title="'+val['coder_description']+'">'+val['coder_name']+'</td><td class="hidden">'+val['coder_uniq_id']+'</td><td>'+service+'</td><td>'+val['pid']+'</td><td><span class="label label-'+class_label+'">'+val['statename']+'</span></td><td>'+val['description']+'</td><td>'+info+'</td><td>'+action+'</td></tr>');

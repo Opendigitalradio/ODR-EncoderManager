@@ -112,6 +112,7 @@ function requestConfiguration(reload=false) {
                 $('#source_alsa_device').val('plughw:1,0');
                 $('#source_stream_url').val('');
                 $('#source_stream_writeicytext option[value="true"]').prop('selected', true);
+                $('#source_stream_lib option[value="vlc"]').prop('selected', true);
                 $('#source_avt_input_uri').val('udp://:32010');
                 $('#source_avt_control_uri').val('udp://192.168.128.111:9325');
                 $('#source_avt_pad_port').val('9405');
@@ -130,12 +131,16 @@ function requestConfiguration(reload=false) {
                 $('#output_dabp_ps option[value="false"]').prop('selected', true);
                 $('#output_dab_dabmode option[value="j"]').prop('selected', true);
                 $('#output_dab_dabpsy option[value="1"]').prop('selected', true);
-                $('#output_zmq_output').html('');
+                $('#output_output').html('');
                 $('#output_zmq_key').val('');
 
                 $('#padenc_enable option[value="true"]').prop('selected', true);
                 $('#padenc_slide_sleeping').val('0');
-                $('#padenc_slide_directory').val('/var/tmp/slide-'+coder_uniq_id+'/');
+                if (document.getElementById("padenc_slide_directory_live") !== null && document.getElementById("padenc_slide_directory_carousel") !== null) {
+                    $('#padenc_slide_directory').val('/var/tmp/sls/'+coder_uniq_id+'/');
+                } else {
+                    $('#padenc_slide_directory').val('/var/tmp/slide-'+coder_uniq_id+'/');
+                }
                 $('#padenc_pad_fifo').val('/var/tmp/metadata-'+coder_uniq_id+'.pad');
                 $('#padenc_dls_file').val('/var/tmp/metadata-'+coder_uniq_id+'.dls');
                 $('#padenc_pad').val('34');
@@ -145,7 +150,27 @@ function requestConfiguration(reload=false) {
                 $('#padenc_uniform_init_burst').val('12');
                 $('#padenc_uniform_label').val('12');
                 $('#padenc_uniform_label_ins').val('1200');
+                
+                if(document.getElementById("padenc_slide_directory_live") !== null) {
+                    $('#padenc_slide_directory_live').val('/pad/slide/live/'+coder_uniq_id+'/');
+                }
+                if(document.getElementById("padenc_slide_directory_carousel") !== null) {
+                    $('#padenc_slide_directory_carousel').val('/pad/slide/carousel/'+coder_uniq_id+'/');
+                }
+                if(document.getElementById("padenc_slide_directory_ads") !== null) {
+                    $('#padenc_slide_directory_ads').val('/pad/slide/ads/'+coder_uniq_id+'/');
+                }
 
+                // Only if 'collapseADCAST' exist
+                if(document.getElementById("collapseADCAST") !== null) {
+                    $('#adcast_enable option[value="false"]').prop('selected', true);
+                    $('#adcast_api_token').val('');
+                    $('#adcast_uuid').val('');
+                    $('#adcast_api_url').val('');
+                    $('#adcast_dst_dir').val('/pad/slide/ads/'+coder_uniq_id+'/');
+                    $('#adcast_listen_addr').val('/var/tmp/adcast-'+coder_uniq_id+'.socket');
+                }
+                
                 $('#path_encoder_path').val('/usr/local/bin/odr-audioenc');
                 $('#path_padenc_path').val('/usr/local/bin/odr-padenc');
                 $('#path_sourcecompanion_path').val('/usr/local/bin/odr-sourcecompanion');
@@ -176,15 +201,28 @@ function requestConfiguration(reload=false) {
                             }
                             else if ( $('#'+form_key).prop('tagName') == 'DIV' ) {
 
-                                if ( form_key == 'output_zmq_output') {
+                                if ( form_key == 'output_output') {
                                     $( '#'+form_key ).empty();
                                     $.each( param_val, function( param_key, param_val ) {
                                         if (param_val['enable'] == 'true') {
-                                            output_zmq_enable=' checked="checked"';
+                                            output_enable=' checked="checked"';
                                         } else {
-                                            output_zmq_enable='';
+                                            output_enable='';
                                         }
-                                        $( '#'+form_key ).append('<div class="form-group"><div class="output_zmq"><label class="control-label col-sm-2" for="output_zmq_name"></label><div class="col-sm-3"><input type="text" class="form-control" id="output_zmq_name" value="'+ param_val['name'] +'" placeholder="Description"> </div><div class="col-sm-5"><div class="input-group"><span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output"><input type="checkbox" id="output_zmq_enable"'+ output_zmq_enable +'></span><input type="text" class="form-control" id="output_zmq_host" value="'+ param_val['host'] +'" placeholder="Host or IP"><span class="input-group-addon">:</span><input type="text" class="form-control" id="output_zmq_port"  value="'+ param_val['port'] +'" placeholder="Port"><span class="input-group-btn"><button class="btn btn-danger btn_output_zmq_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>')
+                                        if ('type' in param_val) {
+                                            if (param_val['type'] == 'editcp') {
+                                                output_type_zmq_selected = ''
+                                                output_type_editcp_selected = ' selected="selected"'
+                                            }
+                                            if (param_val['type'] == 'zmq') {
+                                                output_type_zmq_selected = ' selected="selected"'
+                                                output_type_editcp_selected = ''
+                                            }
+                                        } else {
+                                            output_type_zmq_selected = ' selected="selected"'
+                                            output_type_editcp_selected = ''
+                                        }
+                                        $( '#'+form_key ).append('<div class="form-group"><div class="output"><label class="control-label col-sm-2" for="output_name"></label><div class="col-sm-2"><input type="text" class="form-control" id="output_name" value="'+ param_val['name'] +'" placeholder="Description"> </div><div class="col-sm-6"><div class="input-group"><span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output"><input type="checkbox" id="output_enable"'+ output_enable +'></span><select type="select" class="form-control" id="output_type"><option value="zmq"'+output_type_zmq_selected+'>ZMQ</option><option value="editcp"'+output_type_editcp_selected+'>EDI/tcp</option></select><span class="input-group-addon">/</span><input type="text" class="form-control" id="output_host" value="'+ param_val['host'] +'" placeholder="Host or IP"><span class="input-group-addon">:</span><input type="text" class="form-control" id="output_port"  value="'+ param_val['port'] +'" placeholder="Port"><span class="input-group-btn"><button class="btn btn-danger btn_output_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>')
                                     });
                                 }
 
@@ -217,15 +255,15 @@ function requestConfiguration(reload=false) {
 }
 
 function setConfiguration() {
-        var zmq_output = [];
-        $('#output_zmq_output > .form-group > .output_zmq').each(function () {
+        var output = [];
+        $('#output_output > .form-group > .output').each(function () {
             var $input = $(this)
-            if ( $input.find('#output_zmq_enable').is(":checked") ) {
-                    zmq_output_enable='true';
+            if ( $input.find('#output_enable').is(":checked") ) {
+                    output_enable='true';
             } else {
-                    zmq_output_enable='false';
+                    output_enable='false';
             }
-            zmq_output.push({name: $input.find('#output_zmq_name').val(), host: $input.find('#output_zmq_host').val(), port: $input.find('#output_zmq_port').val(), enable: zmq_output_enable});
+            output.push({name: $input.find('#output_name').val(), type: $input.find('#output_type').val(), host: $input.find('#output_host').val(), port: $input.find('#output_port').val(), enable: output_enable});
         });
 
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
@@ -245,6 +283,7 @@ function setConfiguration() {
                         "stats_socket": $('#source_stats_socket').val(),
                         "stream_url": $('#source_stream_url').val(),
                         "stream_writeicytext": $('#source_stream_writeicytext').val(),
+                        "stream_lib": $('#source_stream_lib').val(),
                         "alsa_device": $('#source_alsa_device').val(),
                         "driftcomp": $('#source_driftcomp').val(),
                         "silence_detect": $('#source_silence_detect').val(),
@@ -259,7 +298,7 @@ function setConfiguration() {
                     },
             "output" : {
                         "type": $('#output_type').val(),
-                        "zmq_output": zmq_output,
+                        "output": output,
                         "zmq_key": $('#output_zmq_key').val(),
                         "bitrate": $('#output_bitrate').val(),
                         "samplerate": $('#output_samplerate').val(),
@@ -284,6 +323,31 @@ function setConfiguration() {
                         "uniform_label_ins": $('#padenc_uniform_label_ins').val(),
                         "uniform_init_burst": $('#padenc_uniform_init_burst').val()
                     },
+        }
+        
+        if (document.getElementById("padenc_slide_directory_live") !== null) {
+            param['padenc']['slide_directory_live'] = $('#padenc_slide_directory_live').val();
+        }
+        
+        if (document.getElementById("padenc_slide_directory_carousel") !== null) {
+            param['padenc']['slide_directory_carousel'] = $('#padenc_slide_directory_carousel').val();
+        }
+        
+        if (document.getElementById("padenc_slide_directory_ads") !== null) {
+            param['padenc']['slide_directory_ads'] = $('#padenc_slide_directory_ads').val();
+        }
+        
+        // Only if 'collapseADCAST' exist
+        if(document.getElementById("collapseADCAST") !== null) {
+            adcast = {
+                    "enable": $('#adcast_enable').val(),
+                    "api_token": $('#adcast_api_token').val(),
+                    "uuid": $('#adcast_uuid').val(),
+                    "api_url": $('#adcast_api_url').val(),
+                    "dst_dir": $('#adcast_dst_dir').val(),
+                    "listen_addr": $('#adcast_listen_addr').val()
+            }
+            param['adcast'] = adcast
         }
 
         $.ajax({
@@ -348,6 +412,7 @@ function setEnableDisable(){
         $('#source_type_stream').show();
         $('#source_stream_url').prop('disabled', false);
         $('#source_stream_writeicytext').prop('disabled', false);
+        $('#source_stream_lib').prop('disabled', false);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
@@ -394,6 +459,7 @@ function setEnableDisable(){
         $('#source_type_alsa').show();
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
+        $('#source_stream_lib').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', false);
         $('#btn_list_alsa_devices').prop('disabled', false);
         $('#source_driftcomp').prop('disabled', false);
@@ -415,6 +481,7 @@ function setEnableDisable(){
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
+            $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
             $('#output_dabp_ps').prop('disabled', true);
             $('#output_dabp_afterburner').prop('disabled', true);
@@ -422,6 +489,7 @@ function setEnableDisable(){
             $('#output_dab_dabpsy').prop('disabled', false);
         }
         if ($('#output_type').val() == 'dabp') {
+            $('#output_type_dabp').show();
             $('#output_dabp_sbr').prop('disabled', false);
             $('#output_dabp_ps').prop('disabled', false);
             $('#output_dabp_afterburner').prop('disabled', false);
@@ -434,6 +502,7 @@ function setEnableDisable(){
         $('#source_type_avt').show();
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
+        $('#source_stream_lib').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', true);
@@ -455,6 +524,7 @@ function setEnableDisable(){
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
+            $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
             $('#output_dabp_ps').prop('disabled', true);
             $('#output_dabp_afterburner').prop('disabled', true);
@@ -462,6 +532,7 @@ function setEnableDisable(){
             $('#output_dab_dabpsy').prop('disabled', false);
         }
         if ($('#output_type').val() == 'dabp') {
+            $('#output_type_dabp').show();
             $('#output_dabp_sbr').prop('disabled', false);
             $('#output_dabp_ps').prop('disabled', false);
             $('#output_dabp_afterburner').prop('disabled', true);
@@ -474,6 +545,7 @@ function setEnableDisable(){
         $('#source_type_aes67').show();
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
+        $('#source_stream_lib').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
@@ -495,6 +567,7 @@ function setEnableDisable(){
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
+            $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
             $('#output_dabp_ps').prop('disabled', true);
             $('#output_dabp_afterburner').prop('disabled', true);
@@ -502,6 +575,7 @@ function setEnableDisable(){
             $('#output_dab_dabpsy').prop('disabled', false);
         }
         if ($('#output_type').val() == 'dabp') {
+            $('#output_type_dabp').show();
             $('#output_dabp_sbr').prop('disabled', false);
             $('#output_dabp_ps').prop('disabled', false);
             $('#output_dabp_afterburner').prop('disabled', false);
@@ -731,9 +805,32 @@ $(function(){
     });
 
     // Default value
+    $('#btn_reset_source_aes67_sdp_file').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#source_aes67_sdp_file").val('/var/tmp/'+coder_uniq_id+'.sdp');
+    });
     $('#btn_reset_padenc_slide_directory').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
-        $("#padenc_slide_directory").val('/pad/slide/live/'+coder_uniq_id+'/');
+        if (document.getElementById("padenc_slide_directory_live") !== null && document.getElementById("padenc_slide_directory_carousel") !== null) {
+            $("#padenc_slide_directory").val('/pad/slide/sls/'+coder_uniq_id+'/');
+        } else {
+            $("#padenc_slide_directory").val('/var/tmp/slide-'+coder_uniq_id+'/');
+        }
+    });
+    
+    $('#btn_reset_padenc_slide_directory_live').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#padenc_slide_directory_live").val('/pad/slide/live/'+coder_uniq_id+'/');
+    });
+    
+    $('#btn_reset_padenc_slide_directory_carousel').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#padenc_slide_directory_carousel").val('/pad/slide/carousel/'+coder_uniq_id+'/');
+    });
+    
+    $('#btn_reset_padenc_slide_directory_ads').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#padenc_slide_directory_ads").val('/pad/slide/ads/'+coder_uniq_id+'/');
     });
 
     $('#btn_reset_padenc_pad_fifo').click(function () {
@@ -745,7 +842,12 @@ $(function(){
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#padenc_dls_file").val('/var/tmp/metadata-'+coder_uniq_id+'.dls');
     });
-
+    
+    $('#btn_reset_adcast_listen_addr').click(function () {
+        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+        $("#adcast_listen_addr").val('/var/tmp/adcast-'+coder_uniq_id+'.socket');
+    });
+    
     $('#btn_reset_path_zmq_key_tmp_file').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#path_zmq_key_tmp_file").val('/var/tmp/zmq-'+coder_uniq_id+'.key');
@@ -755,18 +857,78 @@ $(function(){
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#source_stats_socket").val('/var/tmp/'+coder_uniq_id+'.stats');
     });
+    
+    $('#btn_adcast_api_test').click(function () {
+        $('#ADCastModal .modal-body').html('');
+        error_msg = ''
+        if ($('#adcast_api_token').val() == '') {
+            error_msg += 'API token can not be empty<br />'
+        }
+        if ($('#adcast_uuid').val() == '') {
+            error_msg += 'UUID can not be empty<br />'
+        }
+        
+        if (error_msg != '') {
+            $('#ADCastModal .modal-body').html('<div class="alert alert-warning"><strong>Warning!</strong><br/>'+error_msg+'</div>');
+        } else {
+            o = ''
+            if ($('#adcast_api_url').val() == '') {
+                url = 'https://dig-adcast.appspot.com/api/v1/screen/controller/'+$('#adcast_uuid').val()+'/'
+            } else {
+                url = $('#adcast_api_url').val()+'/api/v1/screen/controller/'+$('#adcast_uuid').val()+'/'
+            }
+            o += 'testing url: '+url+'<br/>'
+            o += 'api token: '+$('#adcast_api_token').val()+'<br />'
+            o += '<textarea class="form-control" rows="20" cols="80" id="adcast_api_test_result"></textarea>'
+            $('#ADCastModal .modal-body').html(o);
+            
+            $.ajax({
+                type: "GET",
+                url: url,
+                headers: {
+                    "Authorization": 'Token '+$('#adcast_api_token').val()
+                },
+                contentType: 'application/json',
+                dataType: 'json',
+
+                error: function(data) {
+                    console.log(data)
+                    $('#adcast_api_test_result').text('ERROR\n'+JSON.stringify(data, null, "    "));
+                },
+                success: function(data) {
+                    console.log(data)
+                    $('#adcast_api_test_result').text('SUCCES\n'+JSON.stringify(data, null, "    "));
+                }
+            });
+        }
+    });
+    
 
     // Add ZMQ output
-    $('#btn_output_zmq_add').click(function () {
-        if ( $('#add_output_zmq_enable').is(":checked") ) {
-            output_zmq_enable=' checked="checked"';
+    $('#btn_output_add').click(function () {
+        if ( $('#add_output_enable').is(":checked") ) {
+            output_enable=' checked="checked"';
         } else {
-            output_zmq_enable='';
+            output_enable='';
         }
-        $( '#output_zmq_output' ).append('<div class="form-group"><div class="output_zmq"><label class="control-label col-sm-2" for="output_zmq_name"></label><div class="col-sm-3"><input type="text" class="form-control" id="output_zmq_name" value="'+ $('#add_output_zmq_name').val().replace(/(['"])/g, "") +'" placeholder="Description"> </div><div class="col-sm-5"><div class="input-group"><span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output"><input type="checkbox" id="output_zmq_enable" '+ output_zmq_enable +'></span><input type="text" class="form-control" id="output_zmq_host" value="'+ $('#add_output_zmq_host').val().replace(/(['"])/g, "") +'" placeholder="Host or IP"><span class="input-group-addon">:</span><input type="text" class="form-control" id="output_zmq_port"  value="'+ $('#add_output_zmq_port').val().replace(/(['"])/g, "") +'" placeholder="Port"><span class="input-group-btn"><button class="btn btn-danger btn_output_zmq_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>')
-        $('#add_output_zmq_name').val('');
-        $('#add_output_zmq_host').val('');
-        $('#add_output_zmq_port').val('');
+        output_type_zmq_selected = ''
+        output_type_editcp_selected = ''
+        console.log( $('#add_output_type').val() )
+        if ( $('#add_output_type').val() == 'zmq' ) {
+            output_type_zmq_selected = ' selected="selected"'
+            output_type_editcp_selected = ''
+        }
+        if ( $('#add_output_type').val() == 'editcp' ) {
+            output_type_zmq_selected = ''
+            output_type_editcp_selected = ' selected="selected"'
+        }
+        $( '#output_output' ).append('<div class="form-group"><div class="output"><label class="control-label col-sm-2" for="output_name"></label><div class="col-sm-2"><input type="text" class="form-control" id="output_name" value="'+ $('#add_output_name').val().replace(/(['"])/g, "") +'" placeholder="Description"> </div><div class="col-sm-6"><div class="input-group"><span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output"><input type="checkbox" id="output_enable" '+ output_enable +'></span><select type="select" class="form-control" id="output_type"><option value="zmq"'+output_type_zmq_selected+'>ZMQ</option><option value="editcp"'+output_type_editcp_selected+'>EDI/tcp</option></select><span class="input-group-addon">/</span><input type="text" class="form-control" id="output_host" value="'+ $('#add_output_host').val().replace(/(['"])/g, "") +'" placeholder="Host or IP"><span class="input-group-addon">:</span><input type="text" class="form-control" id="output_port"  value="'+ $('#add_output_port').val().replace(/(['"])/g, "") +'" placeholder="Port"><span class="input-group-btn"><button class="btn btn-danger btn_output_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>')
+        
+        //$('#source_stream_lib option[value="vlc"]').prop('selected', true);
+        
+        $('#add_output_name').val('');
+        $('#add_output_host').val('');
+        $('#add_output_port').val('');
     });
 });
 

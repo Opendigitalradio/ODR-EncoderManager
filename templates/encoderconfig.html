@@ -183,6 +183,27 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                         </div>
                     </div>
                 </div>
+                
+                {% if is_adcast is sameas true and is_slide_mgnt is sameas true%}
+                <!-- Modal ADCastModal -->
+                <div class="modal fade" id="ADCastModal" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">ADCast</h4>
+                            </div>
+                            <div class="modal-body">
+
+                            
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- Long form -->
                 <ul id="tab_coder" class="nav nav-tabs">
@@ -282,6 +303,15 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                     </select>
                                                     </div>
                                                 </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="source_stream_lib">Player library:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="source_stream_lib" data-toggle="tooltip" data-placement="top" title="Choose the library used to listen the stream">
+                                                        <option value="gst">GStreamer</option>
+                                                        <option value="vlc">VLC</option>
+                                                    </select>
+                                                    </div>
+                                                </div>
                                                 <hr />
                                             </div>
 
@@ -331,7 +361,16 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                     </div>
                                                     <label class="control-label col-sm-2" for="source_aes67_sdp_file">SDP file:</label>
                                                     <div class="col-sm-3">
-                                                        <input type="text" class="form-control" id="source_aes67_sdp_file" placeholder="Enter SDP file"><br />
+                                                        
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" id="source_aes67_sdp_file" placeholder="Enter SDP file"><br />
+                                                            <div class="input-group-btn">
+                                                                <button class="btn btn-default" type="button" id="btn_reset_source_aes67_sdp_file" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                    <i class="glyphicon glyphicon-repeat"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        
                                                         <button type="button" id="btn_aes67_wizard" class="btn btn-info" data-toggle="modal" data-target="#AES67WizardModal"><span class="glyphicon glyphicon-flash"></span> AES67 SDP Wizard</button>
                                                     </div>
                                                 </div>
@@ -450,25 +489,48 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 
                                             <h4>ZMQ configuration</h4>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-2" for="output_zmq_name">Hosts:</label>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="add_output_zmq_name" value="" placeholder="Description"> 
+                                                <label class="control-label col-sm-2" for="output_name">Hosts:</label>
+                                                <div class="col-sm-2">
+                                                    <input type="text" class="form-control" id="add_output_name" value="" placeholder="Description"> 
                                                 </div>
-                                                <div class="col-sm-5">
+                                                
+                                                
+<!--                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="output_type">Output type:</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <select type="select" class="form-control" id="output_type">
+                                                                <option value="dabp">DAB+</option>
+                                                                <option value="dab">DAB</option>
+                                                            </select>
+                                                            <span class="input-group-addon"><input type="checkbox" id="output_display" data-toggle="tooltip" data-placement="top" title="Display all parameters."></span>
+                                                        </div>
+                                                    </div>
+                                                </div>-->
+                                                
+                                                
+                                                <div class="col-sm-6">
                                                     <div class="input-group">
                                                         <span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output">
-                                                            <input type="checkbox" id="add_output_zmq_enable" checked="checked">
+                                                            <input type="checkbox" id="add_output_enable" checked="checked">
                                                         </span>
-                                                        <input type="text" class="form-control" id="add_output_zmq_host" value="" placeholder="Host or IP">
+                                                        <select type="select" class="form-control" id="add_output_type">
+                                                            <option value="zmq" selected="selected">ZMQ</option>
+                                                            <option value="editcp">EDI/tcp</option>
+                                                        </select>
+                                                        <span class="input-group-addon">/</span>
+                                                        <input type="text" class="form-control" id="add_output_host" value="" placeholder="Host or IP">
                                                         <span class="input-group-addon">:</span>
-                                                        <input type="text" class="form-control" id="add_output_zmq_port"  value="" placeholder="Port">
+                                                        <input type="text" class="form-control" id="add_output_port"  value="" placeholder="Port">
+                                                        
+                                                        
                                                         <span class="input-group-btn">
-                                                            <button class="btn btn-success" id="btn_output_zmq_add" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                                            <button class="btn btn-success" id="btn_output_add" type="button"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                                                         </span>
-                                                </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div id="output_zmq_output">
+                                            <div id="output_output">
                                             </div>
 
                                             <div class="form-group">
@@ -480,7 +542,6 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
@@ -520,12 +581,14 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
+                                                
+                                                
+                                                <label class="control-label col-sm-2" for="padenc_pad_fifo">PAD fifo:</label>
                                                 <div class="col-sm-3">
                                                     <div class="input-group">
-                                                        <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
+                                                        <input type="text" class="form-control" id="padenc_pad_fifo" placeholder="Enter pad fifo">
                                                         <div class="input-group-btn">
-                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_pad_fifo" data-toggle="tooltip" data-placement="top" title="Default value">
                                                                 <i class="glyphicon glyphicon-repeat"></i>
                                                             </button>
                                                         </div>
@@ -540,20 +603,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                     </select>
                                                 </div>
                                             </div>
-
-                                            <div class="form-group">
-                                                <label class="control-label col-sm-2" for="padenc_pad_fifo">PAD fifo:</label>
-                                                <div class="col-sm-3">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" id="padenc_pad_fifo" placeholder="Enter pad fifo">
-                                                        <div class="input-group-btn">
-                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_pad_fifo" data-toggle="tooltip" data-placement="top" title="Default value">
-                                                                <i class="glyphicon glyphicon-repeat"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_dls_file">DLS file:</label>
                                                 <div class="col-sm-3">
@@ -567,7 +617,82 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                     </div>
                                                 </div>
                                             </div>
+                                            
+                                        {% if is_slide_mgnt is sameas true %}
                                             <hr />
+                                            
+                                            <h4>Slide management</h4>
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_directory">Working slide directory:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter working slide directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_directory_live">Live slide directory:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory_live" placeholder="Enter live slide directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory_live" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_directory_carousel">Carousel slide directory:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory_carousel" placeholder="Enter carousel slide directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory_carousel" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_directory_ads">ADS slide directory:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory_ads" placeholder="Enter ADS slide directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory_ads" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="padenc_slide_directory">Slide directory:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="padenc_slide_directory" placeholder="Enter slide directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_slide_directory" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        {% endif %}
+                                        
+                                            <hr />
+                                            
                                             <h4>Uniform PAD</h4>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="padenc_uniform">enable:</label>
@@ -596,6 +721,70 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                     </div>
                                 </div>
 
+                                {% if is_adcast is sameas true and is_slide_mgnt is sameas true%}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                            <span class="glyphicon glyphicon-blackboard"></span> <a data-toggle="collapse" data-parent="#accordion" href="#collapseADCAST">ADCast</a>
+                                            </h4>
+                                    </div>
+                                    <div id="collapseADCAST" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="adcast_enable">Enable:</label>
+                                                <div class="col-sm-3">
+                                                    <select type="select" class="form-control" id="adcast_enable">
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <label class="control-label col-sm-2" for="adcast_api_url">API URL:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="adcast_api_url" placeholder="https://dig-adcast.appspot.com/" data-toggle="tooltip" data-placement="top" title="ADCast URL">
+                                                        <span class="input-group-btn">
+                                                            <button type="button" id="btn_adcast_api_test" class="btn btn-info" data-toggle="modal" data-target="#ADCastModal"><span class="glyphicon glyphicon-eye-open"></span> API Test</button>
+                                                            
+
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="adcast_api_token">API token:</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" id="adcast_api_token" placeholder="" data-toggle="tooltip" data-placement="top" title="Your ADCast API token">
+                                                </div>
+                                                
+                                                <label class="control-label col-sm-2" for="adcast_listen_addr">Listen addr path:</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="adcast_listen_addr" placeholder="Enter adcast destination directory">
+                                                        <div class="input-group-btn">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_adcast_listen_addr" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                                <i class="glyphicon glyphicon-repeat"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="control-label col-sm-2" for="adcast_uuid">API UUID:</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" id="adcast_uuid" placeholder="" data-toggle="tooltip" data-placement="top" title="Your ADCast UUID">
+                                                </div>
+
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">

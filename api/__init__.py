@@ -389,7 +389,7 @@ class API():
                         'dabp_ps': 'false',
                         'dab_dabmode': 'j',
                         'dab_dabpsy': '1',
-                        'zmq_output': [],
+                        'output': [],
                         'zmq_key': ''
                         }
                 if 'padenc' not in output:
@@ -407,11 +407,6 @@ class API():
                         'uniform_label': '12',
                         'uniform_label_ins': '1200'
                         }
-                    if os.path.exists('/pad/metadata'):
-                        output['padenc']['dls_file'] = '/pad/metadata/'+output['uniq_id']+'.dls'
-
-                    if os.path.exists('/pad/slide'):
-                        output['padenc']['slide_directory'] = '/pad/slide/live/'+output['uniq_id']+'/'
 
                 if 'path' not in output:
                     output['path'] = {
@@ -523,14 +518,33 @@ class API():
                             shutil.rmtree(odr['padenc']['slide_directory'])
                         except:
                             pass
+                        
+                    if 'slide_directory_live' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_live']):
+                        try:
+                            shutil.rmtree(odr['padenc']['slide_directory_live'])
+                        except:
+                            pass
+                        
+                    if 'slide_directory_carousel' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_carousel']):
+                        try:
+                            shutil.rmtree(odr['padenc']['slide_directory_carousel'])
+                        except:
+                            pass
+                        
+                    if 'slide_directory_ads' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_ads']):
+                        try:
+                            shutil.rmtree(odr['padenc']['slide_directory_ads'])
+                        except:
+                            pass
 
-                        # If config.mot_slide_directory start with /pad/slide/live/, try to remove carousel directory
-                        if odr['padenc']['slide_directory'].startswith('/pad/slide/live/'):
-                            try:
-                                shutil.rmtree('/pad/slide/carousel/'+odr['padenc']['slide_directory'].replace('/pad/slide/live/', ''))
-                            except:
-                                pass
-
+                                
+                    # Remove statistics UNIX Datagram socket
+                    if os.path.exists(odr['source']['stats_socket']):
+                        try:
+                            os.remove(odr['source']['stats_socket'])
+                        except:
+                            pass
+                    
                     # Remove service odr-audioencoder
                     service = 'odr-audioencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
@@ -555,6 +569,30 @@ class API():
                         except Exception as e:
                             return {'status': '-206', 'statusText': 'Error when removing odr-padencoder-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
 
+                    # Remove service slide-mgnt
+                    service = 'slide-mgnt-%s' % (odr['uniq_id'])
+                    if self.is_program_exist(programs, service):
+                        try:
+                            if self.is_program_running(programs, service):
+                                server.supervisor.stopProcess(service)
+                                server.supervisor.reloadConfig()
+                            server.supervisor.removeProcessGroup(service)
+                            server.supervisor.reloadConfig()
+                        except Exception as e:
+                            return {'status': '-206', 'statusText': 'Error when removing slide-mgnt-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
+                        
+                    # Remove service adcast
+                    service = 'adcast-%s' % (odr['uniq_id'])
+                    if self.is_program_exist(programs, service):
+                        try:
+                            if self.is_program_running(programs, service):
+                                server.supervisor.stopProcess(service)
+                                server.supervisor.reloadConfig()
+                            server.supervisor.removeProcessGroup(service)
+                            server.supervisor.reloadConfig()
+                        except Exception as e:
+                            return {'status': '-206', 'statusText': 'Error when removing adcast-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
+                    
                     # Remove configuration_changed information
                     self.conf.delConfigurationChanged(odr['uniq_id'])
 
@@ -606,12 +644,42 @@ class API():
                             except:
                                 pass
 
-                            # If config.mot_slide_directory start with /pad/slide/live/, try to remove carousel directory
-                            if data['padenc']['slide_directory'].startswith('/pad/slide/live/'):
-                                try:
-                                    shutil.rmtree('/pad/slide/carousel/'+data['padenc']['slide_directory'].replace('/pad/slide/live/', ''))
-                                except:
-                                    pass
+                    if ('slide_directory_live' in data['padenc']\
+                        and 'slide_directory_live' not in param['padenc'])\
+                        or ('slide_directory_live' in data['padenc']\
+                        and 'slide_directory_live' in param['padenc']\
+                        and data['padenc']['slide_directory_live'] != param['padenc']['slide_directory_live']):
+                            
+                        if os.path.exists(data['padenc']['slide_directory_live']):
+                            try:
+                                shutil.rmtree(data['padenc']['slide_directory_live'])
+                            except:
+                                pass
+                            
+                    if ('slide_directory_carousel' in data['padenc']\
+                        and 'slide_directory_carousel' not in param['padenc'])\
+                        or ('slide_directory_carousel' in data['padenc']\
+                        and 'slide_directory_carousel' in param['padenc']\
+                        and data['padenc']['slide_directory_carousel'] != param['padenc']['slide_directory_carousel']):
+                            
+                        if os.path.exists(data['padenc']['slide_directory_carousel']):
+                            try:
+                                shutil.rmtree(data['padenc']['slide_directory_carousel'])
+                            except:
+                                pass
+                            
+                    if ('slide_directory_ads' in data['padenc']\
+                        and 'slide_directory_ads' not in param['padenc'])\
+                        or ('slide_directory_ads' in data['padenc']\
+                        and 'slide_directory_ads' in param['padenc']\
+                        and data['padenc']['slide_directory_ads'] != param['padenc']['slide_directory_ads']):
+                            
+                        if os.path.exists(data['padenc']['slide_directory_ads']):
+                            try:
+                                shutil.rmtree(data['padenc']['slide_directory_ads'])
+                            except:
+                                pass
+                    
 
         # Check if PAD fifo & DLS file are already used by other encoder
         for data in self.conf.config['odr']:
@@ -673,14 +741,72 @@ class API():
                 return {'status': '-206', 'statusText': 'Error when starting odr-audioencoder (XMLRPC): ' + str(e)}
 
         # Check for odr-padencoder
+        service = 'odr-padencoder-%s' % (param['uniq_id'])
         if param['padenc']['enable'] == 'true':
-            if not self.is_program_exist(programs, 'odr-padencoder-%s'  % (param['uniq_id'])):
+            if not self.is_program_exist(programs, service):
                 try:
                     server.supervisor.reloadConfig()
                     server.supervisor.addProcessGroup('odr-padencoder-%s' % (param['uniq_id']))
                 except Exception as e:
-                    return {'status': '-207', 'statusText': 'Error when starting odr-padencoder (XMLRPC): ' + str(e)}
+                    return {'status': '-207', 'statusText': 'Error when starting %S (XMLRPC): ' % (service) + str(e)}
+        else:
+            if self.is_program_exist(programs, service):
+                try:
+                    if self.is_program_running(programs, service):
+                        server.supervisor.stopProcess(service)
+                        server.supervisor.reloadConfig()
+                    server.supervisor.removeProcessGroup(service)
+                    server.supervisor.reloadConfig()
+                except Exception as e:
+                    return {'status': '-206', 'statusText': 'Error when removing %s (XMLRPC): ' % (service) + str(e)}
 
+        # Check for slide-mgnt
+        service = 'slide-mgnt-%s' % (param['uniq_id'])
+        if param['padenc']['enable'] == 'true'\
+            and 'slide_mgnt' in self.conf.config['global']\
+            and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true'):
+                
+            if not self.is_program_exist(programs, service):
+                try:
+                    server.supervisor.reloadConfig()
+                    server.supervisor.addProcessGroup(service)
+                except Exception as e:
+                    return {'status': '-207', 'statusText': 'Error when starting %s (XMLRPC): ' % (service) + str(e)}
+        else:
+            if self.is_program_exist(programs, service):
+                try:
+                    if self.is_program_running(programs, service):
+                        server.supervisor.stopProcess(service)
+                        server.supervisor.reloadConfig()
+                    server.supervisor.removeProcessGroup(service)
+                    server.supervisor.reloadConfig()
+                except Exception as e:
+                    return {'status': '-206', 'statusText': 'Error when removing %s (XMLRPC): ' % (service) + str(e)}
+            
+        # Check for adcast
+        service = 'adcast-%s' % (param['uniq_id'])
+        if param['padenc']['enable'] == 'true'\
+            and ('slide_mgnt' in self.conf.config['global'] and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true') )\
+            and ('adcast' in self.conf.config['global'] and (self.conf.config['global']['adcast'] == True or self.conf.config['global']['adcast'] == 'true') ) \
+            and ('adcast' in param and param['adcast']['enable'] == 'true'):
+                
+            if not self.is_program_exist(programs, service):
+                try:
+                    server.supervisor.reloadConfig()
+                    server.supervisor.addProcessGroup(service)
+                except Exception as e:
+                    return {'status': '-207', 'statusText': 'Error when starting %S (XMLRPC): ' % (service) + str(e)}
+        else:
+            if self.is_program_exist(programs, service):
+                try:
+                    if self.is_program_running(programs, service):
+                        server.supervisor.stopProcess(service)
+                        server.supervisor.reloadConfig()
+                    server.supervisor.removeProcessGroup(service)
+                    server.supervisor.reloadConfig()
+                except Exception as e:
+                    return {'status': '-206', 'statusText': 'Error when removing %s (XMLRPC): ' % (service) + str(e)}
+        
         return {'status': '0', 'statusText': 'Ok'}
 
 
@@ -1020,6 +1146,15 @@ class API():
         try:
             for data in self.conf.config['odr']:
                 if all (k in data for k in ("source","output","padenc","path")):
+                    # odr-audioencoder
+                    pn = server.supervisor.getProcessInfo('odr-audioencoder-%s' % (data['uniq_id']) )
+                    pn['coder_name'] = data['name']
+                    pn['coder_description'] = data['description']
+                    pn['coder_uniq_id'] = data['uniq_id']
+                    pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-audioencoder')
+                    output.append( pn )
+                    
+                    # odr-padencoder
                     if data['padenc']['enable'] == 'true':
                         pn = server.supervisor.getProcessInfo('odr-padencoder-%s' % (data['uniq_id']) )
                         pn['coder_name'] = data['name']
@@ -1027,12 +1162,34 @@ class API():
                         pn['coder_uniq_id'] = data['uniq_id']
                         pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-padencoder')
                         output.append( pn )
-                    pn = server.supervisor.getProcessInfo('odr-audioencoder-%s' % (data['uniq_id']) )
-                    pn['coder_name'] = data['name']
-                    pn['coder_description'] = data['description']
-                    pn['coder_uniq_id'] = data['uniq_id']
-                    pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-audioencoder')
-                    output.append( pn )
+                    
+                    # slide-mgnt
+                    if data['padenc']['enable'] == 'true'\
+                        and 'slide_mgnt' in self.conf.config['global']\
+                        and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true')\
+                        and 'slide_directory_live' in data['padenc']\
+                        and 'slide_directory_carousel' in data['padenc']\
+                        and 'slide_directory_ads' in data['padenc']:
+                            
+                        pn = server.supervisor.getProcessInfo('slide-mgnt-%s' % (data['uniq_id']) )
+                        pn['coder_name'] = data['name']
+                        pn['coder_description'] = data['description']
+                        pn['coder_uniq_id'] = data['uniq_id']
+                        pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'slide-mgnt')
+                        output.append( pn )
+                    
+                    # adcast
+                    if data['padenc']['enable'] == 'true'\
+                        and ('slide_mgnt' in self.conf.config['global'] and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true') )\
+                        and ('adcast' in self.conf.config['global'] and (self.conf.config['global']['adcast'] == True or self.conf.config['global']['adcast'] == 'true') )\
+                        and ('adcast' in data and data['adcast']['enable'] == 'true'):
+                            
+                        pn = server.supervisor.getProcessInfo('adcast-%s' % (data['uniq_id']) )
+                        pn['coder_name'] = data['name']
+                        pn['coder_description'] = data['description']
+                        pn['coder_uniq_id'] = data['uniq_id']
+                        pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'adcast')
+                        output.append( pn )
 
                 else:
                     output.append({
@@ -1074,7 +1231,7 @@ class API():
                         'configuration_changed': self.conf.getConfigurationChanged(data['uniq_id'], 'odr-padencoder')
                         })
         except Exception as e:
-            return {'status': '-301', 'statusText': 'Error when getting odr-audioencoder and odr-padencoder status (XMLRPC): {}'.format(e)}
+            return {'status': '-301', 'statusText': 'Error when getting process status (XMLRPC): {}'.format(e)}
 
         if 'supervisor_additional_processes' in self.conf.config['global']:
             for proc in self.conf.config['global']['supervisor_additional_processes']:

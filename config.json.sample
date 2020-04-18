@@ -28,6 +28,7 @@
             "driftcomp": "true",
             "stream_url": "http://ice.stream.frequence3.net/frequence3-128.mp3",
             "stream_writeicytext": "true",
+            "stream_lib": "vlc",
             "avt_jitter_size": "80",
             "avt_control_uri": "udp://192.168.128.111:9325",
             "avt_input_uri": "udp://:32010",
@@ -50,7 +51,7 @@
             "type": "dabp",
             "samplerate": "48000",
             "bitrate": "96",
-            "zmq_output": [
+            "output": [
                 {
                     "host": "192.168.40.120",
                     "enable": "false",
@@ -74,6 +75,7 @@
     }],
     "global": {
         "daemon": false,
+        "max_encoder_instance": 3,
         "logs_directory": "/home/odr/ODR-EncoderManager/logs/",
         "supervisor_xmlrpc": "http://user:pass@127.0.0.1:8900/RPC2",
         "static_directory": "/home/odr/ODR-EncoderManager/static/",

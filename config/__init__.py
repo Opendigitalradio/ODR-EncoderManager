@@ -893,9 +893,9 @@ class Config():
                     command += ' -t 300\n'
                     command += ' -i 35\n'
                     command += ' -I 35\n'
+                    command += ' -a %s\n' % (odr['padenc']['slide_directory_ads'])
+                    command += ' -A 35\n'
                     if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
-                        command += ' -a %s\n' % (odr['padenc']['slide_directory_ads'])
-                        command += ' -A 35\n'
                         command += ' -s %s\n' % (odr['adcast']['listen_addr'])
                     
                     supervisorConfig += "# %s\n" % (odr['name'])

@@ -133,6 +133,8 @@ function requestConfiguration(reload=false) {
                 $('#output_dab_dabpsy option[value="1"]').prop('selected', true);
                 $('#output_output').html('');
                 $('#output_zmq_key').val('');
+                $('#output_edi_identifier').val('');
+                $('#output_edi_timestamps_delay').val('');
 
                 $('#padenc_enable option[value="true"]').prop('selected', true);
                 $('#padenc_slide_sleeping').val('0');
@@ -307,7 +309,9 @@ function setConfiguration() {
                         "dabp_ps": $('#output_dabp_ps').val(),
                         "dabp_afterburner": $('#output_dabp_afterburner').val(),
                         "dab_dabmode": $('#output_dab_dabmode').val(),
-                        "dab_dabpsy": $('#output_dab_dabpsy').val()
+                        "dab_dabpsy": $('#output_dab_dabpsy').val(),
+                        "edi_identifier": $('#output_edi_identifier').val(),
+                        "edi_timestamps_delay": $('#output_edi_timestamps_delay').val()
                     },
             "padenc" : {
                         "enable": $('#padenc_enable').val(),
@@ -433,6 +437,8 @@ function setEnableDisable(){
         $('#output_bitrate').prop('disabled', false);
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
+        $('#output_edi_identifier').prop('disabled', false);
+        $('#output_edi_timestamps_delay').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
             $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
@@ -480,6 +486,8 @@ function setEnableDisable(){
         $('#output_bitrate').prop('disabled', false);
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
+        $('#output_edi_identifier').prop('disabled', false);
+        $('#output_edi_timestamps_delay').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
             $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
@@ -523,6 +531,8 @@ function setEnableDisable(){
         $('#output_bitrate').prop('disabled', false);
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
+        $('#output_edi_identifier').prop('disabled', false);
+        $('#output_edi_timestamps_delay').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
             $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);
@@ -566,6 +576,8 @@ function setEnableDisable(){
         $('#output_bitrate').prop('disabled', false);
         $('#output_samplerate').prop('disabled', false);
         $('#output_channels').prop('disabled', false);
+        $('#output_edi_identifier').prop('disabled', false);
+        $('#output_edi_timestamps_delay').prop('disabled', false);
         if ($('#output_type').val() == 'dab') {
             $('#output_type_dab').show();
             $('#output_dabp_sbr').prop('disabled', true);

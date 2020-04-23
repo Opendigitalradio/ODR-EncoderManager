@@ -280,13 +280,20 @@ class Config():
                         if coderNew['output']['type'] != coderOld['output']['type']:
                             self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                         else:
+                            if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                            if coderNew['output']['channels'] != coderOld['output']['channels']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                            if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                            
                             if coderNew['output']['type'] == 'dabp':
-                                if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                if coderNew['output']['channels'] != coderOld['output']['channels']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                #if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                #if coderNew['output']['channels'] != coderOld['output']['channels']:
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                #if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                                 if coderNew['output']['dabp_sbr'] != coderOld['output']['dabp_sbr']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
@@ -295,26 +302,36 @@ class Config():
                                 if coderNew['output']['dabp_afterburner'] != coderOld['output']['dabp_afterburner']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
-                                # check output
-                                if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                ## check output
+                                #if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                             if coderNew['output']['type'] == 'dab':
-                                if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                if coderNew['output']['channels'] != coderOld['output']['channels']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                #if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                #if coderNew['output']['channels'] != coderOld['output']['channels']:
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                #if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                                 if coderNew['output']['dab_dabmode'] != coderOld['output']['dab_dabmode']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['output']['dab_dabpsy'] != coderOld['output']['dab_dabpsy']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
-                                # check output
-                                if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                ## check output
+                                #if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
+                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                    
+                            # check output
+                            if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                            
+                            # check EDI specific parameters
+                            if coderNew['output']['edi_identifier'] != coderOld['output']['edi_identifier']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                            if coderNew['output']['edi_timestamps_delay'] != coderOld['output']['edi_timestamps_delay']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                         # odr-padenc
                         if coderNew['padenc']['enable'] != coderOld['padenc']['enable']:
@@ -469,12 +486,19 @@ class Config():
                     print ('- rename url to stream_url in configuration file')
             if 'output' in coder:
                 if 'zmq_output' in coder['output']:
+                    print ('- rename zmq_output to output in configuration file')
                     newOutput = []
                     for o in coder['output']['zmq_output']:
                         o['type'] = 'zmq'
                         newOutput.append(o)
                     coder['output']['output'] = newOutput
                     del coder['output']['zmq_output']
+                if 'edi_identifier' not in coder['output']:
+                    coder['output']['edi_identifier'] = ''
+                    print ('- add edi_identifier to output in configuration file')
+                if 'edi_timestamps_delay' not in coder['output']:
+                    coder['output']['edi_timestamps_delay'] = ''
+                    print ('- add edi_timestamps_delay to output in configuration file')
             odr.append(coder)
         # Write configuration file
         output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr }
@@ -863,6 +887,13 @@ class Config():
                 # Stats socket
                 if odr['source']['stats_socket'] != '':
                     command += ' --stats=%s\n' % (odr['source']['stats_socket'])
+                
+                # EDI specific
+                if 'edi_identifier' in odr['output'] and odr['output']['edi_identifier'] != '':
+                    command += ' --identifier=%s\n' % (odr['output']['edi_identifier'])
+                
+                if 'edi_timestamps_delay' in odr['output'] and odr['output']['edi_timestamps_delay'] != '':
+                    command += ' --timestamp-delay=%s\n' % (odr['output']['edi_timestamps_delay'])
 
                 supervisorConfig += "# %s\n" % (odr['name'])
                 supervisorConfig += "[program:odr-audioencoder-%s]\n" % (odr['uniq_id'])
@@ -886,7 +917,7 @@ class Config():
                     and 'slide_directory_ads' in odr['padenc']:
                     
                     command = 'python3 /usr/local/bin/slide-mgnt.py\n'
-                    command += ' -v\n'
+                    #command += ' -v\n'
                     command += ' -w %s\n' % (odr['padenc']['slide_directory'])
                     command += ' -c %s\n' % (odr['padenc']['slide_directory_carousel'])
                     command += ' -l %s\n' % (odr['padenc']['slide_directory_live'])

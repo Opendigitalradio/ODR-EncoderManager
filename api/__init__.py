@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2020 Yoann QUERET <yoann@queret.net>
 """
 
 """
@@ -693,10 +693,11 @@ class API():
                         return {'status': '-223', 'statusText': 'PAD Encoder > Slide directory already used by encoder: ' + data['name']}
 
         # Check if slide interval/lifetime are ok
-        if 'slide_live_interval' in param['padenc']\
-            and 'slide_live_lifetime' in param['padenc']\
-            and int(param['padenc']['slide_live_lifetime']) < int(param['padenc']['slide_live_interval']):
-            return {'status': '-224', 'statusText': 'Live lifetime (%ssec) can not be smaller than Live interval (%ssec)' % (int(param['padenc']['slide_live_lifetime']), int(param['padenc']['slide_live_interval']))}
+        if 'slide_live_interval' in param['padenc'] and 'slide_live_lifetime' in param['padenc']:
+            ll = param['padenc']['slide_live_lifetime'] if param['padenc']['slide_live_lifetime'] != '' else '300'
+            li = param['padenc']['slide_live_interval'] if param['padenc']['slide_live_interval'] != '' else '35'
+            if int(ll) < int(li):
+                return {'status': '-224', 'statusText': 'Live lifetime (%ssec) can not be smaller than Live interval (%ssec)' % (int(ll), int(li))}
         
         # Merge change
         odr = []

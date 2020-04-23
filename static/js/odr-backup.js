@@ -1,5 +1,5 @@
 // 
-// Copyright (C) 2015 Yoann QUERET <yoann@queret.net>
+// Copyright (C) 2020 Yoann QUERET <yoann@queret.net>
 // 
 
 // 

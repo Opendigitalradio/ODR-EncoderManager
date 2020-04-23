@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2020 Yoann QUERET <yoann@queret.net>
 """
 
 """

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (C) 2019 Yoann QUERET <yoann@queret.net>
+Copyright (C) 2020 Yoann QUERET <yoann@queret.net>
 """
 
 """
@@ -390,7 +390,8 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             
                         # adcast
-                        if ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') ):
+                        if ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') )\
+                            and ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') ):
                             if 'adcast' not in coderOld:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
                             else:

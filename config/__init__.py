@@ -441,6 +441,8 @@ class Config():
             if not 'uniq_id' in coder:
                 coder['uniq_id'] = str(uuid.uuid4())
                 print ('- add coder uniq_id in configuration file')
+            if not 'autostart' in coder:
+                coder['autostart'] = 'true'
 
             if 'padenc' in coder:
                 if not 'uniform' in coder['padenc']:
@@ -785,7 +787,7 @@ class Config():
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:odr-padencoder-%s]\n" % (odr['uniq_id'])
                     supervisorConfig += "command=%s" % (command)
-                    supervisorConfig += "autostart=true\n"
+                    supervisorConfig += "autostart=%s\n" % (odr['autostart'])
                     supervisorConfig += "autorestart=true\n"
                     supervisorConfig += "priority=10\n"
                     supervisorConfig += "user=odr\n"
@@ -898,7 +900,7 @@ class Config():
                 supervisorConfig += "# %s\n" % (odr['name'])
                 supervisorConfig += "[program:odr-audioencoder-%s]\n" % (odr['uniq_id'])
                 supervisorConfig += "command=%s" % (command)
-                supervisorConfig += "autostart=true\n"
+                supervisorConfig += "autostart=%s\n" % (odr['autostart'])
                 supervisorConfig += "autorestart=true\n"
                 supervisorConfig += "priority=10\n"
                 supervisorConfig += "user=odr\n"
@@ -935,7 +937,7 @@ class Config():
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:slide-mgnt-%s]\n" % (odr['uniq_id'])
                     supervisorConfig += "command=%s" % (command)
-                    supervisorConfig += "autostart=true\n"
+                    supervisorConfig += "autostart=%s\n" % (odr['autostart'])
                     supervisorConfig += "autorestart=true\n"
                     supervisorConfig += "priority=10\n"
                     supervisorConfig += "user=odr\n"
@@ -959,7 +961,7 @@ class Config():
                         supervisorConfig += "# %s\n" % (odr['name'])
                         supervisorConfig += "[program:adcast-%s]\n" % (odr['uniq_id'])
                         supervisorConfig += "command=%s" % (command)
-                        supervisorConfig += "autostart=true\n"
+                        supervisorConfig += "autostart=%s\n" % (odr['autostart'])
                         supervisorConfig += "autorestart=true\n"
                         supervisorConfig += "priority=10\n"
                         supervisorConfig += "user=odr\n"

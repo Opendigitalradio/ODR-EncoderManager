@@ -190,6 +190,7 @@ function requestConfiguration(reload=false) {
                 // Set value from configuration if available
                 $.each( data['data'], function( section_key, section_val ) {
                     if (section_key == 'description') { $('#coder_description').html(section_val); }
+                    if (section_key == 'autostart') { $('#coder_autostart option[value="'+section_val+'"]').prop('selected', true); }
 
                     if ( typeof section_val === 'object') {
                         $.each( section_val, function( param_key, param_val ) {
@@ -283,6 +284,7 @@ function setConfiguration() {
 
         var param = {
             "uniq_id": coder_uniq_id,
+            "autostart": $('#coder_autostart').val(),
             "path" : {
                         "encoder_path": $('#path_encoder_path').val(),
                         "padenc_path": $('#path_padenc_path').val(),

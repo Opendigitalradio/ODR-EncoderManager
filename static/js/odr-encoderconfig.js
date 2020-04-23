@@ -137,7 +137,7 @@ function requestConfiguration(reload=false) {
                 $('#output_edi_timestamps_delay').val('');
 
                 $('#padenc_enable option[value="true"]').prop('selected', true);
-                $('#padenc_slide_sleeping').val('0');
+                $('#padenc_slide_sleeping').val('4');
                 if (document.getElementById("padenc_slide_directory_live") !== null && document.getElementById("padenc_slide_directory_carousel") !== null) {
                     $('#padenc_slide_directory').val('/var/tmp/sls/'+coder_uniq_id+'/');
                 } else {
@@ -150,8 +150,8 @@ function requestConfiguration(reload=false) {
                 $('#padenc_raw_dls option[value="false"]').prop('selected', true);
                 $('#padenc_uniform option[value="true"]').prop('selected', true);
                 $('#padenc_uniform_init_burst').val('12');
-                $('#padenc_uniform_label').val('12');
-                $('#padenc_uniform_label_ins').val('1200');
+                $('#padenc_uniform_label').val('5');
+                $('#padenc_uniform_label_ins').val('2000');
                 
                 if(document.getElementById("padenc_slide_directory_live") !== null) {
                     $('#padenc_slide_directory_live').val('/pad/slide/live/'+coder_uniq_id+'/');

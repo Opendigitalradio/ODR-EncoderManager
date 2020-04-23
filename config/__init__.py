@@ -288,13 +288,6 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                             
                             if coderNew['output']['type'] == 'dabp':
-                                #if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                #if coderNew['output']['channels'] != coderOld['output']['channels']:
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                #if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-
                                 if coderNew['output']['dabp_sbr'] != coderOld['output']['dabp_sbr']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['output']['dabp_ps'] != coderOld['output']['dabp_ps']:
@@ -302,26 +295,12 @@ class Config():
                                 if coderNew['output']['dabp_afterburner'] != coderOld['output']['dabp_afterburner']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
-                                ## check output
-                                #if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-
                             if coderNew['output']['type'] == 'dab':
-                                #if coderNew['output']['bitrate'] != coderOld['output']['bitrate']:
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                #if coderNew['output']['channels'] != coderOld['output']['channels']:
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                #if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-
                                 if coderNew['output']['dab_dabmode'] != coderOld['output']['dab_dabmode']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['output']['dab_dabpsy'] != coderOld['output']['dab_dabpsy']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
-                                ## check output
-                                #if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
-                                    #self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                     
                             # check output
                             if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
@@ -366,6 +345,26 @@ class Config():
                                     and 'adcast' in coderNew\
                                     and 'adcast' in coderOld:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
+                            
+                            # CHECK SLIDE-MGNT slide interval/liftime
+                            if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                                and 'slide_carousel_interval' in coderNew['padenc']\
+                                and 'slide_carousel_interval' in coderOld['padenc']\
+                                and coderNew['padenc']['slide_carousel_interval'] != coderOld['padenc']['slide_carousel_interval']:        
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                
+                            if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                                and 'slide_live_interval' in coderNew['padenc']\
+                                and 'slide_live_interval' in coderOld['padenc']\
+                                and coderNew['padenc']['slide_live_interval'] != coderOld['padenc']['slide_live_interval']:        
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                
+                            if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
+                                and 'slide_live_lifetime' in coderNew['padenc']\
+                                and 'slide_live_lifetime' in coderOld['padenc']\
+                                and coderNew['padenc']['slide_live_lifetime'] != coderOld['padenc']['slide_live_lifetime']:        
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
+                                
                                 
                             
                             if coderNew['padenc']['slide_once'] != coderOld['padenc']['slide_once']:
@@ -921,9 +920,12 @@ class Config():
                     command += ' -w %s\n' % (odr['padenc']['slide_directory'])
                     command += ' -c %s\n' % (odr['padenc']['slide_directory_carousel'])
                     command += ' -l %s\n' % (odr['padenc']['slide_directory_live'])
-                    command += ' -t 300\n'
-                    command += ' -i 35\n'
-                    command += ' -I 35\n'
+                    if odr['padenc']['slide_live_lifetime'] != '':
+                        command += ' -t %s\n' % (odr['padenc']['slide_live_lifetime'])
+                    if odr['padenc']['slide_live_interval'] != '':
+                        command += ' -i %s\n' % (odr['padenc']['slide_live_interval'])
+                    if odr['padenc']['slide_carousel_interval'] != '':
+                        command += ' -I %s\n' % (odr['padenc']['slide_carousel_interval'])
                     command += ' -a %s\n' % (odr['padenc']['slide_directory_ads'])
                     command += ' -A 35\n'
                     if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):

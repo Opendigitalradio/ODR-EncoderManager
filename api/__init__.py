@@ -692,6 +692,12 @@ class API():
                     if data['padenc']['slide_directory'] == param['padenc']['slide_directory']:
                         return {'status': '-223', 'statusText': 'PAD Encoder > Slide directory already used by encoder: ' + data['name']}
 
+        # Check if slide interval/lifetime are ok
+        if 'slide_live_interval' in param['padenc']\
+            and 'slide_live_lifetime' in param['padenc']\
+            and int(param['padenc']['slide_live_lifetime']) < int(param['padenc']['slide_live_interval']):
+            return {'status': '-224', 'statusText': 'Live lifetime (%ssec) can not be smaller than Live interval (%ssec)' % (int(param['padenc']['slide_live_lifetime']), int(param['padenc']['slide_live_interval']))}
+        
         # Merge change
         odr = []
         for data in self.conf.config['odr']:

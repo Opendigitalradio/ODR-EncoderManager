@@ -162,6 +162,15 @@ function requestConfiguration(reload=false) {
                 if(document.getElementById("padenc_slide_directory_ads") !== null) {
                     $('#padenc_slide_directory_ads').val('/pad/slide/ads/'+coder_uniq_id+'/');
                 }
+                if(document.getElementById("padenc_slide_carousel_interval") !== null) {
+                    $('#padenc_slide_carousel_interval').val('');
+                }
+                if(document.getElementById("padenc_slide_live_interval") !== null) {
+                    $('#padenc_slide_live_interval').val('');
+                }
+                if(document.getElementById("padenc_slide_directory_ads") !== null) {
+                    $('#padenc_slide_live_lifetime').val('');
+                }
 
                 // Only if 'collapseADCAST' exist
                 if(document.getElementById("collapseADCAST") !== null) {
@@ -332,13 +341,21 @@ function setConfiguration() {
         if (document.getElementById("padenc_slide_directory_live") !== null) {
             param['padenc']['slide_directory_live'] = $('#padenc_slide_directory_live').val();
         }
-        
         if (document.getElementById("padenc_slide_directory_carousel") !== null) {
             param['padenc']['slide_directory_carousel'] = $('#padenc_slide_directory_carousel').val();
         }
-        
         if (document.getElementById("padenc_slide_directory_ads") !== null) {
             param['padenc']['slide_directory_ads'] = $('#padenc_slide_directory_ads').val();
+        }
+        
+        if (document.getElementById("padenc_slide_carousel_interval") !== null) {
+            param['padenc']['slide_carousel_interval'] = $('#padenc_slide_carousel_interval').val();
+        }
+        if (document.getElementById("padenc_slide_live_interval") !== null) {
+            param['padenc']['slide_live_interval'] = $('#padenc_slide_live_interval').val();
+        }
+        if (document.getElementById("padenc_slide_live_lifetime") !== null) {
+            param['padenc']['slide_live_lifetime'] = $('#padenc_slide_live_lifetime').val();
         }
         
         // Only if 'collapseADCAST' exist

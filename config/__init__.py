@@ -465,6 +465,13 @@ class Config():
                     coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
                     del coder['padenc']['dls_fifo_file']
                     print ('- rename dls_fifo_file to dls_file in configuration file')
+                if not 'slide_carousel_interval' in coder['padenc']:
+                    coder['padenc']['slide_carousel_interval'] = ''
+                if not 'slide_live_interval' in coder['padenc']:
+                    coder['padenc']['slide_live_interval'] = ''
+                if not 'slide_live_lifetime' in coder['padenc']:
+                    coder['padenc']['slide_live_lifetime'] = ''
+                    
             if 'source' in coder:
                 if not 'stats_socket' in coder['source']:
                     coder['source']['stats_socket'] = '/var/tmp/'+coder['uniq_id']+'.stats'

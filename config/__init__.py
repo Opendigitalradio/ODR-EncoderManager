@@ -48,7 +48,10 @@ def is_network(config_file):
 def is_adcast(config_file):
     conf = Config(config_file)
     if ('adcast' in conf.config['global']) and (conf.config['global']['adcast'] == True or conf.config['global']['adcast'] == 'true'):
-        return True
+        if ('slide_mgnt' in conf.config['global']) and (conf.config['global']['slide_mgnt'] == True or conf.config['global']['slide_mgnt'] == 'true'):
+            return True
+        else:
+            return False
     else:
         return False
     

@@ -1,0 +1,15 @@
+## [v4.0.3] - 2020-05-25 - Yoann QUERET <yoann@queret.net>
+
+### Requirement
+- ODR-AudioEnc v2.6.0
+- ODR-SourceCompanion v0.6.0
+- ODR-PadEnc v2.3.0
+
+### New Feature
+- Add GStreamer support (require ODR-AudioEnc v2.6.0)
+- Add EDI/tcp output support with identifier and timestamps delay (require ODR-DabMux v3.1.0)
+- You can choose to start or not a coder at startup
+- You can define a max_encoder_instance to add limit for example depending on your hardware limitation
+
+### Changed
+- Some change in config.json, but automatically changed at startup

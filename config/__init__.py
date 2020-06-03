@@ -496,6 +496,13 @@ class Config():
                     coder['source']['stream_url'] = coder['source']['url']
                     del coder['source']['url']
                     print ('- rename url to stream_url in configuration file')
+                if not 'stream_url' in coder['source']:
+                    coder['source']['stream_url'] = ''
+                    print ('- add stream_url in configuration file')
+                if not 'stream_lib' in coder['source']:
+                    coder['source']['stream_lib'] = 'vlc'
+                    print ('- add stream_lib in configuration file')
+                    
             if 'output' in coder:
                 if 'zmq_output' in coder['output']:
                     print ('- rename zmq_output to output in configuration file')

@@ -5,8 +5,8 @@ OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder eas
   * Add audio level bar graph
   * AVT AE1 and AVT AE4 support
   * AES67 experimental support
-  * need odr-audioenc v2.4.0 or higher
-  * need odr-sourcecompanion v0.4.0 or higher
+  * need odr-audioenc v2.6.0 or higher
+  * need odr-sourcecompanion v0.6.0 or higher
   * need odr-padenc v2.3.0 or higher
 
 # Note about version V4.0.1

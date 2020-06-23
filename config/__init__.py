@@ -809,7 +809,8 @@ class Config():
                     supervisorConfig += "priority=10\n"
                     supervisorConfig += "user=odr\n"
                     supervisorConfig += "group=odr\n"
-                    supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
+                    supervisorConfig += "redirect_stderr=true\n"
+                    #supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
                     supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
                     supervisorConfig += "\n"
 
@@ -922,7 +923,8 @@ class Config():
                 supervisorConfig += "priority=10\n"
                 supervisorConfig += "user=odr\n"
                 supervisorConfig += "group=odr\n"
-                supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
+                supervisorConfig += "redirect_stderr=true\n"
+                #supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
                 supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
                 supervisorConfig += "\n"
                 
@@ -959,7 +961,8 @@ class Config():
                     supervisorConfig += "priority=10\n"
                     supervisorConfig += "user=odr\n"
                     supervisorConfig += "group=odr\n"
-                    supervisorConfig += "stderr_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
+                    supervisorConfig += "redirect_stderr=true\n"
+                    #supervisorConfig += "stderr_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
                     supervisorConfig += "stdout_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
                     supervisorConfig += "\n"
                 
@@ -983,7 +986,8 @@ class Config():
                         supervisorConfig += "priority=10\n"
                         supervisorConfig += "user=odr\n"
                         supervisorConfig += "group=odr\n"
-                        supervisorConfig += "stderr_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
+                        supervisorConfig += "redirect_stderr=true\n"
+                        #supervisorConfig += "stderr_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
                         supervisorConfig += "stdout_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
                         supervisorConfig += "\n"
                     

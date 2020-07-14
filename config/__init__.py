@@ -804,14 +804,25 @@ class Config():
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:odr-padencoder-%s]\n" % (odr['uniq_id'])
                     supervisorConfig += "command=%s" % (command)
-                    supervisorConfig += "autostart=%s\n" % (odr['autostart'])
-                    supervisorConfig += "autorestart=true\n"
-                    supervisorConfig += "priority=10\n"
-                    supervisorConfig += "user=odr\n"
-                    supervisorConfig += "group=odr\n"
-                    supervisorConfig += "redirect_stderr=true\n"
-                    #supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
-                    supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-padencoder-%s.log\n" % (odr['uniq_id'])
+                    
+                    # -- default parameters
+                    supervisorConfigParam = {}
+                    supervisorConfigParam['autostart'] = odr['autostart']
+                    supervisorConfigParam['autorestart'] = "true"
+                    supervisorConfigParam['priority'] = "10"
+                    supervisorConfigParam['user'] = "odr"
+                    supervisorConfigParam['group'] = "odr"
+                    supervisorConfigParam['redirect_stderr'] = "true"
+                    supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-padencoder-%s.log" % (odr['uniq_id'])
+                    
+                    # -- override default parameters or add additional parameters
+                    if 'supervisor_additional_options' in odr:
+                        for key in odr['supervisor_additional_options'].keys():
+                            supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
+                    
+                    # -- generate final padencoder supervisor configuration
+                    for key in supervisorConfigParam.keys():
+                        supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                     supervisorConfig += "\n"
 
                 # Write supervisor audioencoder section
@@ -918,14 +929,25 @@ class Config():
                 supervisorConfig += "# %s\n" % (odr['name'])
                 supervisorConfig += "[program:odr-audioencoder-%s]\n" % (odr['uniq_id'])
                 supervisorConfig += "command=%s" % (command)
-                supervisorConfig += "autostart=%s\n" % (odr['autostart'])
-                supervisorConfig += "autorestart=true\n"
-                supervisorConfig += "priority=10\n"
-                supervisorConfig += "user=odr\n"
-                supervisorConfig += "group=odr\n"
-                supervisorConfig += "redirect_stderr=true\n"
-                #supervisorConfig += "stderr_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
-                supervisorConfig += "stdout_logfile=/var/log/supervisor/odr-audioencoder-%s.log\n" % (odr['uniq_id'])
+                
+                # -- default parameters
+                supervisorConfigParam = {}
+                supervisorConfigParam['autostart'] = odr['autostart']
+                supervisorConfigParam['autorestart'] = "true"
+                supervisorConfigParam['priority'] = "10"
+                supervisorConfigParam['user'] = "odr"
+                supervisorConfigParam['group'] = "odr"
+                supervisorConfigParam['redirect_stderr'] = "true"
+                supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-audioencoder-%s.log" % (odr['uniq_id'])
+                    
+                # -- override default parameters or add additional parameters
+                if 'supervisor_additional_options' in odr:
+                    for key in odr['supervisor_additional_options'].keys():
+                        supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
+                
+                # -- generate final audioencoder supervisor configuration
+                for key in supervisorConfigParam.keys():
+                    supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                 supervisorConfig += "\n"
                 
                 # Write supervisor slide_mgnt section
@@ -956,15 +978,26 @@ class Config():
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:slide-mgnt-%s]\n" % (odr['uniq_id'])
                     supervisorConfig += "command=%s" % (command)
-                    supervisorConfig += "autostart=%s\n" % (odr['autostart'])
-                    supervisorConfig += "autorestart=true\n"
-                    supervisorConfig += "priority=10\n"
-                    supervisorConfig += "user=odr\n"
-                    supervisorConfig += "group=odr\n"
-                    supervisorConfig += "redirect_stderr=true\n"
-                    #supervisorConfig += "stderr_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
-                    supervisorConfig += "stdout_logfile=/var/log/supervisor/slide-%s.log\n" % (odr['uniq_id'])
+                    # -- default parameters
+                    supervisorConfigParam = {}
+                    supervisorConfigParam['autostart'] = odr['autostart']
+                    supervisorConfigParam['autorestart'] = "true"
+                    supervisorConfigParam['priority'] = "10"
+                    supervisorConfigParam['user'] = "odr"
+                    supervisorConfigParam['group'] = "odr"
+                    supervisorConfigParam['redirect_stderr'] = "true"
+                    supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/slide-%s.log" % (odr['uniq_id'])
+                    
+                    # -- override default parameters or add additional parameters
+                    if 'supervisor_additional_options' in odr:
+                        for key in odr['supervisor_additional_options'].keys():
+                            supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
+                    
+                    # -- generate final slide_mgnt supervisor configuration
+                    for key in supervisorConfigParam.keys():
+                        supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                     supervisorConfig += "\n"
+
                 
                 # Write supervisor adcast section
                 if odr['padenc']['enable'] == 'true'\
@@ -981,15 +1014,26 @@ class Config():
                         supervisorConfig += "# %s\n" % (odr['name'])
                         supervisorConfig += "[program:adcast-%s]\n" % (odr['uniq_id'])
                         supervisorConfig += "command=%s" % (command)
-                        supervisorConfig += "autostart=%s\n" % (odr['autostart'])
-                        supervisorConfig += "autorestart=true\n"
-                        supervisorConfig += "priority=10\n"
-                        supervisorConfig += "user=odr\n"
-                        supervisorConfig += "group=odr\n"
-                        supervisorConfig += "redirect_stderr=true\n"
-                        #supervisorConfig += "stderr_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
-                        supervisorConfig += "stdout_logfile=/var/log/supervisor/adcast-%s.log\n" % (odr['uniq_id'])
+                        # -- default parameters
+                        supervisorConfigParam = {}
+                        supervisorConfigParam['autostart'] = odr['autostart']
+                        supervisorConfigParam['autorestart'] = "true"
+                        supervisorConfigParam['priority'] = "10"
+                        supervisorConfigParam['user'] = "odr"
+                        supervisorConfigParam['group'] = "odr"
+                        supervisorConfigParam['redirect_stderr'] = "true"
+                        supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/adcast-%s.log" % (odr['uniq_id'])
+                        # -- override default parameters or add additional parameters
+                        if 'supervisor_additional_options' in odr:
+                            for key in odr['supervisor_additional_options'].keys():
+                                supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
+                        
+                        # -- generate final adcast supervisor configuration
+                        for key in supervisorConfigParam.keys():
+                            supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                         supervisorConfig += "\n"
+                    
+
                     
 
         try:

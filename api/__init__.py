@@ -706,6 +706,8 @@ class API():
                 param['name'] = data['name']
                 param['uniq_id'] = data['uniq_id']
                 param['description'] = data['description']
+                if 'supervisor_additional_options' in data:
+                    param['supervisor_additional_options'] = data['supervisor_additional_options']
                 if 'action' in param:
                     param.pop('action')
                 odr.append( param )

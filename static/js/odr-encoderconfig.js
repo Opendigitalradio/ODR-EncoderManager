@@ -201,6 +201,11 @@ function requestConfiguration(reload=false) {
                             if ( form_key == 'padenc_dls_fifo_file') { form_key='padenc_dls_file' }
                             if ( form_key == 'source_device') { form_key='source_alsa_device' }
                             if ( form_key == 'source_url') { form_key='source_stream_url' }
+                            
+                            // -- Ignore 'supervisor_additional_options'
+                            if ( section_key == 'supervisor_additional_options') {
+                                return;
+                            }
 
                             if ( $('#'+form_key).prop('tagName') == 'INPUT' ) {
                                 $('#'+form_key).val(param_val);
@@ -372,7 +377,7 @@ function setConfiguration() {
             }
             param['adcast'] = adcast
         }
-
+        
         $.ajax({
             type: "POST",
             url: "/api/setConfig",

@@ -350,7 +350,10 @@ class AVT():
         ClockSourceIdx = {'1':'internal', '3':'recoveredAesEbu', '4':'ntp'}
         ClockSource = self.get_oid_value('1.3.6.1.4.1.26196.10.3.11.10.40.10')
         if ClockSource['status'] == 0:
-            avt['ClockSource'] = ClockSourceIdx[ClockSource['data']]
+            try:
+                avt['ClockSource'] = ClockSourceIdx[ClockSource['data']]
+            except:
+                avt['ClockSource'] = 'ID not recognized (%s)' % (ClockSource['data'])
 
         Alarms = self.get_AE1AlarmsTable()
         if Alarms['status'] == 0:
@@ -400,7 +403,10 @@ class AVT():
         ClockSourceIdx = {'1':'internal', '2': 'external', '3':'recoveredAesEbu', '4':'ntp'}
         ClockSource = self.get_oid_value('1.3.6.1.4.1.26196.10.3.12.10.20.10.10')
         if ClockSource['status'] == 0:
-            avt['ClockSource'] = ClockSourceIdx[ClockSource['data']]
+            try:
+                avt['ClockSource'] = ClockSourceIdx[ClockSource['data']]
+            except:
+                avt['ClockSource'] = 'ID not recognized (%s)' % (ClockSource['data'])
 
         Alarms = self.get_AE4AlarmsTable()
         if Alarms['status'] == 0:

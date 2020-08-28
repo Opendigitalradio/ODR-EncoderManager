@@ -934,6 +934,7 @@ class Config():
                 supervisorConfigParam = {}
                 supervisorConfigParam['autostart'] = odr['autostart']
                 supervisorConfigParam['autorestart'] = "true"
+                supervisorConfigParam['startretries'] = "100000"     #To ensure station stays on air even with bad internet connection
                 supervisorConfigParam['priority'] = "10"
                 supervisorConfigParam['user'] = "odr"
                 supervisorConfigParam['group'] = "odr"

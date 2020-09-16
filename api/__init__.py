@@ -402,6 +402,7 @@ class API():
                         'pad': '34',
                         'slide_once': 'true',
                         'raw_dls': 'false',
+                        'raw_slides': 'false',
                         'uniform': 'true',
                         'uniform_init_burst': '12',
                         'uniform_label': '12',

@@ -374,6 +374,8 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['raw_dls'] != coderOld['padenc']['raw_dls']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
+                            if coderNew['padenc']['raw_slides'] != coderOld['padenc']['raw_slides']:
+                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['uniform'] != coderOld['padenc']['uniform']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['uniform_init_burst'] != coderOld['padenc']['uniform_init_burst']:
@@ -474,6 +476,8 @@ class Config():
                     coder['padenc']['slide_live_interval'] = ''
                 if not 'slide_live_lifetime' in coder['padenc']:
                     coder['padenc']['slide_live_lifetime'] = ''
+                if not 'raw_slides' in coder['padenc']:
+                    coder['padenc']['raw_slides'] = 'false'
                     
             if 'source' in coder:
                 if not 'stats_socket' in coder['source']:
@@ -690,7 +694,7 @@ class Config():
                 # Write supervisor pad-encoder section
                 if odr['padenc']['enable'] == 'true':
                     command = '%s\n' % (odr['path']['padenc_path'])
-                    command += ' -v\n'
+                    #command += ' -v\n'
                     if odr['padenc']['slide_directory'].strip() != '':
                         # Check if config.mot_slide_directory exist
                         if os.path.exists(odr['padenc']['slide_directory']):
@@ -759,6 +763,9 @@ class Config():
 
                     if odr['padenc']['raw_dls'] == 'true':
                         command += ' --raw-dls\n'
+                        
+                    if odr['padenc']['raw_slides'] == 'true':
+                        command += ' --raw-slides\n'
 
                     # UNIFORM
                     if odr['padenc']['uniform'] == 'true':

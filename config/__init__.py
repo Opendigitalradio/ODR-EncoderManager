@@ -974,6 +974,8 @@ class Config():
                     command += ' -A 35\n'
                     if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
                         command += ' -s %s\n' % (odr['adcast']['listen_addr'])
+                    if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
+                        command += ' -r\n'
                     
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:slide-mgnt-%s]\n" % (odr['uniq_id'])

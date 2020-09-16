@@ -188,6 +188,8 @@ if __name__ == '__main__':
         'log.screen': False,
         'tools.sessions.on': True,
         'tools.sessions.name': "ODR-Encoder-Manager",
+        'tools.sessions.secure': True,
+        'tools.sessions.same_site': 'Lax',
         'tools.encode.on': True,
         'tools.encode.encoding': "utf-8"
         })

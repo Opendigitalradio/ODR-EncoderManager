@@ -8,6 +8,10 @@
             "sourcecompanion_path": "/usr/local/bin/odr-sourcecompanion",
             "encoder_path": "/usr/local/bin/odr-audioenc"
         },
+        "supervisor_additional_options": {
+                "startretries": "50",
+                "autorestart": "false"
+            },
         "padenc": {
             "enable": "true",
             "uniform": "false",

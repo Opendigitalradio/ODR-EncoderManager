@@ -580,12 +580,12 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="control-label col-sm-2" for="padenc_pad_fifo">PAD fifo:</label>
+                                                <label class="control-label col-sm-2" for="padenc_dls_file">DLS file:</label>
                                                 <div class="col-sm-3">
                                                     <div class="input-group">
-                                                        <input type="text" class="form-control" id="padenc_pad_fifo" placeholder="Enter pad fifo">
+                                                        <input type="text" class="form-control" id="padenc_dls_file" placeholder="Enter dls file">
                                                         <div class="input-group-btn">
-                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_pad_fifo" data-toggle="tooltip" data-placement="top" title="Default value">
+                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_dls_file" data-toggle="tooltip" data-placement="top" title="Default value">
                                                                 <i class="glyphicon glyphicon-repeat"></i>
                                                             </button>
                                                         </div>
@@ -602,16 +602,8 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             </div>
                                             
                                             <div class="form-group">
-                                                <label class="control-label col-sm-2" for="padenc_dls_file">DLS file:</label>
+                                                <label class="control-label col-sm-2" for=""> </label>
                                                 <div class="col-sm-3">
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control" id="padenc_dls_file" placeholder="Enter dls file">
-                                                        <div class="input-group-btn">
-                                                            <button class="btn btn-default" type="button" id="btn_reset_padenc_dls_file" data-toggle="tooltip" data-placement="top" title="Default value">
-                                                                <i class="glyphicon glyphicon-repeat"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                                 
                                                 <label class="control-label col-sm-2" for="padenc_raw_slides">Raw Slides:</label>
@@ -824,21 +816,30 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_encoder_path">odr-audioenc path:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="path_encoder_path" placeholder="Enter odr-audioenc full path">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="path_encoder_path" placeholder="Enter odr-audioenc full path">
+                                                        <span class="input-group-addon" id="path_encoder_version">-</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_padenc_path">odr-padenc path:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="path_padenc_path" placeholder="Enter odr-audioenc full path">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="path_padenc_path" placeholder="Enter odr-audioenc full path">
+                                                        <span class="input-group-addon" id="path_padenc_version">-</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label class="control-label col-sm-2" for="path_sourcecompanion_path">odr-sourcecompanion path:</label>
                                                 <div class="col-sm-3">
-                                                    <input type="text" class="form-control" id="path_sourcecompanion_path" placeholder="Enter odr-sourcecompanion full path">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="path_sourcecompanion_path" placeholder="Enter odr-sourcecompanion full path">
+                                                        <span class="input-group-addon" id="path_sourcecompanion_version">-</span>
+                                                    </div>
                                                 </div>
                                             </div>
 

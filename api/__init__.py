@@ -397,7 +397,6 @@ class API():
                         'enable': 'true',
                         'slide_sleeping': '0',
                         'slide_directory': '/var/tmp/slide-'+output['uniq_id']+'/',
-                        'pad_fifo': '/var/tmp/metadata-'+output['uniq_id']+'.pad',
                         'dls_file': '/var/tmp/metadata-'+output['uniq_id']+'.dls',
                         'pad': '34',
                         'slide_once': 'true',
@@ -421,7 +420,52 @@ class API():
             else:
                 return {'status': '-299', 'statusText': 'coder not found', 'data': {}}
         else:
-            return {'status': '0', 'statusText': 'Ok', 'data': self.conf.config['odr'][0]}
+            return {'status': '-298', 'statusText': 'you have to specify uniq_id', 'data': {}}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @require()
+    def getVersion(self, **params):
+        query = parse_query_string(cherrypy.request.query_string)
+        self.conf = Config(self.config_file)
+
+        if 'uniq_id' in query:
+            odr = {}
+            for data in self.conf.config['odr']:
+                if data['uniq_id'] == query['uniq_id']:
+                    odr = data
+                    
+            if 'uniq_id' in odr:
+                if 'path' in odr:
+                    output = {}
+                    
+                    for process_path in odr['path']:
+                        if process_path.endswith("_path"):
+                            if os.path.isfile(odr['path'][process_path]):
+                                output["{process}_version".format(process=process_path)] = 'found'
+                                cmd = [odr['path'][process_path], '--version']
+                                try:
+                                    result = subprocess.check_output(cmd, universal_newlines=True)
+                                    result = result.replace('\n','')
+                                except:
+                                    output["{process}_version".format(process=process_path)] = 'error'
+                                else:
+                                    output["{process}_version".format(process=process_path)] = result
+                            else:
+                                output["{process}_version".format(process=process_path)] = 'not found'
+                            
+                    
+                else:
+                    return {'status': '-299', 'statusText': 'path not found', 'data': {}}
+                
+            else:
+                return {'status': '-299', 'statusText': 'coder not found', 'data': {}}
+                    
+            return {'status': '0', 'statusText': 'Ok', 'data': output}
+        else:
+            return {'status': '-298', 'statusText': 'you have to specify uniq_id', 'data': {}}
+        
+        
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -502,15 +546,10 @@ class API():
 
             for odr in odr_to_remove:
                 if all (k in odr for k in ("source","output","padenc","path")):
-                    # Remove DLS fifo / PAD file
+                    # Remove PAD file
                     if os.path.exists(odr['padenc']['dls_file']):
                         try:
                             os.remove(odr['padenc']['dls_file'])
-                        except:
-                            pass
-                    if os.path.exists(odr['padenc']['pad_fifo']):
-                        try:
-                            os.remove(odr['padenc']['pad_fifo'])
                         except:
                             pass
 
@@ -622,7 +661,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        # Remove PAD fifo & DLS file of changed
+        # Remove DLS file of changed
         for data in self.conf.config['odr']:
             if data['uniq_id'] == param['uniq_id']:
                 if all (k in data for k in ("source","output","padenc","path")):
@@ -630,12 +669,6 @@ class API():
                         if os.path.exists(data['padenc']['dls_file']):
                             try:
                                 os.remove(data['padenc']['dls_file'])
-                            except:
-                                pass
-                    if data['padenc']['pad_fifo'] != param['padenc']['pad_fifo']:
-                        if os.path.exists(data['padenc']['pad_fifo']):
-                            try:
-                                os.remove(data['padenc']['pad_fifo'])
                             except:
                                 pass
                     if data['padenc']['slide_directory'] != param['padenc']['slide_directory']:
@@ -682,12 +715,10 @@ class API():
                                 pass
                     
 
-        # Check if PAD fifo & DLS file are already used by other encoder
+        # Check if PAD socket & DLS file are already used by other encoder
         for data in self.conf.config['odr']:
             if data['uniq_id'] != param['uniq_id']:
                 if all (k in data for k in ("source","output","padenc","path")):
-                    if data['padenc']['pad_fifo'] == param['padenc']['pad_fifo']:
-                        return {'status': '-221', 'statusText': 'PAD Encoder > PAD fifo already used by encoder: ' + data['name']}
                     if data['padenc']['dls_file'] == param['padenc']['dls_file']:
                         return {'status': '-222', 'statusText': 'PAD Encoder > DLS file already used by encoder: ' + data['name']}
                     if data['padenc']['slide_directory'] == param['padenc']['slide_directory']:

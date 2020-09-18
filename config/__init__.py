@@ -81,7 +81,7 @@ class Config():
         for coder in self.config['odr']:
             if all (k in coder for k in ("source","output","padenc","path")):
                 if not coder['uniq_id'] in audioSocket:
-                    #print ('add socket', coder['uniq_id'])
+                    print ('add stats socket %s' % (coder['uniq_id']), flush=True)
                     audioSocket[coder['uniq_id']] = {}
                     audioSocket[coder['uniq_id']]['uniq_id'] = coder['uniq_id']
                     audioSocket[coder['uniq_id']]['stats_socket'] = coder['source']['stats_socket']
@@ -118,7 +118,7 @@ class Config():
                 else:
                     if audioSocket[coder['uniq_id']]['stats_socket'] != coder['source']['stats_socket']:
                         # Stats socket changed - remove entry (recreated next loop)
-                        #print ('socket file changed', coder['uniq_id'])
+                        print ('stats socket changed, remove it %s' % (coder['uniq_id']), flush=True)
                         audioSocket[coder['uniq_id']]['socket'].close()
                         del audioSocket[coder['uniq_id']]
 
@@ -131,13 +131,14 @@ class Config():
 
         for uniq_id in audioSocketToRemove:
             #print ('del socket', uniq_id)
+            print ('remove stats socket %s' % (coder['uniq_id']), flush=True)
             audioSocket[uniq_id]['socket'].close()
             del audioSocket[uniq_id]
 
     def retreiveAudioSocket(self):
         for uniq_id in audioSocket:
             try:
-                data, addr = audioSocket[uniq_id]['socket'].recvfrom(256)
+                data, addr = audioSocket[uniq_id]['socket'].recvfrom(1024)
             except socket.timeout as err:
                 audioSocket[uniq_id]['status'] = '-502'
                 audioSocket[uniq_id]['statusText'] = 'socket timeout'
@@ -386,10 +387,6 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['pad'] != coderOld['padenc']['pad']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
-                            if coderNew['padenc']['pad_fifo'] != coderOld['padenc']['pad_fifo']:
-                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['dls_file'] != coderOld['padenc']['dls_file']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
@@ -461,15 +458,17 @@ class Config():
                     print ('- add uniform_label pad in configuration file')
                 if not 'uniform_init_burst' in coder['padenc']:
                     coder['padenc']['uniform_init_burst'] = '12'
-                    print ('- add uniform_init_burst pad in configuration file')
+                    print ('- add uniform_init_burst pad in configuration file')                   
                 if 'pad_fifo_file' in coder['padenc']:
-                    coder['padenc']['pad_fifo'] = coder['padenc']['pad_fifo_file']
                     del coder['padenc']['pad_fifo_file']
-                    print ('- rename pad_fifo_file to pad_fifo in configuration file')
+                    print ('- remove pad_fifo_file in configuration file')
+                if 'pad_fifo' in coder['padenc']:
+                    del coder['padenc']['pad_fifo']
+                    print ('- remove pad_fifo in configuration file')
                 if 'dls_fifo_file' in coder['padenc']:
                     coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
                     del coder['padenc']['dls_fifo_file']
-                    print ('- rename dls_fifo_file to dls_file in configuration file')
+                    print ('- rename dls_fifo_file to dls_file in configuration file')    
                 if not 'slide_carousel_interval' in coder['padenc']:
                     coder['padenc']['slide_carousel_interval'] = ''
                 if not 'slide_live_interval' in coder['padenc']:
@@ -740,26 +739,22 @@ class Config():
                             raise ValueError('Error when create DLS file: {}'.format(e))
 
                     # Check if config.mot_pad_fifo exist and create it if needed.
-                    if not os.path.exists(odr['padenc']['pad_fifo']):
-                        try:
-                            os.mkfifo(odr['padenc']['pad_fifo'])
-                        except Exception as e:
-                            raise ValueError('Error when create PAD fifo: {}'.format(e))
-                    else:
-                        if not stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
-                            #File %s is not a fifo
-                            pass
+                    #if not os.path.exists(odr['padenc']['pad_fifo']):
+                        #try:
+                            #os.mkfifo(odr['padenc']['pad_fifo'])
+                        #except Exception as e:
+                            #raise ValueError('Error when create PAD fifo: {}'.format(e))
+                    #else:
+                        #if not stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
+                            ##File %s is not a fifo
+                            #pass
 
                     if odr['padenc']['slide_sleeping']:
                         command += ' --sleep=%s\n' % (odr['padenc']['slide_sleeping'])
                     else:
                         command += ' --sleep=10\n'
-                    if odr['padenc']['pad']:
-                        command += ' --pad=%s\n' % (odr['padenc']['pad'])
-                    else:
-                        command += ' --pad=34\n'
                     command += ' --dls=%s\n' % (odr['padenc']['dls_file'])
-                    command += ' --output=%s\n' % (odr['padenc']['pad_fifo'])
+                    command += ' --output=%s\n' % (odr['uniq_id'])
 
                     if odr['padenc']['raw_dls'] == 'true':
                         command += ' --raw-dls\n'
@@ -898,12 +893,11 @@ class Config():
 
                 # PAD encoder
                 if odr['padenc']['enable'] == 'true':
-                    if os.path.exists(odr['padenc']['pad_fifo']) and stat.S_ISFIFO(os.stat(odr['padenc']['pad_fifo']).st_mode):
-                        command += ' --pad=%s\n' % (odr['padenc']['pad'])
-                        command += ' --pad-fifo=%s\n' % (odr['padenc']['pad_fifo'])
-                        # Write icy-text only for stream input type and if writeicytext is true
-                        if odr['source']['type'] == 'stream' and odr['source']['stream_writeicytext'] == 'true':
-                            command += ' --write-icy-text=%s\n' % (odr['padenc']['dls_file'])
+                    command += ' --pad=%s\n' % (odr['padenc']['pad'])
+                    command += ' --pad-socket=%s\n' % (odr['uniq_id'])
+                    # Write icy-text only for stream input type and if writeicytext is true
+                    if odr['source']['type'] == 'stream' and odr['source']['stream_writeicytext'] == 'true':
+                        command += ' --write-icy-text=%s\n' % (odr['padenc']['dls_file'])
 
                 # AVT input type specific option
                 if odr['source']['type'] == 'avt':

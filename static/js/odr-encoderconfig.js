@@ -73,6 +73,54 @@ function requestCoder() {
     });
 }
 
+function requestVersion(reload=false) {
+    coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
+    
+    console.log('Version request for: '+coder_uniq_id)
+    
+    $.ajax({
+        type: "GET",
+        url: "/api/getVersion?uniq_id="+coder_uniq_id,
+        contentType: 'application/json',
+        dataType: 'json',
+
+        error: function(data) {
+            $.gritter.add({
+                title: 'Load version : ERROR !',
+                text: data['status'] + " : " + data['statusText'],
+                image: '/fonts/warning.png',
+                sticky: true,
+            });
+        },
+        success: function(data) {
+            if (data['status'] == '-401') {
+                console.log('Session timeout. Please login again.')
+                $.gritter.add({
+                    title: 'Session timeout',
+                    text: 'Please <a href="/auth/login?from_page='+window.location.pathname+'"> login</a> again',
+                    image: '/fonts/warning.png',
+                    sticky: true,
+                });
+            } else {
+                if ( data['status'] == '0' ) {
+                    $.each( data['data'], function( key, val ) {
+                        if (key == 'encoder_path_version') { $('#path_encoder_version').html(val); }
+                        if (key == 'padenc_path_version') { $('#path_padenc_version').html(val); }
+                        if (key == 'sourcecompanion_path_version') { $('#path_sourcecompanion_version').html(val); }
+                    })
+                    
+                } else {
+                    $.gritter.add({
+                        title: 'Load configuration',
+                        text: "ERROR = " + data['status'] + " : " + data['statusText'],
+                        image: '/fonts/warning.png',
+                        sticky: true,
+                    });
+                }
+            }
+        }
+    })
+}
 
 function requestConfiguration(reload=false) {
     coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
@@ -143,7 +191,6 @@ function requestConfiguration(reload=false) {
                 } else {
                     $('#padenc_slide_directory').val('/var/tmp/slide-'+coder_uniq_id+'/');
                 }
-                $('#padenc_pad_fifo').val('/var/tmp/metadata-'+coder_uniq_id+'.pad');
                 $('#padenc_dls_file').val('/var/tmp/metadata-'+coder_uniq_id+'.dls');
                 $('#padenc_pad').val('34');
                 $('#padenc_slide_once option[value="true"]').prop('selected', true);
@@ -203,6 +250,10 @@ function requestConfiguration(reload=false) {
                             if ( form_key == 'source_device') { form_key='source_alsa_device' }
                             if ( form_key == 'source_url') { form_key='source_stream_url' }
                             
+                            // Ignore old key
+                            if ( form_key == 'padenc_pad_fifo') { return; }
+                            
+                            
                             // -- Ignore 'supervisor_additional_options'
                             if ( section_key == 'supervisor_additional_options') {
                                 return;
@@ -253,6 +304,7 @@ function requestConfiguration(reload=false) {
                     }
                 });
                 setEnableDisable();
+                requestVersion();
                 if (reload == true) {
                     $.gritter.add({
                         title: 'Reload configuration',
@@ -333,7 +385,6 @@ function setConfiguration() {
             "padenc" : {
                         "enable": $('#padenc_enable').val(),
                         "pad": $('#padenc_pad').val(),
-                        "pad_fifo": $('#padenc_pad_fifo').val(),
                         "dls_file": $('#padenc_dls_file').val(),
                         "slide_directory": $('#padenc_slide_directory').val(),
                         "slide_sleeping": $('#padenc_slide_sleeping').val(),
@@ -869,11 +920,6 @@ $(function(){
     $('#btn_reset_padenc_slide_directory_ads').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#padenc_slide_directory_ads").val('/pad/slide/ads/'+coder_uniq_id+'/');
-    });
-
-    $('#btn_reset_padenc_pad_fifo').click(function () {
-        coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
-        $("#padenc_pad_fifo").val('/var/tmp/metadata-'+coder_uniq_id+'.pad');
     });
 
     $('#btn_reset_padenc_dls_file').click(function () {

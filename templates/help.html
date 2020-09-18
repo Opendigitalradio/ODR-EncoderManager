@@ -74,12 +74,12 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 <div id="collapse2" class="panel-collapse collapse">
                 <div class="panel-body">
                     <b>Set SLS for all encoder</b>
-                    <p>To sende slide used for SLS, use http POST on the Encoder Manager API.</p>
-                    <pre>curl -X POST -F 'slide_file=@"live.jpg"' http://{ip}:8080/api/setDLS</pre>
+                    <p>To send slide used for SLS, use http POST on the Encoder Manager API.</p>
+                    <pre>curl -X POST -F 'slide_file=@"live.jpg"' http://{ip}:8080/api/setSLS</pre>
 
                     <b>Set SLS for specific encoder</b>
                     <p>If you want to update SLS for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
-                    <pre>curl -X POST -F 'uniq_id=e01184d5-f5df-416a-af6c-9d7ce788d455' -F 'slide_file=@"live.jpg"' http://{ip}:8080/api/setDLS</pre>
+                    <pre>curl -X POST -F 'uniq_id={00000000-0000-0000-0000-000000000000}' -F 'slide_file=@"{file.jpg}"' http://{ip}:8080/api/setSLS</pre>
                 </div>
                 </div>
             </div>

@@ -849,80 +849,116 @@ class API():
         return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
-    def setSLS(self, uniq_id=None, slide_file=None, **params):
+    def setSLS(self, uniq_id=None, slide_file=None, rmode=None, **params):
         self.conf = Config(self.config_file)
         
         if cherrypy.request.method != 'POST':
+            # it's impossible to use build_response here, because
+            # with an invalid request, the `output` parameter is
+            # also considered invalid.
             cherrypy.response.status = 400
             cherrypy.response.headers['content-type'] = "text/plain"
             return "Only HTTP POST are available"
         
-        if not uniq_id:
-            cherrypy.response.status = 401
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "Need uniq_id parameter"
-        if not any(c['uniq_id'] == uniq_id for c in self.conf.config['odr']):
-            cherrypy.response.status = 402
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "Unknown uniq_id"
+        def build_response(g, r):
+            if rmode and rmode == 'json':
+                cherrypy.response.headers['content-type'] = "application/json"
+                g['data'] = r
+                return json.dumps(g).encode()
+            else:
+                cherrypy.response.headers['content-type'] = "text/plain"
+                if g['status'] != 0:
+                    return g['statusText']
+                if len(r) == 0:
+                    return 'no data updated'
+                else:
+                    result = ''
+                    for o in r:
+                        result += '%s: %s\n' % (o['coder_name'], o['statusText'] )
+                    return result
         
-        if not slide_file:
-            cherrypy.response.status = 401
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "Need slide_file parameter"
-        
-        
-        fname = slide_file.filename
-        fext = os.path.splitext(fname)[1]
-        if fext not in ['.jpg', '.jpeg', '.png', '.apng']:
-            cherrypy.response.status = 400
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "Unauthorized file extension %s" % (fext)
-        
-        fdata = slide_file.file.read()
-        flen = len(fdata)
-        flen_kb = round(len(fdata)/1000)
-        
-        slide_size_limit = 30
-        
-        if int(flen_kb) > int(slide_size_limit):
-            cherrypy.response.status = 400
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "File is too big %skB (max %skB)" % (flen_kb, slide_size_limit)
-        
-        # write file into live directory
-        cherrypy.response.status = 400
-        cherrypy.response.headers['content-type'] = "text/plain"
-        
-        fdest = None
-        for odr in self.conf.config['odr']:
-            if odr['uniq_id'] == uniq_id:
-                if 'slide_directory_live' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_live']):
-                    fdest = odr['padenc']['slide_directory_live']
-                elif odr['padenc']['slide_directory'].strip() != '' and os.path.exists(odr['padenc']['slide_directory']):
-                    fdest = odr['padenc']['slide_directory']
-        
-        if not fdest:
-            cherrypy.response.status = 400
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "Destination directory %s not exist" % (fdest)
-        
-        destPath = "%s/%s" % (fdest,fname)
-        
-        # Write
-        try:
-            with open(destPath, 'wb') as outfile:
-                outfile.write(fdata)
-        except Exception as e:
-            cherrypy.response.status = 400
-            cherrypy.response.headers['content-type'] = "text/plain"
-            return "Fail to write slide file %s " % (destPath)
-        else:
-            return "Slide file write to %s (size:%s - %skB)" % (destPath, flen, flen_kb)
-    
-    
-        
+        def process_query(odr, f):
+            output = {}
+            output['coder_name'] = odr['name']
+            output['coder_uniq_id'] = odr['uniq_id']
+            output['coder_description'] = odr['description']
             
+            if 'padenc' in odr:
+                if odr['padenc']['enable'] == 'true':
+                    # Find slide directory
+                    fdest = None
+                    if 'slide_directory_live' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_live']):
+                        fdest = odr['padenc']['slide_directory_live']
+                    elif odr['padenc']['slide_directory'].strip() != '' and os.path.exists(odr['padenc']['slide_directory']):
+                        fdest = odr['padenc']['slide_directory']
+                    
+                    if not fdest:
+                        output['status'] = -208
+                        output['statusText'] = "Destination directory %s not exist" % (fdest)
+                        return output
+                    
+                    destPath = "%s/%s" % (fdest,f['name'])
+                    
+                    # Write slide
+                    try:
+                        with open(destPath, 'wb') as outfile:
+                            outfile.write(f['data'])
+                    except Exception as e:
+                        output['status'] = -208
+                        output['statusText'] = "Fail to write slide file %s " % (destPath)
+                        return output
+                    else:
+                        output['status'] = 0
+                        output['statusText'] = "Slide file write to %s (size:%s - %skB)" % (destPath, f['len'], f['len_kb'])
+                        return output
+                
+                # DLS (odr-padenc process) is disable
+                else:
+                    output['status'] = -208
+                    output['statusText'] = 'PAD Encoder is disable'
+                    return output
+                
+            # padenc is not present in configuration / encoder is not configured.
+            else:
+                output['status'] = -211
+                output['statusText'] = 'Encoder is not configured'
+                return output
+        
+        # check if slide_file parameter is available
+        if not slide_file:
+            return build_response({'status': -401, 'statusText': 'Need slide_file parameter'}, [])
+        
+        f= {}
+        f['name'] = slide_file.filename
+        f['ext'] = os.path.splitext(f['name'])[1]
+        f['data'] = slide_file.file.read()
+        f['len'] = len(f['data'])
+        f['len_kb'] = round(len(f['data'])/1000)
+        
+        # check if sent file is authorized extension
+        if f['ext'] not in ['.jpg', '.jpeg', '.png', '.apng']:
+            return build_response({'status': -208, 'statusText': 'Unauthorized file extension %s' % (f['ext'])}, [])
+        
+        # check if sent file size under slide_size_limit
+        slide_size_limit = 50
+        if int(f['len_kb']) > int(slide_size_limit):
+            return build_response({'status': -208, 'statusText': 'File is too big %skB (max %skB)' % (f['len_kb'], slide_size_limit)}, [])
+        
+        result = []
+        if uniq_id:
+            # check if uniq_id exist
+            if not any(c['uniq_id'] == uniq_id for c in self.conf.config['odr']):
+                return build_response({'status': -401, 'statusText': 'Unknown uniq_id %s' % (uniq_id)}, [])
+            
+            for odr in self.conf.config['odr']:
+                if odr['uniq_id'] == uniq_id:
+                    result.append( process_query(odr, f) )
+        else:
+            for odr in self.conf.config['odr']:
+                result.append( process_query(odr, f) )
+
+        return build_response({'status': 0, 'statusText': 'Ok'}, result)
+        
 
     @cherrypy.expose
     def setDLS(self, dls=None, artist=None, title=None, output=None, uniq_id=None, **params):

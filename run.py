@@ -64,12 +64,14 @@ class Root():
         return tmpl.render(tab='home', js=js, is_login=is_login(), is_network=is_network(self.config_file))
 
     @cherrypy.expose
+    @require()
     def help(self):
         tmpl = env.get_template("help.html")
         js = []
         return tmpl.render(tab='help', js=js, is_login=is_login(), is_network=is_network(self.config_file))
 
     @cherrypy.expose
+    @require()
     def about(self):
         tmpl = env.get_template("about.html")
         js = []
@@ -229,7 +231,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     cherrypy.engine.start()
     #cherrypy.engine.block()
-
+    
     config.initAudioSocket()
     while True:
         config.addAudioSocket()

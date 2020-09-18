@@ -402,8 +402,6 @@ class API():
                         'slide_once': 'true',
                         'raw_dls': 'false',
                         'raw_slides': 'false',
-                        'uniform': 'true',
-                        'uniform_init_burst': '12',
                         'uniform_label': '12',
                         'uniform_label_ins': '1200'
                         }
@@ -850,6 +848,81 @@ class API():
         
         return {'status': '0', 'statusText': 'Ok'}
 
+    @cherrypy.expose
+    def setSLS(self, uniq_id=None, slide_file=None, **params):
+        self.conf = Config(self.config_file)
+        
+        if cherrypy.request.method != 'POST':
+            cherrypy.response.status = 400
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Only HTTP POST are available"
+        
+        if not uniq_id:
+            cherrypy.response.status = 401
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Need uniq_id parameter"
+        if not any(c['uniq_id'] == uniq_id for c in self.conf.config['odr']):
+            cherrypy.response.status = 402
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Unknown uniq_id"
+        
+        if not slide_file:
+            cherrypy.response.status = 401
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Need slide_file parameter"
+        
+        
+        fname = slide_file.filename
+        fext = os.path.splitext(fname)[1]
+        if fext not in ['.jpg', '.jpeg', '.png', '.apng']:
+            cherrypy.response.status = 400
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Unauthorized file extension %s" % (fext)
+        
+        fdata = slide_file.file.read()
+        flen = len(fdata)
+        flen_kb = round(len(fdata)/1000)
+        
+        slide_size_limit = 30
+        
+        if int(flen_kb) > int(slide_size_limit):
+            cherrypy.response.status = 400
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "File is too big %skB (max %skB)" % (flen_kb, slide_size_limit)
+        
+        # write file into live directory
+        cherrypy.response.status = 400
+        cherrypy.response.headers['content-type'] = "text/plain"
+        
+        fdest = None
+        for odr in self.conf.config['odr']:
+            if odr['uniq_id'] == uniq_id:
+                if 'slide_directory_live' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_live']):
+                    fdest = odr['padenc']['slide_directory_live']
+                elif odr['padenc']['slide_directory'].strip() != '' and os.path.exists(odr['padenc']['slide_directory']):
+                    fdest = odr['padenc']['slide_directory']
+        
+        if not fdest:
+            cherrypy.response.status = 400
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Destination directory %s not exist" % (fdest)
+        
+        destPath = "%s/%s" % (fdest,fname)
+        
+        # Write
+        try:
+            with open(destPath, 'wb') as outfile:
+                outfile.write(fdata)
+        except Exception as e:
+            cherrypy.response.status = 400
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return "Fail to write slide file %s " % (destPath)
+        else:
+            return "Slide file write to %s (size:%s - %skB)" % (destPath, flen, flen_kb)
+    
+    
+        
+            
 
     @cherrypy.expose
     def setDLS(self, dls=None, artist=None, title=None, output=None, uniq_id=None, **params):

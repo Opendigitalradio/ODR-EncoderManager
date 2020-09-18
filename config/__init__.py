@@ -377,10 +377,6 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['raw_slides'] != coderOld['padenc']['raw_slides']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
-                            if coderNew['padenc']['uniform'] != coderOld['padenc']['uniform']:
-                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
-                            if coderNew['padenc']['uniform_init_burst'] != coderOld['padenc']['uniform_init_burst']:
-                                self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['uniform_label'] != coderOld['padenc']['uniform_label']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['uniform_label_ins'] != coderOld['padenc']['uniform_label_ins']:
@@ -447,18 +443,18 @@ class Config():
                 coder['autostart'] = 'true'
 
             if 'padenc' in coder:
-                if not 'uniform' in coder['padenc']:
-                    coder['padenc']['uniform'] = 'false'
-                    print ('- add uniform pad in configuration file')
+                if 'uniform' in coder['padenc']:
+                    del coder['padenc']['uniform']
+                    print ('- remove uniform in configuration file')
+                if 'uniform_init_burst' in coder['padenc']:
+                    del coder['padenc']['uniform_init_burst']
+                    print ('- remove uniform_init_burst in configuration file')
                 if not 'uniform_label' in coder['padenc']:
                     coder['padenc']['uniform_label'] = '12'
                     print ('- add uniform_label pad in configuration file')
                 if not 'uniform_label_ins' in coder['padenc']:
                     coder['padenc']['uniform_label_ins'] = '1200'
                     print ('- add uniform_label pad in configuration file')
-                if not 'uniform_init_burst' in coder['padenc']:
-                    coder['padenc']['uniform_init_burst'] = '12'
-                    print ('- add uniform_init_burst pad in configuration file')                   
                 if 'pad_fifo_file' in coder['padenc']:
                     del coder['padenc']['pad_fifo_file']
                     print ('- remove pad_fifo_file in configuration file')
@@ -763,44 +759,16 @@ class Config():
                         command += ' --raw-slides\n'
 
                     # UNIFORM
-                    if odr['padenc']['uniform'] == 'true':
-                        # DAB+
-                        if odr['output']['type'] == 'dabp':
-                            if odr['output']['dabp_sbr'] == 'false':
-                                # AAC_LC
-                                if odr['output']['samplerate'] == '48000':
-                                    command += ' --frame-dur=20\n'
-                                elif odr['output']['samplerate'] == '32000':
-                                    command += ' --frame-dur=30\n'
-                            elif odr['output']['dabp_sbr'] == 'true':
-                                # HE_AAC
-                                if odr['output']['samplerate'] == '48000':
-                                    command += ' --frame-dur=40\n'
-                                elif odr['output']['samplerate'] == '32000':
-                                    command += ' --frame-dur=60\n'
+                    # DAB+ / DAB Common
+                    if odr['padenc']['uniform_label']:
+                        command += ' --label=%s\n' % (odr['padenc']['uniform_label'])
+                    else:
+                        command += ' --label=12\n'
 
-                        # DAB
-                        if odr['output']['type'] == 'dab':
-                            if odr['output']['samplerate'] == '48000':
-                                command += ' --frame-dur=24\n'
-                            elif odr['output']['samplerate'] == '24000':
-                                command += ' --frame-dur=48\n'
-
-                        # DAB+ / DAB Common
-                        if odr['padenc']['uniform_label']:
-                            command += ' --label=%s\n' % (odr['padenc']['uniform_label'])
-                        else:
-                            command += ' --label=12\n'
-
-                        if odr['padenc']['uniform_label_ins']:
-                            command += ' --label-ins=%s\n' % (odr['padenc']['uniform_label_ins'])
-                        else:
-                            command += ' --label-ins=1200\n'
-
-                        if odr['padenc']['uniform_init_burst']:
-                            command += ' --init-burst=%s\n' % (odr['padenc']['uniform_init_burst'])
-                        else:
-                            command += ' --init-burst=12\n'
+                    if odr['padenc']['uniform_label_ins']:
+                        command += ' --label-ins=%s\n' % (odr['padenc']['uniform_label_ins'])
+                    else:
+                        command += ' --label-ins=1200\n'
 
 
                     supervisorConfig += "# %s\n" % (odr['name'])

@@ -196,8 +196,6 @@ function requestConfiguration(reload=false) {
                 $('#padenc_slide_once option[value="true"]').prop('selected', true);
                 $('#padenc_raw_dls option[value="false"]').prop('selected', true);
                 $('#padenc_raw_slides option[value="false"]').prop('selected', true);
-                $('#padenc_uniform option[value="true"]').prop('selected', true);
-                $('#padenc_uniform_init_burst').val('12');
                 $('#padenc_uniform_label').val('5');
                 $('#padenc_uniform_label_ins').val('2000');
                 
@@ -391,10 +389,8 @@ function setConfiguration() {
                         "slide_once": $('#padenc_slide_once').val(),
                         "raw_dls": $('#padenc_raw_dls').val(),
                         "raw_slides": $('#padenc_raw_slides').val(),
-                        "uniform": $('#padenc_uniform').val(),
                         "uniform_label": $('#padenc_uniform_label').val(),
-                        "uniform_label_ins": $('#padenc_uniform_label_ins').val(),
-                        "uniform_init_burst": $('#padenc_uniform_init_burst').val()
+                        "uniform_label_ins": $('#padenc_uniform_label_ins').val()
                     },
         }
         

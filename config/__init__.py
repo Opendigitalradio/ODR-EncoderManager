@@ -30,6 +30,7 @@ import stat
 import socket
 import yaml
 import uuid
+import time
 
 if sys.version_info >= (3, 0):
     from xmlrpc import client as xmlrpc_client
@@ -88,32 +89,42 @@ class Config():
                     audioSocket[coder['uniq_id']]['status'] = '-504'
                     audioSocket[coder['uniq_id']]['statusText'] = 'Unknown'
                     audioSocket[coder['uniq_id']]['data'] = {}
+                    audioSocket[coder['uniq_id']]['timestamp'] = None
                     audioSocket[coder['uniq_id']]['socket'] = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-                    audioSocket[coder['uniq_id']]['socket'].settimeout(1)
+                    #audioSocket[coder['uniq_id']]['socket'].settimeout(1)
+                    audioSocket[coder['uniq_id']]['socket'].setblocking(False)
                     if os.path.exists(audioSocket[coder['uniq_id']]['stats_socket']):
+                        #print ('Socket already exist try to unlink %s' % (audioSocket[coder['uniq_id']]['stats_socket']), flush=True)
                         try:
                             os.unlink(audioSocket[coder['uniq_id']]['stats_socket'])
                         except OSError:
+                            #print ('!! Could not unlink socket', flush=True)
                             audioSocket[coder['uniq_id']]['status'] = '-502'
                             audioSocket[coder['uniq_id']]['statusText'] = 'Could not unlink socket'
                             audioSocket[coder['uniq_id']]['data'] = {}
                         else:
-                            audioSocket[coder['uniq_id']]['status'] = '0'
-                            audioSocket[coder['uniq_id']]['statusText'] = 'Ok'
+                            #print ('Ok', flush=True)
+                            audioSocket[coder['uniq_id']]['status'] = '-512'
+                            audioSocket[coder['uniq_id']]['statusText'] = 'Ok - Waiting first data'
                             audioSocket[coder['uniq_id']]['data'] = {}
+                    
+                    #print ('Try to bind socket %s' % (audioSocket[coder['uniq_id']]['stats_socket']), flush=True)
                     try:
                         audioSocket[coder['uniq_id']]['socket'].bind(audioSocket[coder['uniq_id']]['stats_socket'])
                     except socket.timeout as err:
-                        audioSocket[uniq_id]['status'] = '-503'
-                        audioSocket[uniq_id]['statusText'] = 'socket timeout'
-                        audioSocket[uniq_id]['data'] = {}
+                        #print ('!! socket timeout', flush=True)
+                        audioSocket[coder['uniq_id']]['status'] = '-503'
+                        audioSocket[coder['uniq_id']]['statusText'] = 'socket timeout'
+                        audioSocket[coder['uniq_id']]['data'] = {}
                     except socket.error as err:
-                        audioSocket[uniq_id]['status'] = '-503'
-                        audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
-                        audioSocket[uniq_id]['data'] = {}
+                        #print ('!! socket error: %s' % (err), flush=True)
+                        audioSocket[coder['uniq_id']]['status'] = '-503'
+                        audioSocket[coder['uniq_id']]['statusText'] = 'socket error: %s' % (err)
+                        audioSocket[coder['uniq_id']]['data'] = {}
                     else:
-                        audioSocket[coder['uniq_id']]['status'] = '0'
-                        audioSocket[coder['uniq_id']]['statusText'] = 'Ok'
+                        #print ('Ok', flush=True)
+                        audioSocket[coder['uniq_id']]['status'] = '-513'
+                        audioSocket[coder['uniq_id']]['statusText'] = 'Ok - Waiting first data'
                         audioSocket[coder['uniq_id']]['data'] = {}
                 else:
                     if audioSocket[coder['uniq_id']]['stats_socket'] != coder['source']['stats_socket']:
@@ -131,7 +142,7 @@ class Config():
 
         for uniq_id in audioSocketToRemove:
             #print ('del socket', uniq_id)
-            print ('remove stats socket %s' % (coder['uniq_id']), flush=True)
+            print ('remove stats socket %s' % (audioSocket[uniq_id]), flush=True)
             audioSocket[uniq_id]['socket'].close()
             del audioSocket[uniq_id]
 
@@ -144,14 +155,21 @@ class Config():
                 audioSocket[uniq_id]['statusText'] = 'socket timeout'
                 audioSocket[uniq_id]['data'] = {}
             except socket.error as err:
-                audioSocket[uniq_id]['status'] = '-502'
-                audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
-                audioSocket[uniq_id]['data'] = {}
+                if err.errno != 11:
+                    audioSocket[uniq_id]['status'] = '-502'
+                    audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
+                    audioSocket[uniq_id]['data'] = {}
+                else:
+                    if audioSocket[uniq_id]['timestamp'] and ((time.time() - audioSocket[uniq_id]['timestamp']) > 2):
+                        audioSocket[uniq_id]['status'] = '-501'
+                        audioSocket[uniq_id]['statusText'] = 'no data'
+                        audioSocket[uniq_id]['data'] = {}
             else:
-                data = yaml.load(data)
+                ydata = yaml.load(data)
                 audioSocket[uniq_id]['status'] = '0'
                 audioSocket[uniq_id]['statusText'] = 'Ok'
-                audioSocket[uniq_id]['data'] = data
+                audioSocket[uniq_id]['data'] = ydata
+                audioSocket[uniq_id]['timestamp'] = time.time()
 
     def delAudioSocket(self, uniq_id):
         audioSocket[uniq_id]['socket'].close()
@@ -164,6 +182,7 @@ class Config():
                       'status': audioSocket[uniq_id]['status'],
                       'statusText': audioSocket[uniq_id]['statusText'],
                       'data': audioSocket[uniq_id]['data'],
+                      'timestamp': audioSocket[uniq_id]['timestamp'],
                       }
             return output
         else:

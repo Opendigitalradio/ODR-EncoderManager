@@ -236,4 +236,4 @@ if __name__ == '__main__':
     while True:
         config.addAudioSocket()
         config.retreiveAudioSocket()
-        #time.sleep(5)
+        time.sleep(0.10)

@@ -1,38 +1,29 @@
 # ODR-EncoderManager
 OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder easly with a WebGUI.
 
-# Note about version V4.0.3
-  * Add audio level bar graph
-  * AVT AE1 and AVT AE4 support
-  * AES67 experimental support
-  * need odr-audioenc v2.6.0 or higher
-  * need odr-sourcecompanion v0.6.0 or higher
-  * need odr-padenc v2.3.0 or higher
+# Note about version V5.0.0
+**Requirement**
 
-# Note about version V4.0.1
-  * resolve 500 Internal server error when adding user
+  * ODR-AudioEnc v3.0.0
+  * ODR-SourceCompanion v1.0.0
+  * ODR-PadEnc v3.0.0
 
-# Note about version V4.0.0
-From version V4.0.0, python2 that will be deprecated on January 1st 2020 is no longer supported. Use python3.
+**New Feature / Change**
 
-Version V4.0.0, introduces the support of several encoder, managed from the same interface. In the case of an upgrade from a lower version, the config.json configuration file and processes managed by supervisor will be automatically converted into the new format.
+  * Add odr-padenc raw-slides option
+  * Add additional supervisor option by encoder (only via editing config file at this time)
+  * Display ODR tools version
+  * ODR-padenc socket support
+  * Change supervisor stderr logging
+  * Communication between odr-audioenc/odr-sourcecompanion use socket instead fifo
 
-New features from version V4.0.0 :
-  * Multi encoder support
-  * aes67 input support (experimental)
-  * restart encoder after blank detection
-  * Raw DLS support
-  * Uniform PAD support
-  * Can choose to enable/disable writing ICY Text when using a stream as input
-  * AVT Status windows (via SNMP)
-  * Edit DLS
-  * Status page refactoring
-  * ...
+**Bug fixes**
+
+  * Solve issue with SNMP request on AVT with last firmware (ClockSource)
 
 
 # INSTALLATION
 
-  * (root) Install requirement (debian/jessie) : `apt install python3-cherrypy3 python3-jinja2 python3-serial python3-yaml supervisor python3-pysnmp`
   * (root) Install requirement (debian/stretch) : `apt install python3-cherrypy3 python3-jinja2 python3-serial python3-yaml supervisor python3-pysnmp4`
   * (root) Add odr user : `adduser odr`
   * (root) Add odr user to dialout group : `usermod -a -G dialout odr`
@@ -63,7 +54,7 @@ password = pass ; Auth password
   * If you want to change supervisor XMLRPC login/password, you need to edit `/etc/supervisor/supervisord.conf` and `config.json` files
 
 
-# How to set DLS / DL+
+# How to set DLS / DL+ / SLS
 **Set DLS / DL+ for all encoder**
 To set a text metadata used for DLS, use http GET or POST on the Encoder Manager API from your automation software.
 > http://{ip}:8080/api/setDLS?dls={artist}-{title}
@@ -81,6 +72,14 @@ At each events on your playlist (when a track start) the radio automation softwa
 **Set DLS / DL+ for specific encoder (from version V4.0.0)**
 If you want to update DLS / DL+ for a specific encoder, you need to find the uniq_id on Encoder > Manage page under Information button
 > http://{ip}:8080/api/setDLS?dls={artist}-{title}&uniq_id={00000000-0000-0000-0000-000000000000}
+
+**Set SLS for all encoder**
+To send slide used for SLS, use http POST on the Encoder Manager API.
+> curl -X POST -F 'slide_file=@"live.jpg"' http://{ip}:8080/api/setSLS
+
+**Set SLS for specific encoder**
+If you want to update SLS for a specific encoder, you need to find the uniq_id on Encoder > Manage page under Information button
+> curl -X POST -F 'uniq_id={00000000-0000-0000-0000-000000000000}' -F 'slide_file=@"{file.jpg}"' http://{ip}:8080/api/setSLS
 
 # ADVANCED
   * To use the reboot api (/api/reboot), you need to allow odr user to run shutdown command by adding the line bellow at the end of /etc/sudoers file :

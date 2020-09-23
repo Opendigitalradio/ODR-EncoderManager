@@ -1,3 +1,22 @@
+## [v5.0.0] - 2020-09-23 - Yoann QUERET <yoann@queret.net>
+
+### Requirement
+- ODR-AudioEnc v3.0.0
+- ODR-SourceCompanion v1.0.0
+- ODR-PadEnc v3.0.0
+
+### New Feature / Change
+- Add odr-padenc raw-slides option
+- Add additional supervisor option by encoder (only via editing config file at this time)
+- Display ODR tools version 
+- ODR-padenc socket support
+- Change supervisor stderr logging
+- Communication between odr-audioenc/odr-sourcecompanion use socket instead fifo
+
+### Bug fixes
+- Solve issue with SNMP request on AVT with last firmware (ClockSource)
+
+
 ## [v4.0.3] - 2020-05-25 - Yoann QUERET <yoann@queret.net>
 
 ### Requirement
@@ -13,3 +32,28 @@
 
 ### Changed
 - Some change in config.json, but automatically changed at startup
+
+
+## Note about version V4.0.3
+  * Add audio level bar graph
+  * AVT AE1 and AVT AE4 support
+  * AES67 experimental support
+  * need odr-audioenc v2.6.0 or higher
+  * need odr-sourcecompanion v0.6.0 or higher
+  * need odr-padenc v2.3.0 or higher
+
+## Note about version V4.0.1
+  * resolve 500 Internal server error when adding user
+
+## Note about version V4.0.0 :
+  * python 2 is deprecated. Use python 3
+  * Multi encoder support
+  * aes67 input support (experimental)
+  * restart encoder after blank detection
+  * Raw DLS support
+  * Uniform PAD support
+  * Can choose to enable/disable writing ICY Text when using a stream as input
+  * AVT Status windows (via SNMP)
+  * Edit DLS
+  * Status page refactoring
+  * ...

@@ -190,8 +190,10 @@ if __name__ == '__main__':
         'log.screen': False,
         'tools.sessions.on': True,
         'tools.sessions.name': "ODR-Encoder-Manager",
-        'tools.sessions.secure': True,
-        'tools.sessions.same_site': 'Lax',
+        # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+        # https://github.com/cherrypy/cherrypy/issues/1767
+        #'tools.sessions.secure': True,
+        #'tools.sessions.same_site': 'Lax',
         'tools.encode.on': True,
         'tools.encode.encoding': "utf-8"
         })

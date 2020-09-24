@@ -746,6 +746,14 @@ class Config():
 
                     # Check if config.mot_dls_file exist and create it if needed.
                     if not os.path.isfile(odr['padenc']['dls_file']):
+                        # Check if directory exist
+                        if not os.path.exists( os.path.dirname(odr['padenc']['dls_file']) ):
+                            try:
+                                os.makedirs( os.path.dirname(odr['padenc']['dls_file']) )
+                            except Exception as e:
+                                raise ValueError('Error when creating dls_file directory: {}'.format(e))
+                        
+                        # Create file
                         try:
                             f = open(odr['padenc']['dls_file'], 'w')
                             f.close()

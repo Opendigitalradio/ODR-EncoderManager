@@ -917,7 +917,7 @@ class Config():
                 
                 # EDI specific
                 if 'edi_identifier' in odr['output'] and odr['output']['edi_identifier'] != '':
-                    command += ' --identifier=%s\n' % (odr['output']['edi_identifier'])
+                    command += ' --identifier="%s"\n' % (odr['output']['edi_identifier'])
                 
                 if 'edi_timestamps_delay' in odr['output'] and odr['output']['edi_timestamps_delay'] != '':
                     command += ' --timestamp-delay=%s\n' % (odr['output']['edi_timestamps_delay'])

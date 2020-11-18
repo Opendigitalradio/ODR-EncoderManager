@@ -22,8 +22,12 @@ You should have received a copy of the GNU General Public License
 along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+SUPERVISOR_USER = "odr"
+SUPERVISOR_GROUP = "odr"
+
 #import ConfigParser
 import os
+import select
 import sys
 import json
 import stat
@@ -77,7 +81,52 @@ class Config():
         global audioSocket
         audioSocket = {}
 
-    def addAudioSocket(self):
+    def handleAudioSockets(self):
+        self._updateAudioSockets()
+
+        poller = select.poll()
+        for uniq_id in audioSocket:
+            poller.register(audioSocket[uniq_id]['socket'], select.POLLIN + select.POLLPRI)
+
+        # Check for new sockets every ten seconds,
+        # and reuse the same poller several times for performance
+        t_start = time.time()
+        while time.time() < t_start + 10:
+            self._handleSocketEvents(poller)
+
+    def _handleSocketEvents(self, poller):
+        for ev in poller.poll(1000): # timeout in milliseconds
+            fd, event = ev
+            for uniq_id in audioSocket:
+                if audioSocket[uniq_id]['socket'].fileno() == fd:
+                    try:
+                        data, addr = audioSocket[uniq_id]['socket'].recvfrom(1024)
+                    except socket.timeout as err:
+                        audioSocket[uniq_id]['status'] = '-502'
+                        audioSocket[uniq_id]['statusText'] = 'socket timeout'
+                        audioSocket[uniq_id]['data'] = {}
+                    except socket.error as err:
+                        if err.errno != 11:
+                            audioSocket[uniq_id]['status'] = '-502'
+                            audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
+                            audioSocket[uniq_id]['data'] = {}
+                        else:
+                            if audioSocket[uniq_id]['timestamp'] and ((time.time() - audioSocket[uniq_id]['timestamp']) > 2):
+                                audioSocket[uniq_id]['status'] = '-501'
+                                audioSocket[uniq_id]['statusText'] = 'no data'
+                                audioSocket[uniq_id]['data'] = {}
+                    else:
+                        ydata = yaml.load(data)
+                        audioSocket[uniq_id]['status'] = '0'
+                        audioSocket[uniq_id]['statusText'] = 'Ok'
+                        audioSocket[uniq_id]['data'] = ydata
+                        audioSocket[uniq_id]['timestamp'] = time.time()
+                    break
+            else:
+                print("Could not find uniq_id corresponding to socket fd={}!".format(fd))
+
+
+    def _updateAudioSockets(self):
         self.load(self.config_file)
         for coder in self.config['odr']:
             if all (k in coder for k in ("source","output","padenc","path")):
@@ -145,31 +194,6 @@ class Config():
             print ('remove stats socket %s' % (audioSocket[uniq_id]), flush=True)
             audioSocket[uniq_id]['socket'].close()
             del audioSocket[uniq_id]
-
-    def retreiveAudioSocket(self):
-        for uniq_id in audioSocket:
-            try:
-                data, addr = audioSocket[uniq_id]['socket'].recvfrom(1024)
-            except socket.timeout as err:
-                audioSocket[uniq_id]['status'] = '-502'
-                audioSocket[uniq_id]['statusText'] = 'socket timeout'
-                audioSocket[uniq_id]['data'] = {}
-            except socket.error as err:
-                if err.errno != 11:
-                    audioSocket[uniq_id]['status'] = '-502'
-                    audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
-                    audioSocket[uniq_id]['data'] = {}
-                else:
-                    if audioSocket[uniq_id]['timestamp'] and ((time.time() - audioSocket[uniq_id]['timestamp']) > 2):
-                        audioSocket[uniq_id]['status'] = '-501'
-                        audioSocket[uniq_id]['statusText'] = 'no data'
-                        audioSocket[uniq_id]['data'] = {}
-            else:
-                ydata = yaml.load(data)
-                audioSocket[uniq_id]['status'] = '0'
-                audioSocket[uniq_id]['statusText'] = 'Ok'
-                audioSocket[uniq_id]['data'] = ydata
-                audioSocket[uniq_id]['timestamp'] = time.time()
 
     def delAudioSocket(self, uniq_id):
         audioSocket[uniq_id]['socket'].close()
@@ -807,8 +831,8 @@ class Config():
                     supervisorConfigParam['autostart'] = odr['autostart']
                     supervisorConfigParam['autorestart'] = "true"
                     supervisorConfigParam['priority'] = "10"
-                    supervisorConfigParam['user'] = "odr"
-                    supervisorConfigParam['group'] = "odr"
+                    supervisorConfigParam['user'] = SUPERVISOR_USER
+                    supervisorConfigParam['group'] = SUPERVISOR_GROUP
                     supervisorConfigParam['redirect_stderr'] = "true"
                     supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-padencoder-%s.log" % (odr['uniq_id'])
                     
@@ -931,8 +955,8 @@ class Config():
                 supervisorConfigParam['autostart'] = odr['autostart']
                 supervisorConfigParam['autorestart'] = "true"
                 supervisorConfigParam['priority'] = "10"
-                supervisorConfigParam['user'] = "odr"
-                supervisorConfigParam['group'] = "odr"
+                supervisorConfigParam['user'] = SUPERVISOR_USER
+                supervisorConfigParam['group'] = SUPERVISOR_GROUP
                 supervisorConfigParam['redirect_stderr'] = "true"
                 supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-audioencoder-%s.log" % (odr['uniq_id'])
                     
@@ -981,8 +1005,8 @@ class Config():
                     supervisorConfigParam['autostart'] = odr['autostart']
                     supervisorConfigParam['autorestart'] = "true"
                     supervisorConfigParam['priority'] = "10"
-                    supervisorConfigParam['user'] = "odr"
-                    supervisorConfigParam['group'] = "odr"
+                    supervisorConfigParam['user'] = SUPERVISOR_USER
+                    supervisorConfigParam['group'] = SUPERVISOR_GROUP
                     supervisorConfigParam['redirect_stderr'] = "true"
                     supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/slide-%s.log" % (odr['uniq_id'])
                     
@@ -1017,8 +1041,8 @@ class Config():
                         supervisorConfigParam['autostart'] = odr['autostart']
                         supervisorConfigParam['autorestart'] = "true"
                         supervisorConfigParam['priority'] = "10"
-                        supervisorConfigParam['user'] = "odr"
-                        supervisorConfigParam['group'] = "odr"
+                        supervisorConfigParam['user'] = SUPERVISOR_USER
+                        supervisorConfigParam['group'] = SUPERVISOR_GROUP
                         supervisorConfigParam['redirect_stderr'] = "true"
                         supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/adcast-%s.log" % (odr['uniq_id'])
                         # -- override default parameters or add additional parameters

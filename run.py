@@ -233,9 +233,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     cherrypy.engine.start()
     #cherrypy.engine.block()
-    
+
     config.initAudioSocket()
     while True:
-        config.addAudioSocket()
-        config.retreiveAudioSocket()
-        time.sleep(0.10)
+        config.handleAudioSockets()

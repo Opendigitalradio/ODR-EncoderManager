@@ -10,7 +10,9 @@
         },
         "supervisor_additional_options": {
                 "startretries": "50",
-                "autorestart": "false"
+                "autorestart": "false",
+                "user": "odr",
+                "group": "odr"
             },
         "padenc": {
             "enable": "true",

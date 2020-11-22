@@ -22,9 +22,6 @@ You should have received a copy of the GNU General Public License
 along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-SUPERVISOR_USER = "odr"
-SUPERVISOR_GROUP = "odr"
-
 #import ConfigParser
 import os
 import select
@@ -831,8 +828,8 @@ class Config():
                     supervisorConfigParam['autostart'] = odr['autostart']
                     supervisorConfigParam['autorestart'] = "true"
                     supervisorConfigParam['priority'] = "10"
-                    supervisorConfigParam['user'] = SUPERVISOR_USER
-                    supervisorConfigParam['group'] = SUPERVISOR_GROUP
+                    supervisorConfigParam['user'] = "odr"
+                    supervisorConfigParam['group'] = "odr"
                     supervisorConfigParam['redirect_stderr'] = "true"
                     supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-padencoder-%s.log" % (odr['uniq_id'])
                     
@@ -955,8 +952,8 @@ class Config():
                 supervisorConfigParam['autostart'] = odr['autostart']
                 supervisorConfigParam['autorestart'] = "true"
                 supervisorConfigParam['priority'] = "10"
-                supervisorConfigParam['user'] = SUPERVISOR_USER
-                supervisorConfigParam['group'] = SUPERVISOR_GROUP
+                supervisorConfigParam['user'] = "odr"
+                supervisorConfigParam['group'] = "odr"
                 supervisorConfigParam['redirect_stderr'] = "true"
                 supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-audioencoder-%s.log" % (odr['uniq_id'])
                     
@@ -1005,8 +1002,8 @@ class Config():
                     supervisorConfigParam['autostart'] = odr['autostart']
                     supervisorConfigParam['autorestart'] = "true"
                     supervisorConfigParam['priority'] = "10"
-                    supervisorConfigParam['user'] = SUPERVISOR_USER
-                    supervisorConfigParam['group'] = SUPERVISOR_GROUP
+                    supervisorConfigParam['user'] = "odr"
+                    supervisorConfigParam['group'] = "odr"
                     supervisorConfigParam['redirect_stderr'] = "true"
                     supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/slide-%s.log" % (odr['uniq_id'])
                     
@@ -1041,8 +1038,8 @@ class Config():
                         supervisorConfigParam['autostart'] = odr['autostart']
                         supervisorConfigParam['autorestart'] = "true"
                         supervisorConfigParam['priority'] = "10"
-                        supervisorConfigParam['user'] = SUPERVISOR_USER
-                        supervisorConfigParam['group'] = SUPERVISOR_GROUP
+                        supervisorConfigParam['user'] = "odr"
+                        supervisorConfigParam['group'] = "odr"
                         supervisorConfigParam['redirect_stderr'] = "true"
                         supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/adcast-%s.log" % (odr['uniq_id'])
                         # -- override default parameters or add additional parameters

@@ -6,21 +6,21 @@
                         </div>
                         <div>
                         <ul class="nav navbar-nav" id="main_menu">
-                                <li{% if tab == 'home' %} class="active"{% endif %}><a href="/">Home</a></li>
+                                <li id="home_menu"><a href="/">Home</a></li>
                                 {% if is_login is sameas true %}
-                                <li{% if tab == 'status' %} class="active"{% endif %}><a href="/status">Status</a></li>
-                                <li class="dropdown{% if tab == 'encoderconfig' or tab == 'encodermanage' %} active"{% endif %}">
+                                <li id="status_menu"><a href="/status">Status</a></li>
+                                <li id="encoder_menu" class="dropdown">
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="/encoderconfig">Encoder
                                         <span class="caret"></span></a>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu" id="encoder_submenu">
                                                 <li><a href="/encoderconfig">Configuration</a></li>
                                                 <li><a href="/encodermanage">Manage</a></li>
                                         </ul>
                                 </li>
-                                <li class="dropdown{% if tab == 'backup' or tab == 'user' %} active"{% endif %}">
+                                <li id="tools_menu" class="dropdown">
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Tools
                                         <span class="caret"></span></a>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu" id="tools_submenu">
                                                 <li><a href="/backup">Backup & Restore</a></li>
                                                 <li><a href="/user">User management</a></li>
                                                 {% if is_network is sameas true %}
@@ -28,10 +28,10 @@
                                                 {% endif %}
                                         </ul>
                                 </li>
-                                <li class="dropdown{% if tab == 'help' or tab == 'about' %} active"{% endif %}">
+                                <li id="help_menu" class="dropdown">
                                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Help
                                         <span class="caret"></span></a>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu" id="help_submenu">
                                                 <li class="dropdown-header">Open Digital Radio</li>
                                                 <li><a href="http://www.opendigitalradio.org/">Website</a></li>
                                                 <li><a href="http://wiki.opendigitalradio.org/">Documentation</a></li>

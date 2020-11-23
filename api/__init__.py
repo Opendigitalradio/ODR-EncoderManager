@@ -86,9 +86,8 @@ class API():
                               'python': python_version
                               }
         info['is_login'] = is_login()
+        info['is_network'] = is_network(self.config_file)
         
-        if is_network(self.config_file):
-            info['is_network'] = is_network(self.config_file)
         if is_adcast(self.config_file):
             info['is_adcast'] = is_adcast(self.config_file)
         if is_slide_mgnt(self.config_file):

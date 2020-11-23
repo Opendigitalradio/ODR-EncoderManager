@@ -5,7 +5,7 @@
                                 <a class="navbar-brand" href="/">ODR - Encoder Manager</a>
                         </div>
                         <div>
-                        <ul class="nav navbar-nav">
+                        <ul class="nav navbar-nav" id="main_menu">
                                 <li{% if tab == 'home' %} class="active"{% endif %}><a href="/">Home</a></li>
                                 {% if is_login is sameas true %}
                                 <li{% if tab == 'status' %} class="active"{% endif %}><a href="/status">Status</a></li>

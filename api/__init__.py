@@ -36,7 +36,7 @@ if sys.version_info >= (3, 0):
 else:
     import xmlrpclib as xmlrpc_client
 
-from config import Config
+from config import Config, is_network, is_adcast, is_slide_mgnt
 from auth import AuthController, require, is_login
 from avt import AVT
 
@@ -58,11 +58,11 @@ import time
 
 class API():
 
-    def __init__(self, config_file):
+    def __init__(self, config_file, Plugins):
         self.config_file = config_file
         self.conf = Config(self.config_file)
         self.auth = AuthController(self.conf.config['auth'])
-
+        self.plugins = Plugins
 
     # all methods in this controller (and subcontrollers) is
     # open only to members of the admin group
@@ -79,10 +79,24 @@ class API():
         encodermanager_version = subprocess.check_output(["git", "describe"]).strip().decode('UTF-8')
         python_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
 
-        return { 'status': '0', 'statusText': 'Ok',
-                 'version': { 'odr-encodermanager': encodermanager_version,
+        info = {}
+        info['status'] = '0'
+        info['statusText'] ='Ok'
+        info['version'] = { 'odr-encodermanager': encodermanager_version,
                               'python': python_version
-                              }}
+                              }
+        info['is_login'] = is_login()
+        
+        if is_network(self.config_file):
+            info['is_network'] = is_network(self.config_file)
+        if is_adcast(self.config_file):
+            info['is_adcast'] = is_adcast(self.config_file)
+        if is_slide_mgnt(self.config_file):
+            info['is_slide_mgnt'] = is_slide_mgnt(self.config_file)
+            
+        info['plugins'] = self.plugins.list_plugins()
+        
+        return info
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

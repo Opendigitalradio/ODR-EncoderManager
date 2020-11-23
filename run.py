@@ -31,6 +31,8 @@ from config import Config, is_network, is_adcast, is_slide_mgnt
 from auth import AuthController, require, is_login
 from api import API
 
+from plugins import Plugins
+
 import signal
 import time
 
@@ -45,7 +47,8 @@ class Root():
         self.config_file = config_file
         self.conf = Config(self.config_file)
         self.auth = AuthController(self.config_file)
-        self.api = API(self.config_file)
+        self.plugins = Plugins(self.config_file)
+        self.api = API(self.config_file, self.plugins)
 
     _cp_config = {
         'tools.sessions.on': True,
@@ -60,66 +63,66 @@ class Root():
     @cherrypy.expose
     def home(self):
         tmpl = env.get_template("home.html")
-        js = []
-        return tmpl.render(tab='home', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js']
+        return tmpl.render(tab='home', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
     @cherrypy.expose
     @require()
     def help(self):
         tmpl = env.get_template("help.html")
-        js = []
-        return tmpl.render(tab='help', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js']
+        return tmpl.render(tab='help', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
     @cherrypy.expose
     @require()
     def about(self):
         tmpl = env.get_template("about.html")
-        js = []
-        return tmpl.render(tab='about', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js']
+        return tmpl.render(tab='about', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
     # This is only available for authenticated user
     @cherrypy.expose
     @require()
     def status(self):
         tmpl = env.get_template("status.html")
-        js = ['/js/odr-status.js']
+        js = ['/js/common.js', '/js/odr-status.js']
         css = ['/css/bars.css']
-        return tmpl.render(tab='status', js=js, css=css, is_login=is_login(), is_network=is_network(self.config_file))
+        return tmpl.render(tab='status', js=js, css=css, is_login=is_login(), is_network=is_network(self.config_file) )
 
     @cherrypy.expose
     @require()
     def encoderconfig(self):
         tmpl = env.get_template("encoderconfig.html")
-        js = ['/js/odr-encoderconfig.js']
-        return tmpl.render(tab='encoderconfig', js=js, is_login=is_login(), is_network=is_network(self.config_file), is_slide_mgnt=is_slide_mgnt(self.config_file), is_adcast=is_adcast(self.config_file))
+        js = ['/js/common.js', '/js/odr-encoderconfig.js']
+        return tmpl.render(tab='encoderconfig', js=js, is_login=is_login(), is_network=is_network(self.config_file), is_slide_mgnt=is_slide_mgnt(self.config_file), is_adcast=is_adcast(self.config_file) )
 
     @cherrypy.expose
     @require()
     def encodermanage(self):
         tmpl = env.get_template("encodermanage.html")
-        js = ['/js/odr-encodermanage.js']
-        return tmpl.render(tab='encodermanage', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js', '/js/odr-encodermanage.js']
+        return tmpl.render(tab='encodermanage', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
     @cherrypy.expose
     @require()
     def backup(self):
         tmpl = env.get_template("backup.html")
-        js = ['/js/odr-backup.js']
-        return tmpl.render(tab='backup', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js', '/js/odr-backup.js']
+        return tmpl.render(tab='backup', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
     @cherrypy.expose
     @require()
     def user(self):
         tmpl = env.get_template("user.html")
-        js = ['/js/odr-user.js']
-        return tmpl.render(tab='user', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js', '/js/odr-user.js']
+        return tmpl.render(tab='user', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
     @cherrypy.expose
     @require()
     def network(self):
         tmpl = env.get_template("network.html")
-        js = ['/js/odr-network.js']
-        return tmpl.render(tab='user', js=js, is_login=is_login(), is_network=is_network(self.config_file))
+        js = ['/js/common.js', '/js/odr-network.js']
+        return tmpl.render(tab='network', js=js, is_login=is_login(), is_network=is_network(self.config_file) )
 
 def signal_handler(signal, frame):
     print("Exiting...")

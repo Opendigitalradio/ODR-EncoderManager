@@ -485,26 +485,26 @@ class Config():
             if 'padenc' in coder:
                 if 'uniform' in coder['padenc']:
                     del coder['padenc']['uniform']
-                    print ('- remove uniform in configuration file')
+                    print ('- remove uniform in padenc configuration file')
                 if 'uniform_init_burst' in coder['padenc']:
                     del coder['padenc']['uniform_init_burst']
-                    print ('- remove uniform_init_burst in configuration file')
+                    print ('- remove uniform_init_burst in padenc configuration file')
                 if not 'uniform_label' in coder['padenc']:
                     coder['padenc']['uniform_label'] = '12'
-                    print ('- add uniform_label pad in configuration file')
+                    print ('- add uniform_label to padenc in configuration file')
                 if not 'uniform_label_ins' in coder['padenc']:
                     coder['padenc']['uniform_label_ins'] = '1200'
-                    print ('- add uniform_label pad in configuration file')
+                    print ('- add uniform_label_ins to padenc in configuration file')
                 if 'pad_fifo_file' in coder['padenc']:
                     del coder['padenc']['pad_fifo_file']
-                    print ('- remove pad_fifo_file in configuration file')
+                    print ('- remove pad_fifo_file in padenc configuration file')
                 if 'pad_fifo' in coder['padenc']:
                     del coder['padenc']['pad_fifo']
-                    print ('- remove pad_fifo in configuration file')
+                    print ('- remove pad_fifo in padenc configuration file')
                 if 'dls_fifo_file' in coder['padenc']:
                     coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
                     del coder['padenc']['dls_fifo_file']
-                    print ('- rename dls_fifo_file to dls_file in configuration file')    
+                    print ('- rename dls_fifo_file to dls_file in padenc configuration file')    
                 if not 'slide_carousel_interval' in coder['padenc']:
                     coder['padenc']['slide_carousel_interval'] = ''
                 if not 'slide_live_interval' in coder['padenc']:
@@ -517,30 +517,30 @@ class Config():
             if 'source' in coder:
                 if not 'stats_socket' in coder['source']:
                     coder['source']['stats_socket'] = '/var/tmp/'+coder['uniq_id']+'.stats'
-                    print ('- add stats_socket in configuration file')
+                    print ('- add stats_socket to source in configuration file')
                 if not 'stream_writeicytext' in coder['source']:
                     coder['source']['stream_writeicytext'] = 'true'
-                    print ('- add stream_writeicytext in configuration file')
+                    print ('- add stream_writeicytext to source in configuration file')
                 if not 'silence_detect' in coder['source']:
                     coder['source']['silence_detect'] = 'false'
-                    print ('- add silence_detect in configuration file')
+                    print ('- add silence_detect to source in configuration file')
                 if not 'silence_duration' in coder['source']:
                     coder['source']['silence_duration'] = '30'
-                    print ('- add silence_duration in configuration file')
+                    print ('- add silence_duration to source in configuration file')
                 if 'device' in coder['source']:
                     coder['source']['alsa_device'] = coder['source']['device']
                     del coder['source']['device']
-                    print ('- rename device to alsa_device in configuration file')
+                    print ('- rename device to alsa_device in source configuration file')
                 if 'url' in coder['source']:
                     coder['source']['stream_url'] = coder['source']['url']
                     del coder['source']['url']
-                    print ('- rename url to stream_url in configuration file')
+                    print ('- rename url to stream_url in source configuration file')
                 if not 'stream_url' in coder['source']:
                     coder['source']['stream_url'] = ''
-                    print ('- add stream_url in configuration file')
+                    print ('- add stream_url to source in configuration file')
                 if not 'stream_lib' in coder['source']:
                     coder['source']['stream_lib'] = 'vlc'
-                    print ('- add stream_lib in configuration file')
+                    print ('- add stream_lib to source in configuration file')
                     
             if 'output' in coder:
                 if 'zmq_output' in coder['output']:

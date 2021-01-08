@@ -45,18 +45,19 @@ class Plugins():
         #global loaded_plugins
         #loaded_plugins = []
         
-        for plugin in listdirs(self.plugins_dir):           
-            module_name = 'plugins.%s' % (plugin)
-            try:
-                module_obj = importlib.import_module(module_name)
-                
-            except BaseException as err:
-                serr = str(err)
-                print("Error loading plugins '" + plugin + "': " + serr)
-            else:
-                print('Loading plugin "%s"' % (plugin), flush=True)
-                self.conf.addPlugins(plugin)
-                setattr( self, plugin, __getitem__(module_obj, plugin)(self.config_file) )
+        for plugin in listdirs(self.plugins_dir):
+            if not plugin.startswith('__'):
+                module_name = 'plugins.%s' % (plugin)
+                try:
+                    module_obj = importlib.import_module(module_name)
+                    
+                except BaseException as err:
+                    serr = str(err)
+                    print("Error loading plugins '" + plugin + "': " + serr)
+                else:
+                    print('Loading plugin "%s"' % (plugin), flush=True)
+                    self.conf.addPlugins(plugin)
+                    setattr( self, plugin, __getitem__(module_obj, plugin)(self.config_file) )
         
         # remove old plugin section in configuration file if removed
         self.conf = Config(self.config_file)

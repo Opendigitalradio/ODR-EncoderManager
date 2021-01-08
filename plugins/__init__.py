@@ -27,6 +27,7 @@ import importlib
 import cherrypy
 
 from auth import AuthController, require, is_login
+from config import Config
 
 def listdirs(path):
     return [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
@@ -39,8 +40,10 @@ class Plugins():
 
     def __init__(self, config_file):
         self.config_file = config_file
+        self.conf = Config(self.config_file)
         self.plugins_dir = '%s/plugins/' % ( os.getcwd() )
-        self.plugins = []
+        #global loaded_plugins
+        #loaded_plugins = []
         
         for plugin in listdirs(self.plugins_dir):           
             module_name = 'plugins.%s' % (plugin)
@@ -51,22 +54,43 @@ class Plugins():
                 serr = str(err)
                 print("Error loading plugins '" + plugin + "': " + serr)
             else:
-                print ('Loading plugins %s' % (plugin), flush=True)
-                self.plugins.append(plugin)
+                print('Loading plugin "%s"' % (plugin), flush=True)
+                self.conf.addPlugins(plugin)
                 setattr( self, plugin, __getitem__(module_obj, plugin)(self.config_file) )
+        
+        # remove old plugin section in configuration file if removed
+        self.conf = Config(self.config_file)
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
+        
+        
+        plugins_to_remove = []
+        for plugin in output['plugins']:
+            if plugin not in self.conf.getPlugins():
+                plugins_to_remove.append(plugin)
+        
+        for plugin in plugins_to_remove:
+            print('Remove plugin "%s" in configuration file' % (plugin), flush=True)
+            del(output['plugins'][plugin])
+        
+        # Write configuration file
+        try:
+            self.conf.write(output)
+        except Exception as e:
+            return {'status': '-201', 'statusText': 'Error when writing configuration file: {}'.format(e)}
+        
     
     def is_available(self):
-        if len( self.plugins ) != 0:
+        if len( self.conf.getPlugins() ) != 0:
             return True
         else:
             return False
         
     def list_plugins(self):
-        return self.plugins
+        return self.conf.getPlugins()
     
     @cherrypy.expose
     @require()
     def index(self):
         cherrypy.response.headers['content-type'] = "text/plain"
-        return "This is the plugins area with {0} available.".format( len( self.plugins ) )
+        return "This is the plugins area with {0} available.".format( len( loaded_plugins ) )
     

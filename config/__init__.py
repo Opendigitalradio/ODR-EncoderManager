@@ -33,6 +33,8 @@ import yaml
 import uuid
 import time
 
+import importlib
+
 if sys.version_info >= (3, 0):
     from xmlrpc import client as xmlrpc_client
 else:
@@ -72,6 +74,17 @@ class Config():
     def load(self, config_file):
         with open(self.config_file) as data_file:
             self.config = json.load(data_file)
+            
+    ## Plugins
+    def initPlugins(self):
+        global loaded_plugins
+        loaded_plugins = []
+        
+    def addPlugins(self, plugin):
+        loaded_plugins.append(plugin)
+        
+    def getPlugins(self):
+        return loaded_plugins
 
     ## Audio socket Management
     def initAudioSocket(self):
@@ -558,8 +571,13 @@ class Config():
                     coder['output']['edi_timestamps_delay'] = ''
                     print ('- add edi_timestamps_delay to output in configuration file')
             odr.append(coder)
+            
+        if 'plugins' not in self.config:
+            plugins = {}
+        else:
+            plugins = self.config['plugins']
         # Write configuration file
-        output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr }
+        output = { 'global': self.config['global'], 'auth': self.config['auth'], 'odr': odr, 'plugins': plugins }
         self.write(output, False)
         self.load(self.config_file)
 
@@ -724,6 +742,8 @@ class Config():
 
     def generateSupervisorFiles(self, config):
         supervisorConfig = ""
+        
+        # Generate ODR process supervisor configuration
         for odr in config['odr']:
             if all (k in odr for k in ("source","output","padenc","path")):
                 # Write supervisor pad-encoder section
@@ -1051,10 +1071,42 @@ class Config():
                         for key in supervisorConfigParam.keys():
                             supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                         supervisorConfig += "\n"
+        
+        # Generate plugins process supervisor configuration
+        if len( loaded_plugins ) != 0:
+            #supervisorConfig += "# ----- PLUGINS PROCESS -----\n"
+            for plugin in loaded_plugins:
+                try:
+                    module = importlib.import_module("plugins.%s" % (plugin))
+                except:
+                    pass
+                else:
+                    if 'collectSupervisorCommand' in dir(module):
+                        csc = module.collectSupervisorCommand(self.config_file, plugin)
+                        for i, cmd in enumerate(csc.get()):
+                            supervisorConfig += "# plugin:%s cmd-num:%s\n" % (plugin, i)
+                            supervisorConfig += "[program:plugin-%s-%s]\n" % (plugin, i)
+                            supervisorConfig += "command=%s" % ( cmd )
+                            # -- default parameters
+                            supervisorConfigParam = {}
+                            supervisorConfigParam['autostart'] = "true"
+                            supervisorConfigParam['autorestart'] = "true"
+                            supervisorConfigParam['priority'] = "10"
+                            supervisorConfigParam['user'] = "odr"
+                            supervisorConfigParam['group'] = "odr"
+                            supervisorConfigParam['redirect_stderr'] = "true"
+                            supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/plugin-%s-%s.log" % (plugin, i)
+                            # -- override default parameters or add additional parameters
+                            if 'supervisor_additional_options' in odr:
+                                for key in odr['supervisor_additional_options'].keys():
+                                    supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
+                            # -- generate plugin supervisor configuration
+                            for key in supervisorConfigParam.keys():
+                                supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
+                            supervisorConfig += "\n"
+                        del csc
+                    del module
                     
-
-                    
-
         try:
             with open(config['global']['supervisor_file'], 'w') as supfile:
                 supfile.write(supervisorConfig)

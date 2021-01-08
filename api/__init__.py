@@ -93,7 +93,7 @@ class API():
         if is_slide_mgnt(self.config_file):
             info['is_slide_mgnt'] = is_slide_mgnt(self.config_file)
             
-        info['plugins'] = self.plugins.list_plugins()
+        info['plugins'] = self.conf.getPlugins()
         
         return info
 
@@ -239,7 +239,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
 
         output['global']['network']['dns'] = param
 
@@ -276,7 +276,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
 
         output['global']['network']['ntp'] = param
 
@@ -333,7 +333,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
 
         change = False
         for i,value in enumerate(output['global']['network']['cards']):
@@ -530,7 +530,7 @@ class API():
                 coder['uniq_id'] = str(uuid.uuid4())
                 odr.append( coder )
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr, 'plugins': self.conf.config['plugins'] }
 
         # Write configuration file
         try:
@@ -758,7 +758,7 @@ class API():
             else:
                 odr.append ( data )
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': odr, 'plugins': self.conf.config['plugins'] }
 
         # Write configuration file
         try:
@@ -1227,7 +1227,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
 
         user_exists = any(u['username'] == param['username'] for u in output['auth']['users'])
         if not user_exists:
@@ -1253,7 +1253,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
 
         change = False
         for i,value in enumerate(output['auth']['users']):
@@ -1281,7 +1281,7 @@ class API():
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
 
-        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'] }
+        output = { 'global': self.conf.config['global'], 'auth': self.conf.config['auth'], 'odr': self.conf.config['odr'], 'plugins': self.conf.config['plugins'] }
 
         change = False
         for i,value in enumerate(output['auth']['users']):

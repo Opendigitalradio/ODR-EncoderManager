@@ -169,6 +169,12 @@ if __name__ == '__main__':
         print ( 'Error during configuration file check: ' + str(e) )
         sys.exit(2)
 
+    # init plugins
+    config.initPlugins()
+    
+    # init configuration changed
+    config.initConfigurationChanged()
+
     # Check supervisor process and add or remove it if necessary
     try:
         config.checkSupervisorProcess()
@@ -176,8 +182,7 @@ if __name__ == '__main__':
         print ( 'Error during supervisor process check: ' + str(e) )
         sys.exit(2)
 
-    # init configuration changed
-    config.initConfigurationChanged()
+    
 
     # Start cherrypy
     if config.config['global']['daemon']:

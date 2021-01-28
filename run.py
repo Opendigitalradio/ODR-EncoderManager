@@ -175,15 +175,6 @@ if __name__ == '__main__':
     # init configuration changed
     config.initConfigurationChanged()
 
-    # Check supervisor process and add or remove it if necessary
-    try:
-        config.checkSupervisorProcess()
-    except Exception as e:
-        print ( 'Error during supervisor process check: ' + str(e) )
-        sys.exit(2)
-
-    
-
     # Start cherrypy
     if config.config['global']['daemon']:
         cherrypy.process.plugins.Daemonizer(cherrypy.engine).subscribe()
@@ -200,6 +191,7 @@ if __name__ == '__main__':
         'tools.sessions.name': "ODR-Encoder-Manager",
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
         # https://github.com/cherrypy/cherrypy/issues/1767
+        # https://docs.cherrypy.org/en/3.3.0/progguide/security.html
         #'tools.sessions.secure': True,
         #'tools.sessions.same_site': 'Lax',
         'tools.encode.on': True,
@@ -237,6 +229,13 @@ if __name__ == '__main__':
                 },
         }
     )
+            
+    # Check supervisor process and add or remove it if necessary
+    try:
+        config.checkSupervisorProcess()
+    except Exception as e:
+        print ( 'Error during supervisor process check: ' + str(e) )
+        sys.exit(2)
 
     signal.signal(signal.SIGINT, signal_handler)
     cherrypy.engine.start()

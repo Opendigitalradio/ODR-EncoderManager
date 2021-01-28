@@ -1074,7 +1074,7 @@ class Config():
         
         # Generate plugins process supervisor configuration
         if len( loaded_plugins ) != 0:
-            #supervisorConfig += "# ----- PLUGINS PROCESS -----\n"
+            #print ('DEBUG: config - generateSupervisorFiles - process plugins', flush=True)
             for plugin in loaded_plugins:
                 try:
                     module = importlib.import_module("plugins.%s" % (plugin))
@@ -1106,7 +1106,7 @@ class Config():
                             supervisorConfig += "\n"
                         del csc
                     del module
-                    
+
         try:
             with open(config['global']['supervisor_file'], 'w') as supfile:
                 supfile.write(supervisorConfig)

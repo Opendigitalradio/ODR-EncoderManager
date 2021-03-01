@@ -627,7 +627,7 @@ class Config():
                         server.supervisor.reloadConfig()
                         server.supervisor.addProcessGroup('odr-audioencoder-%s' % (coder['uniq_id']))
                     except Exception as e:
-                        raise ValueError( 'Error when starting odr-audioencoder (XMLRPC): ' % (process['name'], str(e)) )
+                        raise ValueError( 'Error when starting odr-audioencoder-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
                 
                 # odr-padencoder
                 if coder['padenc']['enable'] == 'true':
@@ -636,7 +636,7 @@ class Config():
                             server.supervisor.reloadConfig()
                             server.supervisor.addProcessGroup('odr-padencoder-%s' % (coder['uniq_id']))
                         except Exception as e:
-                            raise ValueError( 'Error when starting odr-padencoder (XMLRPC): ' % (process['name'], str(e)) )
+                            raise ValueError( 'Error when starting odr-padencoder-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
                     
                 # slide-mgnt
                 if coder['padenc']['enable'] == 'true'\
@@ -651,7 +651,7 @@ class Config():
                             server.supervisor.reloadConfig()
                             server.supervisor.addProcessGroup('slide-mgnt-%s' % (coder['uniq_id']))
                         except Exception as e:
-                            raise ValueError( 'Error when starting slide-mgnt (XMLRPC): ' % (process['name'], str(e)) )
+                            raise ValueError( 'Error when starting slide-mgnt-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
                 
                 # adcast
                 if coder['padenc']['enable'] == 'true'\
@@ -664,7 +664,7 @@ class Config():
                             server.supervisor.reloadConfig()
                             server.supervisor.addProcessGroup('adcast-%s' % (coder['uniq_id']))
                         except Exception as e:
-                            raise ValueError( 'Error when starting adcast (XMLRPC): ' % (process['name'], str(e)) )
+                            raise ValueError( 'Error when starting adcast-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
 
     def generateNetworkFiles(self, config):
         # Write network/interfaces file

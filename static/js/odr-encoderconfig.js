@@ -161,6 +161,7 @@ function requestConfiguration(reload=false) {
                 $('#source_stream_url').val('');
                 $('#source_stream_writeicytext option[value="true"]').prop('selected', true);
                 $('#source_stream_lib option[value="vlc"]').prop('selected', true);
+                $('#source_stream_gain').val('');
                 $('#source_avt_input_uri').val('udp://:32010');
                 $('#source_avt_control_uri').val('udp://192.168.128.111:9325');
                 $('#source_avt_pad_port').val('9405');
@@ -353,6 +354,7 @@ function setConfiguration() {
                         "stream_url": $('#source_stream_url').val(),
                         "stream_writeicytext": $('#source_stream_writeicytext').val(),
                         "stream_lib": $('#source_stream_lib').val(),
+                        "stream_gain": $('#source_stream_gain').val(),
                         "alsa_device": $('#source_alsa_device').val(),
                         "driftcomp": $('#source_driftcomp').val(),
                         "silence_detect": $('#source_silence_detect').val(),
@@ -490,6 +492,12 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', false);
         $('#source_stream_writeicytext').prop('disabled', false);
         $('#source_stream_lib').prop('disabled', false);
+        if ($('#source_stream_lib').val() == 'vlc') {
+            $('#source_stream_gain').prop('disabled', false);
+        } else {
+            $('#source_stream_gain').prop('disabled', true);
+        }
+        
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
@@ -539,6 +547,7 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
         $('#source_stream_lib').prop('disabled', true);
+        $('#source_stream_gain').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', false);
         $('#btn_list_alsa_devices').prop('disabled', false);
         $('#source_driftcomp').prop('disabled', false);
@@ -584,6 +593,7 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
         $('#source_stream_lib').prop('disabled', true);
+        $('#source_stream_gain').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', true);
@@ -629,6 +639,7 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
         $('#source_stream_lib').prop('disabled', true);
+        $('#source_stream_gain').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
@@ -803,6 +814,10 @@ $(function(){
     });
 
     $("#source_type").change(function() {
+        setEnableDisable();
+    });
+    
+    $("#source_stream_lib").change(function() {
         setEnableDisable();
     });
 

@@ -384,6 +384,8 @@ class API():
                         'alsa_device': 'plughw:1,0',
                         'stream_url': '',
                         'stream_writeicytext': 'true',
+                        'stream_lib': 'gst',
+                        'stream_gain': '',
                         'avt_input_uri': 'udp://:32010',
                         'avt_control_uri': 'udp://192.168.128.111:9325',
                         'avt_pad_port': '9405',

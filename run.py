@@ -45,6 +45,7 @@ env = Environment(loader=FileSystemLoader('templates'))
 class Root():
     def __init__(self, config_file):
         self.config_file = config_file
+        self.hostname = os.uname().nodename
         self.conf = Config(self.config_file)
         self.auth = AuthController(self.config_file)
         self.plugins = Plugins(self.config_file)
@@ -64,21 +65,21 @@ class Root():
     def home(self):
         tmpl = env.get_template("home.html")
         js = []
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def help(self):
         tmpl = env.get_template("help.html")
         js = []
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def about(self):
         tmpl = env.get_template("about.html")
         js = []
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
     # This is only available for authenticated user
     @cherrypy.expose
@@ -87,42 +88,42 @@ class Root():
         tmpl = env.get_template("status.html")
         js = ['/js/odr-status.js']
         css = ['/css/bars.css']
-        return tmpl.render(js=js, css=css, is_login=is_login() )
+        return tmpl.render(js=js, css=css, is_login=is_login(), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def encoderconfig(self):
         tmpl = env.get_template("encoderconfig.html")
         js = ['/js/odr-encoderconfig.js']
-        return tmpl.render(js=js, is_login=is_login(), is_slide_mgnt=is_slide_mgnt(self.config_file), is_adcast=is_adcast(self.config_file) )
+        return tmpl.render(js=js, is_login=is_login(), is_slide_mgnt=is_slide_mgnt(self.config_file), is_adcast=is_adcast(self.config_file), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def encodermanage(self):
         tmpl = env.get_template("encodermanage.html")
         js = ['/js/odr-encodermanage.js']
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def backup(self):
         tmpl = env.get_template("backup.html")
         js = ['/js/odr-backup.js']
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def user(self):
         tmpl = env.get_template("user.html")
         js = ['/js/odr-user.js']
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
     @cherrypy.expose
     @require()
     def network(self):
         tmpl = env.get_template("network.html")
         js = ['/js/odr-network.js']
-        return tmpl.render(js=js, is_login=is_login() )
+        return tmpl.render(js=js, is_login=is_login(), hostname=self.hostname )
 
 def signal_handler(signal, frame):
     print("Exiting...")

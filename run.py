@@ -196,7 +196,8 @@ if __name__ == '__main__':
         #'tools.sessions.secure': True,
         #'tools.sessions.same_site': 'Lax',
         'tools.encode.on': True,
-        'tools.encode.encoding': "utf-8"
+        'tools.encode.encoding': "utf-8",
+        'tools.encode.text_only': False
         })
 
     cherrypy.tree.mount(

@@ -38,8 +38,9 @@ def __getitem__(self, key):
 
 class Plugins():
 
-    def __init__(self, config_file):
+    def __init__(self, config_file, hostname):
         self.config_file = config_file
+        self.hostname = hostname
         self.conf = Config(self.config_file)
         self.plugins_dir = '%s/plugins/' % ( os.getcwd() )
         #global loaded_plugins
@@ -57,7 +58,7 @@ class Plugins():
                 else:
                     print('Loading plugin "%s"' % (plugin), flush=True)
                     self.conf.addPlugins(plugin)
-                    setattr( self, plugin, __getitem__(module_obj, plugin)(self.config_file) )
+                    setattr( self, plugin, __getitem__(module_obj, plugin)(self.config_file, self.hostname) )
         
         # remove old plugin section in configuration file if removed
         self.conf = Config(self.config_file)

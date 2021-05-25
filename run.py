@@ -48,7 +48,7 @@ class Root():
         self.hostname = os.uname().nodename
         self.conf = Config(self.config_file)
         self.auth = AuthController(self.config_file)
-        self.plugins = Plugins(self.config_file)
+        self.plugins = Plugins(self.config_file, self.hostname)
         self.api = API(self.config_file, self.plugins)
 
     _cp_config = {

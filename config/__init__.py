@@ -31,7 +31,7 @@ import stat
 import socket
 import yaml
 import uuid
-import time
+²import time
 
 import importlib
 
@@ -436,6 +436,8 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['pad'] != coderOld['padenc']['pad']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
+                                if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') ):
+                                    self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
                             if coderNew['padenc']['dls_file'] != coderOld['padenc']['dls_file']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
@@ -1003,6 +1005,7 @@ class Config():
                     
                     command = 'python3 /usr/local/bin/slide-mgnt.py\n'
                     #command += ' -v\n'
+                    command += ' -p %s\n' % (odr['padenc']['pad'])
                     command += ' -w %s\n' % (odr['padenc']['slide_directory'])
                     command += ' -c %s\n' % (odr['padenc']['slide_directory_carousel'])
                     command += ' -l %s\n' % (odr['padenc']['slide_directory_live'])

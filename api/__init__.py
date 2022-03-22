@@ -467,10 +467,8 @@ class API():
                                     output["{process}_version".format(process=process_path)] = result
                             else:
                                 output["{process}_version".format(process=process_path)] = 'not found'
-                            
-                    
                 else:
-                    return {'status': '-299', 'statusText': 'path not found', 'data': {}}
+                    return {'status': '0', 'statusText': 'Ok (but path section not found. Probably encoder recently created)', 'data': {}}
                 
             else:
                 return {'status': '-299', 'statusText': 'coder not found', 'data': {}}

@@ -757,16 +757,17 @@ class Config():
                     #command += ' -v\n'
                     if odr['padenc']['slide_directory'].strip() != '':
                         # Check if config.mot_slide_directory exist
-                        if os.path.exists(odr['padenc']['slide_directory']):
-                            command += ' --dir=%s\n' % (odr['padenc']['slide_directory'])
-                            if odr['padenc']['slide_once'] == 'true':
-                                command += ' --erase\n'
-                        else:
+                        if not os.path.exists(odr['padenc']['slide_directory']):
                             # Try to create slide_directory
                             try:
                                 os.makedirs(odr['padenc']['slide_directory'])
                             except Exception as e:
                                 raise ValueError('Error when creating slide directory: {}'.format(e))
+                            
+                        if os.path.exists(odr['padenc']['slide_directory']):
+                            command += ' --dir=%s\n' % (odr['padenc']['slide_directory'])
+                            if odr['padenc']['slide_once'] == 'true':
+                                command += ' --erase\n'
 
                     if 'slide_directory_live' in odr['padenc']:
                         if not os.path.exists(odr['padenc']['slide_directory_live']):

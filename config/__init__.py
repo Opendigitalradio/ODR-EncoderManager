@@ -48,7 +48,7 @@ def is_network(config_file):
         return True
     else:
         return False
-    
+
 def is_adcast(config_file):
     conf = Config(config_file)
     if ('adcast' in conf.config['global']) and (conf.config['global']['adcast'] == True or conf.config['global']['adcast'] == 'true'):
@@ -58,7 +58,7 @@ def is_adcast(config_file):
             return False
     else:
         return False
-    
+
 def is_slide_mgnt(config_file):
     conf = Config(config_file)
     if ('slide_mgnt' in conf.config['global']) and (conf.config['global']['slide_mgnt'] == True or conf.config['global']['slide_mgnt'] == 'true'):
@@ -74,15 +74,15 @@ class Config():
     def load(self, config_file):
         with open(self.config_file) as data_file:
             self.config = json.load(data_file)
-            
+
     ## Plugins
     def initPlugins(self):
         global loaded_plugins
         loaded_plugins = []
-        
+
     def addPlugins(self, plugin):
         loaded_plugins.append(plugin)
-        
+
     def getPlugins(self):
         return loaded_plugins
 
@@ -166,7 +166,7 @@ class Config():
                             audioSocket[coder['uniq_id']]['status'] = '-512'
                             audioSocket[coder['uniq_id']]['statusText'] = 'Ok - Waiting first data'
                             audioSocket[coder['uniq_id']]['data'] = {}
-                    
+
                     #print ('Try to bind socket %s' % (audioSocket[coder['uniq_id']]['stats_socket']), flush=True)
                     try:
                         audioSocket[coder['uniq_id']]['socket'].bind(audioSocket[coder['uniq_id']]['stats_socket'])
@@ -343,7 +343,7 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                             if coderNew['output']['samplerate'] != coderOld['output']['samplerate']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                            
+
                             if coderNew['output']['type'] == 'dabp':
                                 if coderNew['output']['dabp_sbr'] != coderOld['output']['dabp_sbr']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
@@ -358,11 +358,11 @@ class Config():
                                 if coderNew['output']['dab_dabpsy'] != coderOld['output']['dab_dabpsy']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
-                                    
+
                             # check output
                             if isOutputNotEqual(coderNew['output']['output'], coderOld['output']['output'], ['name']):
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                            
+
                             # check EDI specific parameters
                             if coderNew['output']['edi_identifier'] != coderOld['output']['edi_identifier']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
@@ -379,20 +379,20 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                                 if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') ):
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                    
-                            # CHECK ADCAST / SLIDE-MGNT slide directory 
+
+                            # CHECK ADCAST / SLIDE-MGNT slide directory
                             if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                                 and 'slide_directory_live' in coderNew['padenc']\
                                 and 'slide_directory_live' in coderOld['padenc']\
-                                and coderNew['padenc']['slide_directory_live'] != coderOld['padenc']['slide_directory_live']:        
+                                and coderNew['padenc']['slide_directory_live'] != coderOld['padenc']['slide_directory_live']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                
+
                             if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                                 and 'slide_directory_carousel' in coderNew['padenc']\
                                 and 'slide_directory_carousel' in coderOld['padenc']\
-                                and coderNew['padenc']['slide_directory_carousel'] != coderOld['padenc']['slide_directory_carousel']:        
+                                and coderNew['padenc']['slide_directory_carousel'] != coderOld['padenc']['slide_directory_carousel']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                
+
                             if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                                 and 'slide_directory_ads' in coderNew['padenc']\
                                 and 'slide_directory_ads' in coderOld['padenc']\
@@ -402,28 +402,28 @@ class Config():
                                     and 'adcast' in coderNew\
                                     and 'adcast' in coderOld:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
-                            
+
                             # CHECK SLIDE-MGNT slide interval/liftime
                             if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                                 and 'slide_carousel_interval' in coderNew['padenc']\
                                 and 'slide_carousel_interval' in coderOld['padenc']\
-                                and coderNew['padenc']['slide_carousel_interval'] != coderOld['padenc']['slide_carousel_interval']:        
+                                and coderNew['padenc']['slide_carousel_interval'] != coderOld['padenc']['slide_carousel_interval']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                
+
                             if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                                 and 'slide_live_interval' in coderNew['padenc']\
                                 and 'slide_live_interval' in coderOld['padenc']\
-                                and coderNew['padenc']['slide_live_interval'] != coderOld['padenc']['slide_live_interval']:        
+                                and coderNew['padenc']['slide_live_interval'] != coderOld['padenc']['slide_live_interval']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                
+
                             if ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                                 and 'slide_live_lifetime' in coderNew['padenc']\
                                 and 'slide_live_lifetime' in coderOld['padenc']\
-                                and coderNew['padenc']['slide_live_lifetime'] != coderOld['padenc']['slide_live_lifetime']:        
+                                and coderNew['padenc']['slide_live_lifetime'] != coderOld['padenc']['slide_live_lifetime']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                
-                                
-                            
+
+
+
                             if coderNew['padenc']['slide_once'] != coderOld['padenc']['slide_once']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
                             if coderNew['padenc']['raw_dls'] != coderOld['padenc']['raw_dls']:
@@ -441,7 +441,7 @@ class Config():
                             if coderNew['padenc']['dls_file'] != coderOld['padenc']['dls_file']:
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-padencoder', True)
-                            
+
                         # adcast
                         if ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') )\
                             and ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') ):
@@ -460,8 +460,8 @@ class Config():
                                 if coderNew['adcast']['listen_addr'] != coderOld['adcast']['listen_addr']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'adcast', True)
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'slide-mgnt', True)
-                                
-                                
+
+
 
     def write(self, config, checkConfigurationChanged=True):
         if checkConfigurationChanged:
@@ -519,7 +519,7 @@ class Config():
                 if 'dls_fifo_file' in coder['padenc']:
                     coder['padenc']['dls_file'] = coder['padenc']['dls_fifo_file']
                     del coder['padenc']['dls_fifo_file']
-                    print ('- rename dls_fifo_file to dls_file in padenc configuration file')    
+                    print ('- rename dls_fifo_file to dls_file in padenc configuration file')
                 if not 'slide_carousel_interval' in coder['padenc']:
                     coder['padenc']['slide_carousel_interval'] = ''
                 if not 'slide_live_interval' in coder['padenc']:
@@ -528,7 +528,7 @@ class Config():
                     coder['padenc']['slide_live_lifetime'] = ''
                 if not 'raw_slides' in coder['padenc']:
                     coder['padenc']['raw_slides'] = 'false'
-                    
+
             if 'source' in coder:
                 if not 'stats_socket' in coder['source']:
                     coder['source']['stats_socket'] = '/var/tmp/'+coder['uniq_id']+'.stats'
@@ -559,7 +559,7 @@ class Config():
                 if not 'stream_gain' in coder['source']:
                     coder['source']['stream_gain'] = ''
                     print ('- add stream_gain to source in configuration file')
-                    
+
             if 'output' in coder:
                 if 'zmq_output' in coder['output']:
                     print ('- rename zmq_output to output in configuration file')
@@ -576,7 +576,7 @@ class Config():
                     coder['output']['edi_timestamps_delay'] = ''
                     print ('- add edi_timestamps_delay to output in configuration file')
             odr.append(coder)
-            
+
         if 'plugins' not in self.config:
             plugins = {}
         else:
@@ -625,7 +625,7 @@ class Config():
         # Add new supervisor configuration
         for coder in self.config['odr']:
             if all (k in coder for k in ("source","output","padenc","path")):
-                
+
                 # odr-audioencoder
                 if not self.is_program_exist(programs, 'odr-audioencoder-%s' % (coder['uniq_id'])):
                     try:
@@ -633,7 +633,7 @@ class Config():
                         server.supervisor.addProcessGroup('odr-audioencoder-%s' % (coder['uniq_id']))
                     except Exception as e:
                         raise ValueError( 'Error when starting odr-audioencoder-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
-                
+
                 # odr-padencoder
                 if coder['padenc']['enable'] == 'true':
                     if not self.is_program_exist(programs, 'odr-padencoder-%s'  % (coder['uniq_id'])):
@@ -642,7 +642,7 @@ class Config():
                             server.supervisor.addProcessGroup('odr-padencoder-%s' % (coder['uniq_id']))
                         except Exception as e:
                             raise ValueError( 'Error when starting odr-padencoder-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
-                    
+
                 # slide-mgnt
                 if coder['padenc']['enable'] == 'true'\
                     and 'slide_mgnt' in self.config['global']\
@@ -650,20 +650,20 @@ class Config():
                     and 'slide_directory_live' in coder['padenc']\
                     and 'slide_directory_carousel' in coder['padenc']\
                     and 'slide_directory_ads' in coder['padenc']:
-                        
+
                     if not self.is_program_exist(programs, 'slide-mgnt-%s'  % (coder['uniq_id'])):
                         try:
                             server.supervisor.reloadConfig()
                             server.supervisor.addProcessGroup('slide-mgnt-%s' % (coder['uniq_id']))
                         except Exception as e:
                             raise ValueError( 'Error when starting slide-mgnt-%s (XMLRPC): %s' % (coder['uniq_id'], str(e)) )
-                
+
                 # adcast
                 if coder['padenc']['enable'] == 'true'\
                     and ('slide_mgnt' in self.config['global'] and (self.config['global']['slide_mgnt'] == True or self.config['global']['slide_mgnt'] == 'true') )\
                     and ('adcast' in self.config['global'] and (self.config['global']['adcast'] == True or self.config['global']['adcast'] == 'true') )\
                     and ('adcast' in coder and coder['adcast']['enable'] == 'true'):
-                        
+
                     if not self.is_program_exist(programs, 'adcast-%s'  % (coder['uniq_id'])):
                         try:
                             server.supervisor.reloadConfig()
@@ -747,7 +747,7 @@ class Config():
 
     def generateSupervisorFiles(self, config):
         supervisorConfig = ""
-        
+
         # Generate ODR process supervisor configuration
         for odr in config['odr']:
             if all (k in odr for k in ("source","output","padenc","path")):
@@ -763,7 +763,7 @@ class Config():
                                 os.makedirs(odr['padenc']['slide_directory'])
                             except Exception as e:
                                 raise ValueError('Error when creating slide directory: {}'.format(e))
-                            
+
                         if os.path.exists(odr['padenc']['slide_directory']):
                             command += ' --dir=%s\n' % (odr['padenc']['slide_directory'])
                             if odr['padenc']['slide_once'] == 'true':
@@ -775,14 +775,14 @@ class Config():
                                 os.makedirs(odr['padenc']['slide_directory_live'])
                             except Exception as e:
                                 raise ValueError('Error when creating live slide directory: {}'.format(e))
-                            
+
                     if 'slide_directory_carousel' in odr['padenc']:
                         if not os.path.exists(odr['padenc']['slide_directory_carousel']):
                             try:
                                 os.makedirs(odr['padenc']['slide_directory_carousel'])
                             except Exception as e:
                                 raise ValueError('Error when creating carousel slide directory: {}'.format(e))
-                            
+
                     if 'slide_directory_ads' in odr['padenc']:
                         if not os.path.exists(odr['padenc']['slide_directory_ads']):
                             try:
@@ -799,7 +799,7 @@ class Config():
                                 os.makedirs( os.path.dirname(odr['padenc']['dls_file']) )
                             except Exception as e:
                                 raise ValueError('Error when creating dls_file directory: {}'.format(e))
-                        
+
                         # Create file
                         try:
                             f = open(odr['padenc']['dls_file'], 'w')
@@ -828,7 +828,7 @@ class Config():
 
                     if odr['padenc']['raw_dls'] == 'true':
                         command += ' --raw-dls\n'
-                        
+
                     if odr['padenc']['raw_slides'] == 'true':
                         command += ' --raw-slides\n'
 
@@ -848,7 +848,7 @@ class Config():
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:odr-padencoder-%s]\n" % (odr['uniq_id'])
                     supervisorConfig += "command=%s" % (command)
-                    
+
                     # -- default parameters
                     supervisorConfigParam = {}
                     supervisorConfigParam['autostart'] = odr['autostart']
@@ -858,12 +858,12 @@ class Config():
                     supervisorConfigParam['group'] = "odr"
                     supervisorConfigParam['redirect_stderr'] = "true"
                     supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-padencoder-%s.log" % (odr['uniq_id'])
-                    
+
                     # -- override default parameters or add additional parameters
                     if 'supervisor_additional_options' in odr:
                         for key in odr['supervisor_additional_options'].keys():
                             supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
-                    
+
                     # -- generate final padencoder supervisor configuration
                     for key in supervisorConfigParam.keys():
                         supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
@@ -963,18 +963,18 @@ class Config():
                 # Stats socket
                 if odr['source']['stats_socket'] != '':
                     command += ' --stats=%s\n' % (odr['source']['stats_socket'])
-                
+
                 # EDI specific
                 if 'edi_identifier' in odr['output'] and odr['output']['edi_identifier'] != '':
                     command += ' --identifier="%s"\n' % (odr['output']['edi_identifier'])
-                
+
                 if 'edi_timestamps_delay' in odr['output'] and odr['output']['edi_timestamps_delay'] != '':
                     command += ' --timestamp-delay=%s\n' % (odr['output']['edi_timestamps_delay'])
 
                 supervisorConfig += "# %s\n" % (odr['name'])
                 supervisorConfig += "[program:odr-audioencoder-%s]\n" % (odr['uniq_id'])
                 supervisorConfig += "command=%s" % (command)
-                
+
                 # -- default parameters
                 supervisorConfigParam = {}
                 supervisorConfigParam['autostart'] = odr['autostart']
@@ -984,17 +984,17 @@ class Config():
                 supervisorConfigParam['group'] = "odr"
                 supervisorConfigParam['redirect_stderr'] = "true"
                 supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/odr-audioencoder-%s.log" % (odr['uniq_id'])
-                    
+
                 # -- override default parameters or add additional parameters
                 if 'supervisor_additional_options' in odr:
                     for key in odr['supervisor_additional_options'].keys():
                         supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
-                
+
                 # -- generate final audioencoder supervisor configuration
                 for key in supervisorConfigParam.keys():
                     supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                 supervisorConfig += "\n"
-                
+
                 # Write supervisor slide_mgnt section
                 # If global.slide_mgnt is true
                 if odr['padenc']['enable'] == 'true'\
@@ -1003,7 +1003,7 @@ class Config():
                     and 'slide_directory_live' in odr['padenc']\
                     and 'slide_directory_carousel' in odr['padenc']\
                     and 'slide_directory_ads' in odr['padenc']:
-                    
+
                     command = 'python3 /usr/local/bin/slide-mgnt.py\n'
                     #command += ' -v\n'
                     command += ' -p %s\n' % (odr['padenc']['pad'])
@@ -1022,7 +1022,7 @@ class Config():
                         command += ' -s %s\n' % (odr['adcast']['listen_addr'])
                     if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
                         command += ' -r\n'
-                    
+
                     supervisorConfig += "# %s\n" % (odr['name'])
                     supervisorConfig += "[program:slide-mgnt-%s]\n" % (odr['uniq_id'])
                     supervisorConfig += "command=%s" % (command)
@@ -1035,30 +1035,30 @@ class Config():
                     supervisorConfigParam['group'] = "odr"
                     supervisorConfigParam['redirect_stderr'] = "true"
                     supervisorConfigParam['stdout_logfile'] = "/var/log/supervisor/slide-%s.log" % (odr['uniq_id'])
-                    
+
                     # -- override default parameters or add additional parameters
                     if 'supervisor_additional_options' in odr:
                         for key in odr['supervisor_additional_options'].keys():
                             supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
-                    
+
                     # -- generate final slide_mgnt supervisor configuration
                     for key in supervisorConfigParam.keys():
                         supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                     supervisorConfig += "\n"
 
-                
+
                 # Write supervisor adcast section
                 if odr['padenc']['enable'] == 'true'\
                     and ('slide_mgnt' in config['global'] and (config['global']['slide_mgnt'] == True or config['global']['slide_mgnt'] == 'true') )\
                     and ('adcast' in config['global'] and (config['global']['adcast'] == True or config['global']['adcast'] == 'true') ):
-                        
+
                     if ('adcast' in odr) and (odr['adcast']['enable'] == 'true'):
                         command = '/opt/adcast/bin/adcast-slide-controller run\n'
                         command += ' --api-token %s\n' % (odr['adcast']['api_token'])
                         command += ' --uuid %s\n' % (odr['adcast']['uuid'])
                         command += ' --dst-dir %s\n' % (odr['padenc']['slide_directory_ads'])
                         command += ' --listen-addr %s\n' % (odr['adcast']['listen_addr'])
-                        
+
                         supervisorConfig += "# %s\n" % (odr['name'])
                         supervisorConfig += "[program:adcast-%s]\n" % (odr['uniq_id'])
                         supervisorConfig += "command=%s" % (command)
@@ -1075,12 +1075,12 @@ class Config():
                         if 'supervisor_additional_options' in odr:
                             for key in odr['supervisor_additional_options'].keys():
                                 supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
-                        
+
                         # -- generate final adcast supervisor configuration
                         for key in supervisorConfigParam.keys():
                             supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])
                         supervisorConfig += "\n"
-        
+
         # Generate plugins process supervisor configuration
         if len( loaded_plugins ) != 0:
             #print ('DEBUG: config - generateSupervisorFiles - process plugins', flush=True)

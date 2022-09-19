@@ -956,9 +956,9 @@ class Config():
                 for out in odr['output']['output']:
                     if out['enable'] == 'true':
                         if out['type'] == 'zmq':
-                            command += ' -o tcp://%s:%s\n' % (out['host'], out['port'])
+                            command += ' --output=tcp://%s:%s\n' % (out['host'], out['port'])
                         if out['type'] == 'editcp':
-                            command += ' -e tcp://%s:%s\n' % (out['host'], out['port'])
+                            command += ' --edi=tcp://%s:%s\n' % (out['host'], out['port'])
 
                 # Stats socket
                 if odr['source']['stats_socket'] != '':

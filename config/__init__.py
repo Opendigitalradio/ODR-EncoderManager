@@ -542,6 +542,9 @@ class Config():
                 if not 'silence_duration' in coder['source']:
                     coder['source']['silence_duration'] = '30'
                     print ('- add silence_duration to source in configuration file')
+                if not 'audio_gain' in coder['source']:
+                    coder['source']['audio_gain'] = ''
+                    print ('- add audio_gain to source in configuration file')
                 if 'device' in coder['source']:
                     coder['source']['alsa_device'] = coder['source']['device']
                     del coder['source']['device']
@@ -556,9 +559,6 @@ class Config():
                 if not 'stream_lib' in coder['source']:
                     coder['source']['stream_lib'] = 'vlc'
                     print ('- add stream_lib to source in configuration file')
-                if not 'stream_gain' in coder['source']:
-                    coder['source']['stream_gain'] = ''
-                    print ('- add stream_gain to source in configuration file')
 
             if 'output' in coder:
                 if 'zmq_output' in coder['output']:
@@ -882,8 +882,6 @@ class Config():
                 if odr['source']['type'] == 'stream':
                     if odr['source']['stream_lib'] == 'vlc':
                         command += ' --vlc-uri=%s\n' % (odr['source']['stream_url'])
-                        if odr['source']['stream_gain'] != '':
-                            command += ' --vlc-gain=%s\n' % (odr['source']['stream_gain'])
                     if odr['source']['stream_lib'] == 'gst':
                         command += ' --gst-uri=%s\n' % (odr['source']['stream_url'])
                 if odr['source']['type'] == 'aes67':
@@ -911,6 +909,10 @@ class Config():
                 # silence restart for alsa or stream or aes input type only
                 if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['source']['silence_detect'] == 'true' and odr['source']['silence_duration'] != '' and int(odr['source']['silence_duration']) >> 0:
                     command += ' --silence=%s\n' % (odr['source']['silence_duration'])
+
+                # audio gain for alsa or stream or aes input type only
+                if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['source']['audio_gain'] != '':
+                    command += ' -g %s\n' % (odr['source']['audio_gain'])
 
                 # bitrate, samplerate, channels for all input type
                 command += ' --bitrate=%s\n' % (odr['output']['bitrate'])

@@ -75,9 +75,9 @@ function requestCoder() {
 
 function requestVersion(reload=false) {
     coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
-    
+
     console.log('Version request for: '+coder_uniq_id)
-    
+
     $.ajax({
         type: "GET",
         url: "/api/getVersion?uniq_id="+coder_uniq_id,
@@ -108,7 +108,7 @@ function requestVersion(reload=false) {
                         if (key == 'padenc_path_version') { $('#path_padenc_version').html(val); }
                         if (key == 'sourcecompanion_path_version') { $('#path_sourcecompanion_version').html(val); }
                     })
-                    
+
                 } else {
                     $.gritter.add({
                         title: 'Load configuration',
@@ -157,11 +157,11 @@ function requestConfiguration(reload=false) {
                 $('#source_driftcomp option[value="true"]').prop('selected', true);
                 $('#source_silence_detect option[value="true"]').prop('selected', true);
                 $('#source_silence_duration').val('60');
+                $('#source_audio_gain').val('');
                 $('#source_alsa_device').val('plughw:1,0');
                 $('#source_stream_url').val('');
                 $('#source_stream_writeicytext option[value="true"]').prop('selected', true);
                 $('#source_stream_lib option[value="vlc"]').prop('selected', true);
-                $('#source_stream_gain').val('');
                 $('#source_avt_input_uri').val('udp://:32010');
                 $('#source_avt_control_uri').val('udp://192.168.128.111:9325');
                 $('#source_avt_pad_port').val('9405');
@@ -199,7 +199,7 @@ function requestConfiguration(reload=false) {
                 $('#padenc_raw_slides option[value="false"]').prop('selected', true);
                 $('#padenc_uniform_label').val('5');
                 $('#padenc_uniform_label_ins').val('2000');
-                
+
                 if(document.getElementById("padenc_slide_directory_live") !== null) {
                     $('#padenc_slide_directory_live').val('/pad/slide/live/'+coder_uniq_id+'/');
                 }
@@ -228,7 +228,7 @@ function requestConfiguration(reload=false) {
                     $('#adcast_dst_dir').val('/pad/slide/ads/'+coder_uniq_id+'/');
                     $('#adcast_listen_addr').val('/var/tmp/adcast-'+coder_uniq_id+'.socket');
                 }
-                
+
                 $('#path_encoder_path').val('/usr/local/bin/odr-audioenc');
                 $('#path_padenc_path').val('/usr/local/bin/odr-padenc');
                 $('#path_sourcecompanion_path').val('/usr/local/bin/odr-sourcecompanion');
@@ -248,11 +248,11 @@ function requestConfiguration(reload=false) {
                             if ( form_key == 'padenc_dls_fifo_file') { form_key='padenc_dls_file' }
                             if ( form_key == 'source_device') { form_key='source_alsa_device' }
                             if ( form_key == 'source_url') { form_key='source_stream_url' }
-                            
+
                             // Ignore old key
                             if ( form_key == 'padenc_pad_fifo') { return; }
-                            
-                            
+
+
                             // -- Ignore 'supervisor_additional_options'
                             if ( section_key == 'supervisor_additional_options') {
                                 return;
@@ -354,11 +354,11 @@ function setConfiguration() {
                         "stream_url": $('#source_stream_url').val(),
                         "stream_writeicytext": $('#source_stream_writeicytext').val(),
                         "stream_lib": $('#source_stream_lib').val(),
-                        "stream_gain": $('#source_stream_gain').val(),
                         "alsa_device": $('#source_alsa_device').val(),
                         "driftcomp": $('#source_driftcomp').val(),
                         "silence_detect": $('#source_silence_detect').val(),
                         "silence_duration": $('#source_silence_duration').val(),
+                        "audio_gain": $('#source_audio_gain').val(),
                         "avt_input_uri": $('#source_avt_input_uri').val(),
                         "avt_control_uri": $('#source_avt_control_uri').val(),
                         "avt_pad_port": $('#source_avt_pad_port').val(),
@@ -395,7 +395,7 @@ function setConfiguration() {
                         "uniform_label_ins": $('#padenc_uniform_label_ins').val()
                     },
         }
-        
+
         if (document.getElementById("padenc_slide_directory_live") !== null) {
             param['padenc']['slide_directory_live'] = $('#padenc_slide_directory_live').val();
         }
@@ -405,7 +405,7 @@ function setConfiguration() {
         if (document.getElementById("padenc_slide_directory_ads") !== null) {
             param['padenc']['slide_directory_ads'] = $('#padenc_slide_directory_ads').val();
         }
-        
+
         if (document.getElementById("padenc_slide_carousel_interval") !== null) {
             param['padenc']['slide_carousel_interval'] = $('#padenc_slide_carousel_interval').val();
         }
@@ -415,7 +415,7 @@ function setConfiguration() {
         if (document.getElementById("padenc_slide_live_lifetime") !== null) {
             param['padenc']['slide_live_lifetime'] = $('#padenc_slide_live_lifetime').val();
         }
-        
+
         // Only if 'collapseADCAST' exist
         if(document.getElementById("collapseADCAST") !== null) {
             adcast = {
@@ -428,7 +428,7 @@ function setConfiguration() {
             }
             param['adcast'] = adcast
         }
-        
+
         $.ajax({
             type: "POST",
             url: "/api/setConfig",
@@ -492,17 +492,12 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', false);
         $('#source_stream_writeicytext').prop('disabled', false);
         $('#source_stream_lib').prop('disabled', false);
-        if ($('#source_stream_lib').val() == 'vlc') {
-            $('#source_stream_gain').prop('disabled', false);
-        } else {
-            $('#source_stream_gain').prop('disabled', true);
-        }
-        
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
         $('#source_silence_detect').prop('disabled', false);
         $('#source_silence_duration').prop('disabled', false);
+        $('#source_audio_gain').prop('disabled', false);
         $('#source_avt_input_uri').prop('disabled', true);
         $('#source_avt_control_uri').prop('disabled', true);
         $('#source_avt_pad_port').prop('disabled', true);
@@ -547,12 +542,12 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
         $('#source_stream_lib').prop('disabled', true);
-        $('#source_stream_gain').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', false);
         $('#btn_list_alsa_devices').prop('disabled', false);
         $('#source_driftcomp').prop('disabled', false);
         $('#source_silence_detect').prop('disabled', false);
         $('#source_silence_duration').prop('disabled', false);
+        $('#source_audio_gain').prop('disabled', false);
         $('#source_avt_input_uri').prop('disabled', true);
         $('#source_avt_control_uri').prop('disabled', true);
         $('#source_avt_pad_port').prop('disabled', true);
@@ -593,12 +588,12 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
         $('#source_stream_lib').prop('disabled', true);
-        $('#source_stream_gain').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', true);
         $('#source_silence_detect').prop('disabled', true);
         $('#source_silence_duration').prop('disabled', true);
+        $('#source_audio_gain').prop('disabled', true);
         $('#source_avt_input_uri').prop('disabled', false);
         $('#source_avt_control_uri').prop('disabled', false);
         $('#source_avt_pad_port').prop('disabled', false);
@@ -639,12 +634,12 @@ function setEnableDisable(){
         $('#source_stream_url').prop('disabled', true);
         $('#source_stream_writeicytext').prop('disabled', true);
         $('#source_stream_lib').prop('disabled', true);
-        $('#source_stream_gain').prop('disabled', true);
         $('#source_alsa_device').prop('disabled', true);
         $('#btn_list_alsa_devices').prop('disabled', true);
         $('#source_driftcomp').prop('disabled', false);
         $('#source_silence_detect').prop('disabled', false);
         $('#source_silence_duration').prop('disabled', false);
+        $('#source_audio_gain').prop('disabled', false);
         $('#source_avt_input_uri').prop('disabled', true);
         $('#source_avt_control_uri').prop('disabled', true);
         $('#source_avt_pad_port').prop('disabled', true);
@@ -816,7 +811,7 @@ $(function(){
     $("#source_type").change(function() {
         setEnableDisable();
     });
-    
+
     $("#source_stream_lib").change(function() {
         setEnableDisable();
     });
@@ -917,17 +912,17 @@ $(function(){
             $("#padenc_slide_directory").val('/var/tmp/slide-'+coder_uniq_id+'/');
         }
     });
-    
+
     $('#btn_reset_padenc_slide_directory_live').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#padenc_slide_directory_live").val('/pad/slide/live/'+coder_uniq_id+'/');
     });
-    
+
     $('#btn_reset_padenc_slide_directory_carousel').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#padenc_slide_directory_carousel").val('/pad/slide/carousel/'+coder_uniq_id+'/');
     });
-    
+
     $('#btn_reset_padenc_slide_directory_ads').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#padenc_slide_directory_ads").val('/pad/slide/ads/'+coder_uniq_id+'/');
@@ -937,12 +932,12 @@ $(function(){
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#padenc_dls_file").val('/var/tmp/metadata-'+coder_uniq_id+'.dls');
     });
-    
+
     $('#btn_reset_adcast_listen_addr').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#adcast_listen_addr").val('/var/tmp/adcast-'+coder_uniq_id+'.socket');
     });
-    
+
     $('#btn_reset_path_zmq_key_tmp_file').click(function () {
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#path_zmq_key_tmp_file").val('/var/tmp/zmq-'+coder_uniq_id+'.key');
@@ -952,7 +947,7 @@ $(function(){
         coder_uniq_id = $('#tab_coder li.active p.coder_uniq_id').tab('show').html()
         $("#source_stats_socket").val('/var/tmp/'+coder_uniq_id+'.stats');
     });
-    
+
     $('#btn_adcast_api_test').click(function () {
         $('#ADCastModal .modal-body').html('');
         error_msg = ''
@@ -962,7 +957,7 @@ $(function(){
         if ($('#adcast_uuid').val() == '') {
             error_msg += 'UUID can not be empty<br />'
         }
-        
+
         if (error_msg != '') {
             $('#ADCastModal .modal-body').html('<div class="alert alert-warning"><strong>Warning!</strong><br/>'+error_msg+'</div>');
         } else {
@@ -976,7 +971,7 @@ $(function(){
             o += 'api token: '+$('#adcast_api_token').val()+'<br />'
             o += '<textarea class="form-control" rows="20" cols="80" id="adcast_api_test_result"></textarea>'
             $('#ADCastModal .modal-body').html(o);
-            
+
             $.ajax({
                 type: "GET",
                 url: url,
@@ -997,7 +992,7 @@ $(function(){
             });
         }
     });
-    
+
 
     // Add ZMQ output
     $('#btn_output_add').click(function () {
@@ -1018,9 +1013,9 @@ $(function(){
             output_type_editcp_selected = ' selected="selected"'
         }
         $( '#output_output' ).append('<div class="form-group"><div class="output"><label class="control-label col-sm-2" for="output_name"></label><div class="col-sm-2"><input type="text" class="form-control" id="output_name" value="'+ $('#add_output_name').val().replace(/(['"])/g, "") +'" placeholder="Description"> </div><div class="col-sm-6"><div class="input-group"><span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="Check to enable the output"><input type="checkbox" id="output_enable" '+ output_enable +'></span><select type="select" class="form-control" id="output_type"><option value="zmq"'+output_type_zmq_selected+'>ZMQ</option><option value="editcp"'+output_type_editcp_selected+'>EDI/tcp</option></select><span class="input-group-addon">/</span><input type="text" class="form-control" id="output_host" value="'+ $('#add_output_host').val().replace(/(['"])/g, "") +'" placeholder="Host or IP"><span class="input-group-addon">:</span><input type="text" class="form-control" id="output_port"  value="'+ $('#add_output_port').val().replace(/(['"])/g, "") +'" placeholder="Port"><span class="input-group-btn"><button class="btn btn-danger btn_output_del" type="button" onclick="$(this).parent().parent().parent().parent().parent().remove()"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button></span></div></div></div></div>')
-        
+
         //$('#source_stream_lib option[value="vlc"]').prop('selected', true);
-        
+
         $('#add_output_name').val('');
         $('#add_output_host').val('');
         $('#add_output_port').val('');

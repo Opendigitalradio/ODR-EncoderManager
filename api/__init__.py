@@ -87,14 +87,14 @@ class API():
                               }
         info['is_login'] = is_login()
         info['is_network'] = is_network(self.config_file)
-        
+
         if is_adcast(self.config_file):
             info['is_adcast'] = is_adcast(self.config_file)
         if is_slide_mgnt(self.config_file):
             info['is_slide_mgnt'] = is_slide_mgnt(self.config_file)
-            
+
         info['plugins'] = self.conf.getPlugins()
-        
+
         return info
 
     @cherrypy.expose
@@ -381,11 +381,11 @@ class API():
                         'driftcomp': 'true',
                         'silence_detect': 'true',
                         'silence_duration': '60',
+                        'audio_gain': '',
                         'alsa_device': 'plughw:1,0',
                         'stream_url': '',
                         'stream_writeicytext': 'true',
                         'stream_lib': 'gst',
-                        'stream_gain': '',
                         'avt_input_uri': 'udp://:32010',
                         'avt_control_uri': 'udp://192.168.128.111:9325',
                         'avt_pad_port': '9405',
@@ -448,11 +448,11 @@ class API():
             for data in self.conf.config['odr']:
                 if data['uniq_id'] == query['uniq_id']:
                     odr = data
-                    
+
             if 'uniq_id' in odr:
                 if 'path' in odr:
                     output = {}
-                    
+
                     for process_path in odr['path']:
                         if process_path.endswith("_path"):
                             if os.path.isfile(odr['path'][process_path]):
@@ -469,15 +469,15 @@ class API():
                                 output["{process}_version".format(process=process_path)] = 'not found'
                 else:
                     return {'status': '0', 'statusText': 'Ok (but path section not found. Probably encoder recently created)', 'data': {}}
-                
+
             else:
                 return {'status': '-299', 'statusText': 'coder not found', 'data': {}}
-                    
+
             return {'status': '0', 'statusText': 'Ok', 'data': output}
         else:
             return {'status': '-298', 'statusText': 'you have to specify uniq_id', 'data': {}}
-        
-        
+
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -501,7 +501,7 @@ class API():
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
         param = json.loads(rawbody.decode('utf-8'))
-        
+
         if 'max_encoder_instance' in self.conf.config['global']:
             if len(param) >= self.conf.config['global']['max_encoder_instance']+1:
                 return {'status': '-207', 'statusText': 'Maximum encoder instance reached.'}
@@ -570,33 +570,33 @@ class API():
                             shutil.rmtree(odr['padenc']['slide_directory'])
                         except:
                             pass
-                        
+
                     if 'slide_directory_live' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_live']):
                         try:
                             shutil.rmtree(odr['padenc']['slide_directory_live'])
                         except:
                             pass
-                        
+
                     if 'slide_directory_carousel' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_carousel']):
                         try:
                             shutil.rmtree(odr['padenc']['slide_directory_carousel'])
                         except:
                             pass
-                        
+
                     if 'slide_directory_ads' in odr['padenc'] and os.path.exists(odr['padenc']['slide_directory_ads']):
                         try:
                             shutil.rmtree(odr['padenc']['slide_directory_ads'])
                         except:
                             pass
 
-                                
+
                     # Remove statistics UNIX Datagram socket
                     if os.path.exists(odr['source']['stats_socket']):
                         try:
                             os.remove(odr['source']['stats_socket'])
                         except:
                             pass
-                    
+
                     # Remove service odr-audioencoder
                     service = 'odr-audioencoder-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
@@ -632,7 +632,7 @@ class API():
                             server.supervisor.reloadConfig()
                         except Exception as e:
                             return {'status': '-206', 'statusText': 'Error when removing slide-mgnt-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
-                        
+
                     # Remove service adcast
                     service = 'adcast-%s' % (odr['uniq_id'])
                     if self.is_program_exist(programs, service):
@@ -644,7 +644,7 @@ class API():
                             server.supervisor.reloadConfig()
                         except Exception as e:
                             return {'status': '-206', 'statusText': 'Error when removing adcast-%s (XMLRPC): ' % (odr['uniq_id']) + str(e)}
-                    
+
                     # Remove configuration_changed information
                     self.conf.delConfigurationChanged(odr['uniq_id'])
 
@@ -695,37 +695,37 @@ class API():
                         or ('slide_directory_live' in data['padenc']\
                         and 'slide_directory_live' in param['padenc']\
                         and data['padenc']['slide_directory_live'] != param['padenc']['slide_directory_live']):
-                            
+
                         if os.path.exists(data['padenc']['slide_directory_live']):
                             try:
                                 shutil.rmtree(data['padenc']['slide_directory_live'])
                             except:
                                 pass
-                            
+
                     if ('slide_directory_carousel' in data['padenc']\
                         and 'slide_directory_carousel' not in param['padenc'])\
                         or ('slide_directory_carousel' in data['padenc']\
                         and 'slide_directory_carousel' in param['padenc']\
                         and data['padenc']['slide_directory_carousel'] != param['padenc']['slide_directory_carousel']):
-                            
+
                         if os.path.exists(data['padenc']['slide_directory_carousel']):
                             try:
                                 shutil.rmtree(data['padenc']['slide_directory_carousel'])
                             except:
                                 pass
-                            
+
                     if ('slide_directory_ads' in data['padenc']\
                         and 'slide_directory_ads' not in param['padenc'])\
                         or ('slide_directory_ads' in data['padenc']\
                         and 'slide_directory_ads' in param['padenc']\
                         and data['padenc']['slide_directory_ads'] != param['padenc']['slide_directory_ads']):
-                            
+
                         if os.path.exists(data['padenc']['slide_directory_ads']):
                             try:
                                 shutil.rmtree(data['padenc']['slide_directory_ads'])
                             except:
                                 pass
-                    
+
 
         # Check if PAD socket & DLS file are already used by other encoder
         for data in self.conf.config['odr']:
@@ -742,7 +742,7 @@ class API():
             li = param['padenc']['slide_live_interval'] if param['padenc']['slide_live_interval'] != '' else '35'
             if int(ll) < int(li):
                 return {'status': '-224', 'statusText': 'Live lifetime (%ssec) can not be smaller than Live interval (%ssec)' % (int(ll), int(li))}
-        
+
         # Merge change
         odr = []
         for data in self.conf.config['odr']:
@@ -818,7 +818,7 @@ class API():
         if param['padenc']['enable'] == 'true'\
             and 'slide_mgnt' in self.conf.config['global']\
             and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true'):
-                
+
             if not self.is_program_exist(programs, service):
                 try:
                     server.supervisor.reloadConfig()
@@ -835,14 +835,14 @@ class API():
                     server.supervisor.reloadConfig()
                 except Exception as e:
                     return {'status': '-206', 'statusText': 'Error when removing %s (XMLRPC): ' % (service) + str(e)}
-            
+
         # Check for adcast
         service = 'adcast-%s' % (param['uniq_id'])
         if param['padenc']['enable'] == 'true'\
             and ('slide_mgnt' in self.conf.config['global'] and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true') )\
             and ('adcast' in self.conf.config['global'] and (self.conf.config['global']['adcast'] == True or self.conf.config['global']['adcast'] == 'true') ) \
             and ('adcast' in param and param['adcast']['enable'] == 'true'):
-                
+
             if not self.is_program_exist(programs, service):
                 try:
                     server.supervisor.reloadConfig()
@@ -859,13 +859,13 @@ class API():
                     server.supervisor.reloadConfig()
                 except Exception as e:
                     return {'status': '-206', 'statusText': 'Error when removing %s (XMLRPC): ' % (service) + str(e)}
-        
+
         return {'status': '0', 'statusText': 'Ok'}
 
     @cherrypy.expose
     def setSLS(self, uniq_id=None, slide_file=None, rmode=None, **params):
         self.conf = Config(self.config_file)
-        
+
         if cherrypy.request.method != 'POST':
             # it's impossible to use build_response here, because
             # with an invalid request, the `output` parameter is
@@ -873,7 +873,7 @@ class API():
             cherrypy.response.status = 400
             cherrypy.response.headers['content-type'] = "text/plain"
             return "Only HTTP POST are available"
-        
+
         def build_response(g, r):
             if rmode and rmode == 'json':
                 cherrypy.response.headers['content-type'] = "application/json"
@@ -890,13 +890,13 @@ class API():
                     for o in r:
                         result += '%s: %s\n' % (o['coder_name'], o['statusText'] )
                     return result
-        
+
         def process_query(odr, f):
             output = {}
             output['coder_name'] = odr['name']
             output['coder_uniq_id'] = odr['uniq_id']
             output['coder_description'] = odr['description']
-            
+
             if 'padenc' in odr:
                 if odr['padenc']['enable'] == 'true':
                     # Find slide directory
@@ -905,14 +905,14 @@ class API():
                         fdest = odr['padenc']['slide_directory_live']
                     elif odr['padenc']['slide_directory'].strip() != '' and os.path.exists(odr['padenc']['slide_directory']):
                         fdest = odr['padenc']['slide_directory']
-                    
+
                     if not fdest:
                         output['status'] = -208
                         output['statusText'] = "Destination directory %s not exist" % (fdest)
                         return output
-                    
+
                     destPath = "%s/%s" % (fdest,f['name'])
-                    
+
                     # Write slide
                     try:
                         with open(destPath, 'wb') as outfile:
@@ -925,45 +925,45 @@ class API():
                         output['status'] = 0
                         output['statusText'] = "Slide file write to %s (size:%s - %skB)" % (destPath, f['len'], f['len_kb'])
                         return output
-                
+
                 # DLS (odr-padenc process) is disable
                 else:
                     output['status'] = -208
                     output['statusText'] = 'PAD Encoder is disable'
                     return output
-                
+
             # padenc is not present in configuration / encoder is not configured.
             else:
                 output['status'] = -211
                 output['statusText'] = 'Encoder is not configured'
                 return output
-        
+
         # check if slide_file parameter is available
         if not slide_file:
             return build_response({'status': -401, 'statusText': 'Need slide_file parameter'}, [])
-        
+
         f= {}
         f['name'] = slide_file.filename
         f['ext'] = os.path.splitext(f['name'])[1]
         f['data'] = slide_file.file.read()
         f['len'] = len(f['data'])
         f['len_kb'] = round(len(f['data'])/1000)
-        
+
         # check if sent file is authorized extension
         if f['ext'] not in ['.jpg', '.jpeg', '.png', '.apng']:
             return build_response({'status': -208, 'statusText': 'Unauthorized file extension %s' % (f['ext'])}, [])
-        
+
         # check if sent file size under slide_size_limit
         slide_size_limit = 50
         if int(f['len_kb']) > int(slide_size_limit):
             return build_response({'status': -208, 'statusText': 'File is too big %skB (max %skB)' % (f['len_kb'], slide_size_limit)}, [])
-        
+
         result = []
         if uniq_id:
             # check if uniq_id exist
             if not any(c['uniq_id'] == uniq_id for c in self.conf.config['odr']):
                 return build_response({'status': -401, 'statusText': 'Unknown uniq_id %s' % (uniq_id)}, [])
-            
+
             for odr in self.conf.config['odr']:
                 if odr['uniq_id'] == uniq_id:
                     result.append( process_query(odr, f) )
@@ -972,7 +972,7 @@ class API():
                 result.append( process_query(odr, f) )
 
         return build_response({'status': 0, 'statusText': 'Ok'}, result)
-        
+
 
     @cherrypy.expose
     def setDLS(self, dls=None, artist=None, title=None, output=None, uniq_id=None, **params):
@@ -1317,7 +1317,7 @@ class API():
                     pn['coder_uniq_id'] = data['uniq_id']
                     pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-audioencoder')
                     output.append( pn )
-                    
+
                     # odr-padencoder
                     if data['padenc']['enable'] == 'true':
                         pn = server.supervisor.getProcessInfo('odr-padencoder-%s' % (data['uniq_id']) )
@@ -1326,7 +1326,7 @@ class API():
                         pn['coder_uniq_id'] = data['uniq_id']
                         pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'odr-padencoder')
                         output.append( pn )
-                    
+
                     # slide-mgnt
                     if data['padenc']['enable'] == 'true'\
                         and 'slide_mgnt' in self.conf.config['global']\
@@ -1334,20 +1334,20 @@ class API():
                         and 'slide_directory_live' in data['padenc']\
                         and 'slide_directory_carousel' in data['padenc']\
                         and 'slide_directory_ads' in data['padenc']:
-                            
+
                         pn = server.supervisor.getProcessInfo('slide-mgnt-%s' % (data['uniq_id']) )
                         pn['coder_name'] = data['name']
                         pn['coder_description'] = data['description']
                         pn['coder_uniq_id'] = data['uniq_id']
                         pn['configuration_changed'] = self.conf.getConfigurationChanged(data['uniq_id'], 'slide-mgnt')
                         output.append( pn )
-                    
+
                     # adcast
                     if data['padenc']['enable'] == 'true'\
                         and ('slide_mgnt' in self.conf.config['global'] and (self.conf.config['global']['slide_mgnt'] == True or self.conf.config['global']['slide_mgnt'] == 'true') )\
                         and ('adcast' in self.conf.config['global'] and (self.conf.config['global']['adcast'] == True or self.conf.config['global']['adcast'] == 'true') )\
                         and ('adcast' in data and data['adcast']['enable'] == 'true'):
-                            
+
                         pn = server.supervisor.getProcessInfo('adcast-%s' % (data['uniq_id']) )
                         pn['coder_name'] = data['name']
                         pn['coder_description'] = data['description']

@@ -1438,12 +1438,13 @@ class API():
         server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         try:
             if action == 'start':
-                server.supervisor.reloadConfig()
-                server.supervisor.removeProcessGroup(process)
-                server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup(process)
-                server.supervisor.reloadConfig()
-                #server.supervisor.startProcess(process)
+                # NOTE : To solve issue #14, and pay attention to side effects
+                #server.supervisor.reloadConfig()
+                #server.supervisor.removeProcessGroup(process)
+                #server.supervisor.reloadConfig()
+                #server.supervisor.addProcessGroup(process)
+                #server.supervisor.reloadConfig()
+                server.supervisor.startProcess(process)
                 if uniq_id != '':
                     self.conf.setConfigurationChanged(uniq_id, service, False)
             elif action == 'stop':
@@ -1451,12 +1452,13 @@ class API():
             elif action == 'restart':
                 server.supervisor.stopProcess(process)
 
-                server.supervisor.reloadConfig()
-                server.supervisor.removeProcessGroup(process)
-                server.supervisor.reloadConfig()
-                server.supervisor.addProcessGroup(process)
-                server.supervisor.reloadConfig()
-                #server.supervisor.startProcess(process)
+                # NOTE : To solve issue #14, and pay attention to side effects
+                #server.supervisor.reloadConfig()
+                #server.supervisor.removeProcessGroup(process)
+                #server.supervisor.reloadConfig()
+                #server.supervisor.addProcessGroup(process)
+                #server.supervisor.reloadConfig()
+                server.supervisor.startProcess(process)
                 if uniq_id != '':
                     self.conf.setConfigurationChanged(uniq_id, service, False)
         except Exception as e:

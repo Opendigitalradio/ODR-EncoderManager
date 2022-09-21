@@ -4,7 +4,7 @@ OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder eas
 # Note about version V5.0.0
 **Requirement**
 
-  * ODR-AudioEnc v3.0.0
+  * ODR-AudioEnc v3.3.0
   * ODR-SourceCompanion v1.0.0
   * ODR-PadEnc v3.0.0
 

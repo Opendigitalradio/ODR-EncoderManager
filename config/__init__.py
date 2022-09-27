@@ -345,9 +345,7 @@ class Config():
                                 self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
 
                             if coderNew['output']['type'] == 'dabp':
-                                if coderNew['output']['dabp_sbr'] != coderOld['output']['dabp_sbr']:
-                                    self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
-                                if coderNew['output']['dabp_ps'] != coderOld['output']['dabp_ps']:
+                                if coderNew['output']['dabp_enc'] != coderOld['output']['dabp_enc']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
                                 if coderNew['output']['dabp_afterburner'] != coderOld['output']['dabp_afterburner']:
                                     self.setConfigurationChanged(coderNew['uniq_id'], 'odr-audioencoder', True)
@@ -575,6 +573,15 @@ class Config():
                 if 'edi_timestamps_delay' not in coder['output']:
                     coder['output']['edi_timestamps_delay'] = ''
                     print ('- add edi_timestamps_delay to output in configuration file')
+                if 'dabp_sbr' in coder['output'] and 'dabp_ps' in coder['output']:
+                    print ('- replace dabp_sbr and dabp_ps with dabp_enc')
+                    coder['output']['dabp_enc'] = ''
+                    if coder['output']['dabp_sbr'] == 'true':
+                        coder['output']['dabp_enc'] = 'SBR'
+                    if coder['output']['dabp_ps'] == 'true':
+                        coder['output']['dabp_enc'] = 'PS'
+                    del coder['output']['dabp_sbr']
+                    del coder['output']['dabp_ps']
             odr.append(coder)
 
         if 'plugins' not in self.config:
@@ -927,11 +934,11 @@ class Config():
 
                 # DAB+ specific option for all input type
                 if odr['output']['type'] == 'dabp':
-                    if odr['output']['dabp_sbr'] == 'true':
+                    if odr['output']['dabp_enc'] == 'SBR':
                         command += ' --sbr\n'
-                    if odr['output']['dabp_ps'] == 'true':
+                    if odr['output']['dabp_enc'] == 'PS':
                         command += ' --ps\n'
-                    if odr['output']['dabp_sbr'] == 'false' and odr['output']['dabp_ps'] == 'false':
+                    if odr['output']['dabp_enc'] == 'AAC-LC':
                         command += ' --aaclc\n'
                     ## Disable afterburner only for alsa or stream or aes input type
                     if ( odr['source']['type'] == 'alsa' or odr['source']['type'] == 'stream' or odr['source']['type'] == 'aes67' ) and odr['output']['dabp_afterburner'] == 'false':

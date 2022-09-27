@@ -48,12 +48,11 @@
         },
         "output": {
             "dab_dabmode": "j",
+            "dabp_enc": "",
             "dabp_afterburner": "true",
             "dab_dabpsy": "1",
-            "dabp_sbr": "true",
             "channels": "2",
             "zmq_key": "",
-            "dabp_ps": "false",
             "type": "dabp",
             "samplerate": "48000",
             "bitrate": "96",

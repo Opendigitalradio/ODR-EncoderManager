@@ -517,6 +517,18 @@ class Config():
             if not 'uniq_id' in coder:
                 coder['uniq_id'] = str(uuid.uuid4())
                 print ('- add coder uniq_id in configuration file ({})'.format( coder['uniq_id'] ))
+                
+                if 'padenc' in coder:
+                    if coder['padenc']['dls_file'] == '/var/tmp/metadata-sample.dls':
+                        coder['padenc']['dls_file'] = '/var/tmp/metadata-{}.dls'.format( coder['uniq_id'] )
+                        print ('- update dls_file to /var/tmp/metadata-{}.dls'.format( coder['uniq_id'] ) )
+                        if 'dls_fifo_file' in coder['padenc']:
+                            del coder['padenc']['dls_fifo_file']
+                            print ('- remove dls_fifo_file in padenc configuration file')
+                    if coder['padenc']['slide_directory'] == '/var/tmp/sample/':
+                        coder['padenc']['slide_directory'] = '/var/tmp/slide-{}/'.format( coder['uniq_id'] )
+                        print ('- update slide_directory to /var/tmp/slide-{}/'.format( coder['uniq_id'] ) )
+                
             if not 'autostart' in coder:
                 coder['autostart'] = 'true'
 

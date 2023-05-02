@@ -437,7 +437,7 @@ $(function(){
         coder_uniq_id = $(this).parents('tr').find("td:eq(1)").html();
         dls = $(this).parents('tr').find("td:eq(2)").html();
 
-        $('#modal .modal-title').html('Edit '+coder_name)
+        $('#modal .modal-title').html('Edit metadatas : '+coder_name)
         $('#modal .modal-body').html('<form><div class="form-group"><label for="dls_content">DLS:</label><input type="hidden" id="edit_dls_coder_uniq_id" value="'+ coder_uniq_id +'"><input type="text" class="form-control" id="edit_dls_content" value="'+ dls +'"></div><button type="button" id="edit_btn_dls" class="btn btn-default">Submit</button></form>')
     });
 
@@ -446,10 +446,10 @@ $(function(){
         coder_uniq_id = $(this).parents('tr').find("td:eq(1)").html();
         dls = $(this).parents('tr').find("td:eq(2)").html();
 
-        $('#modal .modal-title').html(coder_name+' DAB audio levels')
+        $('#modal .modal-title').html('Audio levels : '+coder_name)
         $('#modal .modal-body').html('')
         const html_graph = `<div class="panel panel-primary">
-            <div class="panel-heading">Audio level</div>
+            <div class="panel-heading">Audio levels</div>
             <div class="panel-body">
                     <div class="ui-bar" style="font-weight:normal;text-shadow:none;text-align:center">
                     <div style="position:absolute;left:0">L</div>

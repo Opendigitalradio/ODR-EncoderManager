@@ -1,6 +1,12 @@
 # ODR-EncoderManager
 OpenDigitalRadio Encoder Manager is a tools to run and configure ODR Encoder easly with a WebGUI.
 
+# Note about version V5.0.1
+
+**Bug fixes**
+
+  * use yaml.safe_load instead yaml.load to avoid crash on recent python version
+
 # Note about version V5.0.0
 **Requirement**
 

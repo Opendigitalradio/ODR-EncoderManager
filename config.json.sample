@@ -16,17 +16,14 @@
             },
         "padenc": {
             "enable": "true",
-            "uniform": "false",
             "uniform_label": "1",
             "uniform_label_ins": "1200",
-            "uniform_init_burst": "12",
             "raw_dls": "false",
             "slide_directory": "/var/tmp/sample/",
             "slide_once": "true",
-            "pad_fifo": "/var/tmp/metadata-sample.pad",
             "dls_file": "/var/tmp/metadata-sample.dls",
             "pad": "34",
-            "slide_sleeping": "20"
+            "slide_sleeping": "0"
         },
         "source": {
             "avt_pad_port": "9405",
@@ -44,7 +41,8 @@
             "type": "stream",
             "stats_socket": "/var/tmp/stats.socket",
             "silence_detect": "false",
-            "silence_duration": "30"
+            "silence_duration": "30",
+            "audio_gain": ""
         },
         "output": {
             "dab_dabmode": "j",
@@ -56,6 +54,8 @@
             "type": "dabp",
             "samplerate": "48000",
             "bitrate": "96",
+            "edi_identifier": "",
+            "edi_timestamps_delay": "",
             "output": [
                 {
                     "host": "192.168.40.120",
@@ -83,7 +83,7 @@
     }],
     "global": {
         "daemon": false,
-        "max_encoder_instance": 3,
+        "max_encoder_instance": 10,
         "logs_directory": "/home/odr/ODR-EncoderManager/logs/",
         "supervisor_xmlrpc": "http://user:pass@127.0.0.1:8900/RPC2",
         "static_directory": "/home/odr/ODR-EncoderManager/static/",
@@ -97,10 +97,6 @@
             {
                 "username": "joe",
                 "password": "secret"
-            },
-            {
-                "username": "yoann",
-                "password": "5ebe2294ecd0e0f08eab7690d2a6ee69"
             }
         ]
     }

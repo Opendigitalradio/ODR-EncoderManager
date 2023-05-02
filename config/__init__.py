@@ -516,7 +516,7 @@ class Config():
                 print ('- add coder description in configuration file')
             if not 'uniq_id' in coder:
                 coder['uniq_id'] = str(uuid.uuid4())
-                print ('- add coder uniq_id in configuration file')
+                print ('- add coder uniq_id in configuration file ({})'.format( coder['uniq_id'] ))
             if not 'autostart' in coder:
                 coder['autostart'] = 'true'
 

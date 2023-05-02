@@ -269,14 +269,14 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                 </div>
                                             </div>
                                             <div class="form-group">
-																							<label class="control-label col-sm-2" for=""></label>
-																							<div class="col-sm-3"></div>
-																							<label class="control-label col-sm-2" for="source_audio_gain">Audio Gain:</label>
-																							<div class="col-sm-3">
-																									<input type="text" class="form-control" id="source_audio_gain" placeholder="Enter audio gain" data-toggle="tooltip" data-placement="top" title="Apply audio gain correction in dB to source, negative values allowed. Use this as a workaround to correct the gain for streams that are much too loud.">
-																							</div>
-																		</div>
-																					<hr />
+                                                <label class="control-label col-sm-2" for=""></label>
+                                                <div class="col-sm-3"></div>
+                                                <label class="control-label col-sm-2" for="source_audio_gain">Audio Gain:</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" id="source_audio_gain" placeholder="Enter audio gain" data-toggle="tooltip" data-placement="top" title="Apply audio gain correction in dB to source, negative values allowed. Use this as a workaround to correct the gain for streams that are much too loud.">
+                                                </div>
+                                            </div>
+                                            <hr />
 
                                             <div id="source_type_alsa" class="source_type">
                                                 <h4>Source alsa</h4>
@@ -382,7 +382,7 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                                         <button type="button" id="btn_aes67_wizard" class="btn btn-info" data-toggle="modal" data-target="#AES67WizardModal"><span class="glyphicon glyphicon-flash"></span> AES67 SDP Wizard</button>
                                                     </div>
                                                 </div>
-																								<hr />
+                                                <hr />
                                             </div>
 
                                         </div>
@@ -439,48 +439,47 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 
                                             <div id="output_type_dabp" class="output_type">
                                                 <h4>DAB+ specific configuration</h4>
-																								<label class="control-label col-sm-2" for="output_dabp_enc">Encoder:</label>
-																								<div class="col-sm-3">
-																										<select type="select" class="form-control" id="output_dabp_enc">
-																												<option value="">Default</option>
-																												<option value="PS">Parametric Stereo</option>
-																												<option value="SBR">Spatial Band Replication</option>
-																												<option value="AAC-LC">MPEG AAC - Low Complexity</option>
-																										</select>
-																								</div>
+                                                <label class="control-label col-sm-2" for="output_dabp_enc">Encoder:</label>
+                                                <div class="col-sm-3">
+                                                    <select type="select" class="form-control" id="output_dabp_enc">
+                                                        <option value="">Default</option>
+                                                        <option value="PS">Parametric Stereo</option>
+                                                        <option value="SBR">Spatial Band Replication</option>
+                                                        <option value="AAC-LC">MPEG AAC - Low Complexity</option>
+                                                    </select>
+                                                </div>
 
-																								<label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
-																								<div class="col-sm-3">
-																										<select type="select" class="form-control" id="output_dabp_afterburner">
-																												<option value="true">true</option>
-																												<option value="false">false</option>
-																										</select>
-																								</div>
+                                                <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
+                                                <div class="col-sm-3">
+                                                    <select type="select" class="form-control" id="output_dabp_afterburner">
+                                                        <option value="true">true</option>
+                                                        <option value="false">false</option>
+                                                    </select>
+                                                </div>
                                                 <hr />
                                             </div>
 
                                             <div id="output_type_dab" class="output_type">
                                                 <h4>DAB specific configuration</h4>
-                                                    <div class="form-group">
-                                                    <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
-                                                    <div class="col-sm-3">
-                                                        <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
-                                                            <option value="s">s - Stereo</option>
-                                                            <option value="d">d - Dual-Channel</option>
-                                                            <option value="j">j - Joint-Stereo (default)</option>
-                                                            <option value="m">m - Mono</option>
-                                                        </select>
-                                                    </div>
+                                                <div class="form-group">
+                                                <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
+                                                <div class="col-sm-3">
+                                                    <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
+                                                        <option value="s">s - Stereo</option>
+                                                        <option value="d">d - Dual-Channel</option>
+                                                        <option value="j">j - Joint-Stereo (default)</option>
+                                                        <option value="m">m - Mono</option>
+                                                    </select>
+                                                </div>
 
-                                                    <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
-                                                    <div class="col-sm-3">
-                                                        <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
-                                                            <option value="0">0</option>
-                                                            <option value="1">1 (default)</option>
-                                                            <option value="2">2</option>
-                                                            <option value="3">3</option>
-                                                        </select>
-                                                    </div>
+                                                <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
+                                                <div class="col-sm-3">
+                                                    <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
+                                                        <option value="0">0</option>
+                                                        <option value="1">1 (default)</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                    </select>
                                                 </div>
                                                 <hr />
                                             </div>

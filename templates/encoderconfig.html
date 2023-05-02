@@ -439,22 +439,24 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
 
                                             <div id="output_type_dabp" class="output_type">
                                                 <h4>DAB+ specific configuration</h4>
-                                                <label class="control-label col-sm-2" for="output_dabp_enc">Encoder:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dabp_enc">
-                                                        <option value="">Default</option>
-                                                        <option value="PS">Parametric Stereo</option>
-                                                        <option value="SBR">Spatial Band Replication</option>
-                                                        <option value="AAC-LC">MPEG AAC - Low Complexity</option>
-                                                    </select>
-                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-2" for="output_dabp_enc">Encoder:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_enc" data-toggle="tooltip" data-placement="top" title="This parameter is related to your bitrate. lower than 48kbps = PS, between 48 and 96kbps = SBR, over 96kbps = AAL-LC">
+                                                            <option value="">Auto (Default)</option>
+                                                            <option value="PS">PS - Parametric Stereo</option>
+                                                            <option value="SBR">SBR - Spatial Band Replication</option>
+                                                            <option value="AAC-LC">AAC - MPEG AAC - Low Complexity</option>
+                                                        </select>
+                                                    </div>
 
-                                                <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dabp_afterburner">
-                                                        <option value="true">true</option>
-                                                        <option value="false">false</option>
-                                                    </select>
+                                                    <label class="control-label col-sm-2" for="output_dabp_afterburner">After Burner:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dabp_afterburner">
+                                                            <option value="true">true</option>
+                                                            <option value="false">false</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <hr />
                                             </div>
@@ -462,24 +464,25 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                                             <div id="output_type_dab" class="output_type">
                                                 <h4>DAB specific configuration</h4>
                                                 <div class="form-group">
-                                                <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
-                                                        <option value="s">s - Stereo</option>
-                                                        <option value="d">d - Dual-Channel</option>
-                                                        <option value="j">j - Joint-Stereo (default)</option>
-                                                        <option value="m">m - Mono</option>
-                                                    </select>
-                                                </div>
+                                                    <label class="control-label col-sm-2" for="output_dab_dabmode">Channel mode:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dab_dabmode" data-toggle="tooltip" data-placement="top" title="Channel mode">
+                                                            <option value="s">s - Stereo</option>
+                                                            <option value="d">d - Dual-Channel</option>
+                                                            <option value="j">j - Joint-Stereo (default)</option>
+                                                            <option value="m">m - Mono</option>
+                                                        </select>
+                                                    </div>
 
-                                                <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
-                                                <div class="col-sm-3">
-                                                    <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
-                                                        <option value="0">0</option>
-                                                        <option value="1">1 (default)</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
+                                                    <label class="control-label col-sm-2" for="output_dab_dabpsy">Psychoacoustic model:</label>
+                                                    <div class="col-sm-3">
+                                                        <select type="select" class="form-control" id="output_dab_dabpsy" data-toggle="tooltip" data-placement="top" title="Psychoacoustic model">
+                                                            <option value="0">0</option>
+                                                            <option value="1">1 (default)</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <hr />
                                             </div>

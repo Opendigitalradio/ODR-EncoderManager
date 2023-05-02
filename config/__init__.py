@@ -126,7 +126,7 @@ class Config():
                                 audioSocket[uniq_id]['statusText'] = 'no data'
                                 audioSocket[uniq_id]['data'] = {}
                     else:
-                        ydata = yaml.safe_load((data)
+                        ydata = yaml.safe_load(data)
                         audioSocket[uniq_id]['status'] = '0'
                         audioSocket[uniq_id]['statusText'] = 'Ok'
                         audioSocket[uniq_id]['data'] = ydata

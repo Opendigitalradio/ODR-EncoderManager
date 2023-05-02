@@ -43,8 +43,6 @@ class Plugins():
         self.hostname = hostname
         self.conf = Config(self.config_file)
         self.plugins_dir = '%s/plugins/' % ( os.getcwd() )
-        #global loaded_plugins
-        #loaded_plugins = []
         
         for plugin in listdirs(self.plugins_dir):
             if not plugin.startswith('__'):

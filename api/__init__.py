@@ -1437,31 +1437,33 @@ class API():
         server = xmlrpc_client.ServerProxy(self.conf.config['global']['supervisor_xmlrpc'])
         try:
             if action == 'start':
-                # NOTE : To solve issue #14, and pay attention to side effects
-                #server.supervisor.reloadConfig()
-                #server.supervisor.removeProcessGroup(process)
-                #server.supervisor.reloadConfig()
-                #server.supervisor.addProcessGroup(process)
-                #server.supervisor.reloadConfig()
-                server.supervisor.startProcess(process)
+                pAdded = server.supervisor.reloadConfig()[0][0]
+                pChanged = server.supervisor.reloadConfig()[0][1]
+                if process in pChanged:
+                    server.supervisor.removeProcessGroup(process)
+                    server.supervisor.addProcessGroup(process)
+                elif process in pAdded:
+                    server.supervisor.addProcessGroup(process)
+                else:
+                    server.supervisor.startProcess(process)
+                    
                 if uniq_id != '':
                     self.conf.setConfigurationChanged(uniq_id, service, False)
             elif action == 'stop':
                 server.supervisor.stopProcess(process)
             elif action == 'restart':
                 server.supervisor.stopProcess(process)
-
-                # NOTE : To solve issue #14, and pay attention to side effects
-                #server.supervisor.reloadConfig()
-                #server.supervisor.removeProcessGroup(process)
-                #server.supervisor.reloadConfig()
-                #server.supervisor.addProcessGroup(process)
-                #server.supervisor.reloadConfig()
-                server.supervisor.startProcess(process)
+                pChanged = server.supervisor.reloadConfig()[0][1]
+                if process in pChanged:
+                    server.supervisor.removeProcessGroup(process)
+                    server.supervisor.addProcessGroup(process)
+                else:
+                    server.supervisor.startProcess(process)
+                
                 if uniq_id != '':
                     self.conf.setConfigurationChanged(uniq_id, service, False)
         except Exception as e:
-            return { 'status': '-401', 'statusText': str(e) }
+            return { 'status': '-213', 'statusText': str(e) }
         else:
             return { 'status': '0', 'statusText': 'Ok', 'data': [] }
 

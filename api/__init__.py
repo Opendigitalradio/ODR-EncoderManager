@@ -1048,11 +1048,13 @@ class API():
 
                     # dls is not present and artist and title are available
                     elif ('artist' in query) and ('title' in query):
-                        if 'dlplus' in self.getDLS(output['coder_uniq_id'])['data'][0] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.artist'] == query['artist'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.title'] == query['title']:
-                            output['status'] = 0
-                            output['statusText'] = 'Ok-oldegal'
-                            output['dlplus'] = {'artist': query['artist'], 'title': query['title']}
-                            return output
+                        if 'dlplus' in self.getDLS(output['coder_uniq_id'])['data'][0]:
+                            if 'item.artist' in self.getDLS(output['coder_uniq_id'])['data'][0] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.artist'] == query['artist']:
+                                if 'item.title' in self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.title'] == query['title']:
+                                    output['status'] = 0
+                                    output['statusText'] = 'Ok-oldegal'
+                                    output['dlplus'] = {'artist': query['artist'], 'title': query['title']}
+                                    return output
 
                         if (query['artist'] != '') and (query['title'] != ''):
                             data  = '##### parameters { #####\n'

@@ -56,6 +56,59 @@ import yaml
 import math
 import time
 
+dlplusCode = {
+    1: 'item.title',
+    2: 'item.album',
+    3: 'item.tracknumber',
+    4: 'item.artist',
+    5: 'item.composition',
+    6: 'item.movement',
+    7: 'item.conductor',
+    8: 'item.composer',
+    9: 'item.band',
+    10: 'item.comment',
+    11: 'item.genre',
+    12: 'info.news',
+    13: 'info.news.local',
+    14: 'info.stockmarket',
+    15: 'info.sport',
+    16: 'info.lottery',
+    17: 'info.horoscope',
+    18: 'info.daily_diversion',
+    19: 'info.health',
+    20: 'info.event',
+    21: 'info.scene',
+    22: 'info.cinema',
+    23: 'info.tv',
+    24: 'info.data_time',
+    25: 'info.weather',
+    26: 'info.traffic',
+    27: 'info.alarm',
+    28: 'info.advertisement',
+    29: 'info.url',
+    30: 'info.other',
+    31: 'stationname.short',
+    32: 'stationname.long',
+    33: 'programme.now',
+    34: 'programme.next',
+    35: 'programme.part',
+    36: 'programme.host',
+    37: 'programme.editorial_staff',
+    38: 'programme.frequency',
+    39: 'programme.homepage',
+    40: 'programme.subchannel',
+    41: 'phone.hotline',
+    42: 'phone.studio',
+    43: 'phone.other',
+    44: 'sms.studio',
+    45: 'sms.other',
+    46: 'email.hotline',
+    47: 'email.studio',
+    48: 'email.other',
+    49: 'mms.other',
+    50: 'chat'
+}
+
 class API():
 
     def __init__(self, config_file, Plugins):
@@ -972,6 +1025,111 @@ class API():
 
         return build_response({'status': 0, 'statusText': 'Ok'}, result)
 
+    @cherrypy.expose
+    def dlplus(self, dlplus=None, uniq_id=None, **params):
+        self.conf = Config(self.config_file)
+        
+        inv_dlplusCode = {v: k for k, v in dlplusCode.items()}
+        
+        if cherrypy.request.method == 'POST':
+            try:
+                dlplus = json.loads( dlplus )
+            except:
+                cherrypy.response.status = 500
+                cherrypy.response.headers['content-type'] = "text/plain"
+                return 'malformed dlplus JSON'
+            
+            if 'dls' not in dlplus:
+                cherrypy.response.status = 500
+                cherrypy.response.headers['content-type'] = "text/plain"
+                return 'dls is needed to define your string'
+            else:
+                # Extract items from dlplus
+                delim_start = "{{"
+                delim_end = "}}"
+                pattern = delim_start + "(.*?)" + delim_end
+                matches = re.findall(pattern, dlplus['dls'])
+                dls = dlplus['dls']
+                for dls_item in matches:
+                    # Check if all dls_item are available in json
+                    if dls_item not in dlplus:
+                        cherrypy.response.status = 500
+                        cherrypy.response.headers['content-type'] = "text/plain"
+                        return '{} argument is not available in json'.format( dls_item )
+                    
+                    # Check if all dls_item are dlplus compatible
+                    # ? really needed
+                    
+                    if dls_item not in inv_dlplusCode:
+                        print( "{} not a dl+ argument".format( dls_item ) )
+                    
+                    # Replace tag in dls with item
+                    dls = dls.replace( '{}{}{}'.format(delim_start, dls_item, delim_end), dlplus[dls_item], 1 )
+                
+                data  = '##### parameters { #####\n'
+                data += 'DL_PLUS=1\n'
+                
+                for dls_item in matches:
+                    if dls_item in inv_dlplusCode:
+                        data += '# tags \"{}\" as {}\n'.format( dlplus[dls_item], dls_item)
+                        data += 'DL_PLUS_TAG={} {} {}\n'.format( inv_dlplusCode[ dls_item ], dls.find(dlplus[dls_item]), len(dlplus[dls_item])-1 )
+                data += '##### parameters } #####\n'
+                data += '{}\n'.format( dls )
+                
+                def process_dls(odr, data):
+                    output = {}
+                    output['coder_name'] = odr['name']
+                    output['coder_uniq_id'] = odr['uniq_id']
+                    output['coder_description'] = odr['description']
+                    try:
+                        with codecs.open(odr['padenc']['dls_file'], 'w', 'utf-8') as outfile:
+                            outfile.write(data)
+                    except Exception as e:
+                        output['status'] = -210
+                        output['statusText'] = 'Fail to write dls data'
+                        return output
+                    else:
+                        output['status'] = 0
+                        output['statusText'] = 'Ok'
+                        return output
+                
+                output = []
+                if uniq_id:
+                    for odr in self.conf.config['odr']:
+                        if odr['uniq_id'] == uniq_id:
+                            output.append( process_dls(odr, data) )
+                            break
+                else:
+                    for odr in self.conf.config['odr']:
+                        output.append( process_dls(odr, data) )
+
+                # Return the result
+                cherrypy.response.status = 200
+                cherrypy.response.headers['content-type'] = "text/plain"
+                for o in output:
+                    if o['status'] << 0:
+                        cherrypy.response.status = 500
+                        break
+                    
+                # Return 500 when uniq_id is receive but output list is empty (uniq_id not found)
+                if uniq_id and not output:
+                    cherrypy.response.status = 500
+                    return 'uniq_id {} not found'.format( uniq_id )
+                
+                # Return all statusText
+                r = ''
+                for o in output:
+                    r += '{} - {}\n'.format(o['coder_name'], o['statusText'])
+                return r
+                
+                    
+                
+        
+        else:
+            cherrypy.response.status = 400
+            cherrypy.response.headers['content-type'] = "text/plain"
+            return 'Method not available here'
+
 
     @cherrypy.expose
     def setDLS(self, dls=None, artist=None, title=None, output=None, uniq_id=None, **params):
@@ -984,6 +1142,7 @@ class API():
             elif artist and title:
                 query['artist'] = artist
                 query['title'] = title
+                
             if output:
                 query['output'] = output
             if uniq_id:
@@ -1049,7 +1208,7 @@ class API():
                     # dls is not present and artist and title are available
                     elif ('artist' in query) and ('title' in query):
                         if 'dlplus' in self.getDLS(output['coder_uniq_id'])['data'][0]:
-                            if 'item.artist' in self.getDLS(output['coder_uniq_id'])['data'][0] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.artist'] == query['artist']:
+                            if 'item.artist' in self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.artist'] == query['artist']:
                                 if 'item.title' in self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.title'] == query['title']:
                                     output['status'] = 0
                                     output['statusText'] = 'Ok-oldegal'
@@ -1166,58 +1325,7 @@ class API():
                                     if line.startswith('DL_PLUS_TAG='):
                                         v = line.split("=", 1)
                                         d = v[1].split(" ")
-                                        dlplusCode = {
-                                            1: 'item.title',
-                                            2: 'item.album',
-                                            3: 'item.tracknumber',
-                                            4: 'item.artist',
-                                            5: 'item.composition',
-                                            6: 'item.movement',
-                                            7: 'item.conductor',
-                                            8: 'item.composer',
-                                            9: 'item.band',
-                                            10: 'item.comment',
-                                            11: 'item.genre',
-                                            12: 'info.news',
-                                            13: 'info.news.local',
-                                            14: 'info.stockmarket',
-                                            15: 'info.sport',
-                                            16: 'info.lottery',
-                                            17: 'info.horoscope',
-                                            18: 'info.daily_diversion',
-                                            19: 'info.health',
-                                            20: 'info.event',
-                                            21: 'info.scene',
-                                            22: 'info.cinema',
-                                            23: 'info.tv',
-                                            24: 'info.data_time',
-                                            25: 'info.weather',
-                                            26: 'info.traffic',
-                                            27: 'info.alarm',
-                                            28: 'info.advertisement',
-                                            29: 'info.url',
-                                            30: 'info.other',
-                                            31: 'stationname.short',
-                                            32: 'stationname.long',
-                                            33: 'programme.now',
-                                            34: 'programme.next',
-                                            35: 'programme.part',
-                                            36: 'programme.host',
-                                            37: 'programme.editorial_staff',
-                                            38: 'programme.frequency',
-                                            39: 'programme.homepage',
-                                            40: 'programme.subchannel',
-                                            41: 'phone.hotline',
-                                            42: 'phone.studio',
-                                            43: 'phone.other',
-                                            44: 'sms.studio',
-                                            45: 'sms.other',
-                                            46: 'email.hotline',
-                                            47: 'email.studio',
-                                            48: 'email.other',
-                                            49: 'mms.other',
-                                            50: 'chat'
-                                            }
+                                        
                                         dlplus_data.append( {'name': dlplusCode[int(d[0])], 'code': int(d[0]), 'start': int(d[1]), 'len': int(d[2])} )
                                     dls = line.rstrip()
                         except Exception as e:

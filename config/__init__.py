@@ -200,39 +200,37 @@ class Config():
                 audioSocketToRemove.append(uniq_id)
 
         for uniq_id in audioSocketToRemove:
-            #print ('del socket', uniq_id)
-            print ('remove stats socket %s' % (audioSocket[uniq_id]), flush=True)
             audioSocket[uniq_id]['socket'].close()
             del audioSocket[uniq_id]
 
-    def retreiveAudioSocket(self):
-        for uniq_id in audioSocket:
-            try:
-                data, addr = audioSocket[uniq_id]['socket'].recvfrom(1024)
-            except socket.timeout as err:
-                audioSocket[uniq_id]['status'] = '-502'
-                audioSocket[uniq_id]['statusText'] = 'socket timeout'
-                audioSocket[uniq_id]['data'] = {}
-            except socket.error as err:
-                if err.errno != 11:
-                    audioSocket[uniq_id]['status'] = '-502'
-                    audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
-                    audioSocket[uniq_id]['data'] = {}
-                else:
-                    if audioSocket[uniq_id]['timestamp'] and ((time.time() - audioSocket[uniq_id]['timestamp']) > 2):
-                        audioSocket[uniq_id]['status'] = '-501'
-                        audioSocket[uniq_id]['statusText'] = 'no data'
-                        audioSocket[uniq_id]['data'] = {}
-            else:
-                ydata = yaml.safe_load(data)
-                audioSocket[uniq_id]['status'] = '0'
-                audioSocket[uniq_id]['statusText'] = 'Ok'
-                audioSocket[uniq_id]['data'] = ydata
-                audioSocket[uniq_id]['timestamp'] = time.time()
+    #def retreiveAudioSocket(self):
+        #for uniq_id in audioSocket:
+            #try:
+                #data, addr = audioSocket[uniq_id]['socket'].recvfrom(1024)
+            #except socket.timeout as err:
+                #audioSocket[uniq_id]['status'] = '-502'
+                #audioSocket[uniq_id]['statusText'] = 'socket timeout'
+                #audioSocket[uniq_id]['data'] = {}
+            #except socket.error as err:
+                #if err.errno != 11:
+                    #audioSocket[uniq_id]['status'] = '-502'
+                    #audioSocket[uniq_id]['statusText'] = 'socket error: %s' % (err)
+                    #audioSocket[uniq_id]['data'] = {}
+                #else:
+                    #if audioSocket[uniq_id]['timestamp'] and ((time.time() - audioSocket[uniq_id]['timestamp']) > 2):
+                        #audioSocket[uniq_id]['status'] = '-501'
+                        #audioSocket[uniq_id]['statusText'] = 'no data'
+                        #audioSocket[uniq_id]['data'] = {}
+            #else:
+                #ydata = yaml.safe_load(data)
+                #audioSocket[uniq_id]['status'] = '0'
+                #audioSocket[uniq_id]['statusText'] = 'Ok'
+                #audioSocket[uniq_id]['data'] = ydata
+                #audioSocket[uniq_id]['timestamp'] = time.time()
 
-    def delAudioSocket(self, uniq_id):
-        audioSocket[uniq_id]['socket'].close()
-        del audioSocket[uniq_id]
+    #def delAudioSocket(self, uniq_id):
+        #audioSocket[uniq_id]['socket'].close()
+        #del audioSocket[uniq_id]
 
     def getAudioSocket(self, uniq_id):
         if uniq_id in audioSocket:

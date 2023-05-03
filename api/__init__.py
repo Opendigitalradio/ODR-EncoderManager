@@ -1048,7 +1048,7 @@ class API():
 
                     # dls is not present and artist and title are available
                     elif ('artist' in query) and ('title' in query):
-                        if 'dlplus' in self.getDLS(output['coder_uniq_id'])['data'][0] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['artist'] == query['artist'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['title'] == query['title']:
+                        if 'dlplus' in self.getDLS(output['coder_uniq_id'])['data'][0] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.artist'] == query['artist'] and self.getDLS(output['coder_uniq_id'])['data'][0]['dlplus']['item.title'] == query['title']:
                             output['status'] = 0
                             output['statusText'] = 'Ok-oldegal'
                             output['dlplus'] = {'artist': query['artist'], 'title': query['title']}
@@ -1165,17 +1165,56 @@ class API():
                                         v = line.split("=", 1)
                                         d = v[1].split(" ")
                                         dlplusCode = {
-                                            1: 'title',
-                                            2: 'album',
-                                            3: 'tracknumber',
-                                            4: 'artist',
-                                            5: 'composition',
-                                            6: 'movement',
-                                            7: 'conductor',
-                                            8: 'composer',
-                                            9: 'band',
-                                            10: 'comment',
-                                            11: 'genre'
+                                            1: 'item.title',
+                                            2: 'item.album',
+                                            3: 'item.tracknumber',
+                                            4: 'item.artist',
+                                            5: 'item.composition',
+                                            6: 'item.movement',
+                                            7: 'item.conductor',
+                                            8: 'item.composer',
+                                            9: 'item.band',
+                                            10: 'item.comment',
+                                            11: 'item.genre',
+                                            12: 'info.news',
+                                            13: 'info.news.local',
+                                            14: 'info.stockmarket',
+                                            15: 'info.sport',
+                                            16: 'info.lottery',
+                                            17: 'info.horoscope',
+                                            18: 'info.daily_diversion',
+                                            19: 'info.health',
+                                            20: 'info.event',
+                                            21: 'info.scene',
+                                            22: 'info.cinema',
+                                            23: 'info.tv',
+                                            24: 'info.data_time',
+                                            25: 'info.weather',
+                                            26: 'info.traffic',
+                                            27: 'info.alarm',
+                                            28: 'info.advertisement',
+                                            29: 'info.url',
+                                            30: 'info.other',
+                                            31: 'stationname.short',
+                                            32: 'stationname.long',
+                                            33: 'programme.now',
+                                            34: 'programme.next',
+                                            35: 'programme.part',
+                                            36: 'programme.host',
+                                            37: 'programme.editorial_staff',
+                                            38: 'programme.frequency',
+                                            39: 'programme.homepage',
+                                            40: 'programme.subchannel',
+                                            41: 'phone.hotline',
+                                            42: 'phone.studio',
+                                            43: 'phone.other',
+                                            44: 'sms.studio',
+                                            45: 'sms.other',
+                                            46: 'email.hotline',
+                                            47: 'email.studio',
+                                            48: 'email.other',
+                                            49: 'mms.other',
+                                            50: 'chat'
                                             }
                                         dlplus_data.append( {'name': dlplusCode[int(d[0])], 'code': int(d[0]), 'start': int(d[1]), 'len': int(d[2])} )
                                     dls = line.rstrip()

@@ -60,7 +60,7 @@ function requestDLS(interval) {
                     if (val['dlplus']) {
                         $.each( val['dlplus'], function( key, val ) {
                             if (dlplus != '') {
-                                dlplus += ', '
+                                dlplus += '<br />'
                             }
                             dlplus += key+': '+val
                         });

@@ -1117,7 +1117,7 @@ class API():
                     return 'uniq_id {} not found'.format( uniq_id )
                 
                 # Return all statusText
-                r = ''
+                r = "{}\n".format(dls)
                 for o in output:
                     r += '{} - {}\n'.format(o['coder_name'], o['statusText'])
                 return r

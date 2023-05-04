@@ -38,27 +38,28 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
             <div class="panel panel-default">
                 <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">How to set DLS / DL+</a>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">How to use setDLS API</a>
                 </h4>
                 </div>
                 <div id="collapse1" class="panel-collapse collapse">
                 <div class="panel-body">
+                    <p>This API is available via HTTP GET or POST (Form data) method.</p>
                     <b>Set DLS for all encoder</b>
-                    <p>To set text metadata used for DLS, use http GET or POST (Form data) on the Encoder Manager API from your automation software.</p>
+                    <p>To set DLS, you can make a request from your automation software.</p>
                     <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}</pre>
                     <pre>curl -X POST -F 'dls={artist}-{title}' http://{ip}:8080/api/setDLS</pre>
 
                     <b>Set DLS for specific encoder</b>
-                    <p>If you want to update DLS / DL+ for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
+                    <p>If you want to update DLS for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
                     <pre>http://{ip}:8080/api/setDLS?dls={artist}-{title}&uniq_id={00000000-0000-0000-0000-000000000000}</pre>
                     <pre>curl -X POST -F 'dls={artist}-{title}' -F 'uniq_id={00000000-0000-0000-0000-000000000000}' http://{ip}:8080/api/setDLS</pre>
 
-                    <b>Set DL+</b>
-                    <p>As an alternative DL+ tags are automatically activated if you use artist & title parameters:</p>
+                    <b>Set artist & title DL+</b>
+                    <p>As an alternative, DL+ tags are automatically activated if you use artist & title parameters:</p>
                     <pre>http://{ip}:8080/api/setDLS?artist={artist}&title={title}</pre>
                     <pre>curl -X POST -F 'artist={artist}' -F 'title={title}' http://{ip}:8080/api/setDLS</pre>
 
-                    <p>Many radio automation software can send this information to Encoder Manager API by using a call of this type (for example)</p>
+                    <p>Many radio automation software can send this information to API by using a call of this type (for example)</p>
                     <pre>http://{ip}:8080/api/setDLS?dls=%%artist%% - %%title%%</pre>
                     <p>%%artist%% - %%title%% should be replaced with the expression expected from your radio automation software.</p>
                     <p>At each events on your playlist (when a track start) the radio automation software will send via this url the appropriate metadata to  Encoder Manager API. It will be reflected on the DAB signal.</p>
@@ -68,10 +69,92 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
             <div class="panel panel-default">
                 <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">How to set SLS (SlideShow)</a>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">How to use DLPlus API</a>
                 </h4>
                 </div>
                 <div id="collapse2" class="panel-collapse collapse">
+                <div class="panel-body">
+                    {% raw %}
+                    <p>This API is available via HTTP POST (Form data) method to set all DL+ tag.</p>
+                    <p>You have to send a JSON with a dlplus key.</p>
+                    <p>This JSON need to have dls key with a string. This string can contain DL+ tag between {{ }} like {{item.artist}}. This DL+ tag need to be available in JSON</p>
+                    <pre>
+{
+    "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}",
+    "item.artist": "Madonna",
+    "item.title": "Dancing for the queen",
+    "stationname.short": "MyRadio"
+}
+                    </pre>
+                    <pre>curl -X POST -F 'dlplus={ "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}", "item.artist": "Madonna", "item.title": "Dancing for the queen", "stationname.short": "MyRadio" }' http://{ip}:8080/api/dlplus</pre>
+                    {% endraw %}
+                    
+                    <b>DL+ tags supported are listed below :</b>
+                    <p>Description are available on <a target="_blank" href="https://www.etsi.org/deliver/etsi_ts/102900_102999/102980/02.01.02_60/ts_102980v020102p.pdf">ETSI TS 102 980</a>, Annex A</p>
+                    <table class="table table-hover">
+                        <tr><td>1</td><td>item.title</td></tr>
+                        <tr><td>2</td><td>item.album</td></tr>
+                        <tr><td>3</td><td>item.tracknumber</td></tr>
+                        <tr><td>4</td><td>item.artist</td></tr>
+                        <tr><td>5</td><td>item.composition</td></tr>
+                        <tr><td>6</td><td>item.movement</td></tr>
+                        <tr><td>7</td><td>item.conductor</td></tr>
+                        <tr><td>8</td><td>item.composer</td></tr>
+                        <tr><td>9</td><td>item.band</td></tr>
+                        <tr><td>10</td><td>item.comment</td></tr>
+                        <tr><td>11</td><td>item.genre</td></tr>
+                        <tr><td>12</td><td>info.news</td></tr>
+                        <tr><td>13</td><td>info.news.local</td></tr>
+                        <tr><td>14</td><td>info.stockmarket</td></tr>
+                        <tr><td>15</td><td>info.sport</td></tr>
+                        <tr><td>16</td><td>info.lottery</td></tr>
+                        <tr><td>17</td><td>info.horoscope</td></tr>
+                        <tr><td>18</td><td>info.daily_diversion</td></tr>
+                        <tr><td>19</td><td>info.health</td></tr>
+                        <tr><td>20</td><td>info.event</td></tr>
+                        <tr><td>21</td><td>info.scene</td></tr>
+                        <tr><td>22</td><td>info.cinema</td></tr>
+                        <tr><td>23</td><td>info.tv</td></tr>
+                        <tr><td>24</td><td>info.data_time</td></tr>
+                        <tr><td>25</td><td>info.weather</td></tr>
+                        <tr><td>26</td><td>info.traffic</td></tr>
+                        <tr><td>27</td><td>info.alarm</td></tr>
+                        <tr><td>28</td><td>info.advertisement</td></tr>
+                        <tr><td>29</td><td>info.url</td></tr>
+                        <tr><td>30</td><td>info.other</td></tr>
+                        <tr><td>31</td><td>stationname.short</td></tr>
+                        <tr><td>32</td><td>stationname.long</td></tr>
+                        <tr><td>33</td><td>programme.now</td></tr>
+                        <tr><td>34</td><td>programme.next</td></tr>
+                        <tr><td>35</td><td>programme.part</td></tr>
+                        <tr><td>36</td><td>programme.host</td></tr>
+                        <tr><td>37</td><td>programme.editorial_staff</td></tr>
+                        <tr><td>38</td><td>programme.frequency</td></tr>
+                        <tr><td>39</td><td>programme.homepage</td></tr>
+                        <tr><td>40</td><td>programme.subchannel</td></tr>
+                        <tr><td>41</td><td>phone.hotline</td></tr>
+                        <tr><td>42</td><td>phone.studio</td></tr>
+                        <tr><td>43</td><td>phone.other</td></tr>
+                        <tr><td>44</td><td>sms.studio</td></tr>
+                        <tr><td>45</td><td>sms.other</td></tr>
+                        <tr><td>46</td><td>email.hotline</td></tr>
+                        <tr><td>47</td><td>email.studio</td></tr>
+                        <tr><td>48</td><td>email.other</td></tr>
+                        <tr><td>49</td><td>mms.other</td></tr>
+                        <tr><td>50</td><td>chat</td></tr>
+                    </table>
+
+
+                </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">How to set SLS (SlideShow)</a>
+                </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse">
                 <div class="panel-body">
                     <b>Set SLS for all encoder</b>
                     <p>To send slide used for SLS, use http POST on the Encoder Manager API.</p>
@@ -81,19 +164,6 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                     <p>If you want to update SLS for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
                     <pre>curl -X POST -F 'uniq_id={00000000-0000-0000-0000-000000000000}' -F 'slide_file=@"{file.jpg}"' http://{ip}:8080/api/setSLS</pre>
                 </div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Lorem ipsum</a>
-                </h4>
-                </div>
-                <div id="collapse3" class="panel-collapse collapse">
-                <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                commodo consequat.</div>
                 </div>
             </div>
         </div>

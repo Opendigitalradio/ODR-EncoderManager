@@ -1121,9 +1121,6 @@ class API():
                 for o in output:
                     r += '{} - {}\n'.format(o['coder_name'], o['statusText'])
                 return r
-                
-                    
-                
         
         else:
             cherrypy.response.status = 400

@@ -1136,10 +1136,10 @@ class Config():
                 else:
                     if 'collectSupervisorCommand' in dir(module):
                         csc = module.collectSupervisorCommand(self.config_file, plugin)
-                        for i, cmd in enumerate(csc.get()):
+                        for i, d in enumerate(csc.get()):
                             supervisorConfig += "# plugin:%s cmd-num:%s\n" % (plugin, i)
                             supervisorConfig += "[program:plugin-%s-%s]\n" % (plugin, i)
-                            supervisorConfig += "command=%s" % ( cmd )
+                            supervisorConfig += "command=%s\n" % ( d['command'] )
                             # -- default parameters
                             supervisorConfigParam = {}
                             supervisorConfigParam['autostart'] = "true"
@@ -1153,6 +1153,12 @@ class Config():
                             if 'supervisor_additional_options' in odr:
                                 for key in odr['supervisor_additional_options'].keys():
                                     supervisorConfigParam[key] = odr['supervisor_additional_options'][key]
+                            # -- some plugins can override default parameters
+                            if 'supervisor_options' in d:
+                                if 'user' in d['supervisor_options']:
+                                    supervisorConfigParam['user'] = "{}".format( d['supervisor_options']['user'] )
+                                if 'group' in d['supervisor_options']:
+                                    supervisorConfigParam['group'] = "{}".format( d['supervisor_options']['group'] )
                             # -- generate plugin supervisor configuration
                             for key in supervisorConfigParam.keys():
                                 supervisorConfig += "%s=%s\n" % (key, supervisorConfigParam[key])

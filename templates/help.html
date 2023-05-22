@@ -66,18 +66,49 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 </div>
             </div>
+            
             <div class="panel panel-default">
                 <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">How to use DLPlus API</a>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">How to use setSLS API (SlideShow)</a>
                 </h4>
                 </div>
                 <div id="collapse2" class="panel-collapse collapse">
                 <div class="panel-body">
+                    <b>Set SLS for all encoder</b>
+                    <p>To send slide used for SLS, use http POST on the Encoder Manager API.</p>
+                    <pre>curl -X POST -F 'slide_file=@"live.jpg"' http://{ip}:8080/api/setSLS</pre>
+
+                    <b>Set SLS for specific encoder</b>
+                    <p>If you want to update SLS for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
+                    <pre>curl -X POST -F 'uniq_id={00000000-0000-0000-0000-000000000000}' -F 'slide_file=@"{file.jpg}"' http://{ip}:8080/api/setSLS</pre>
+                </div>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">How to use DLPlus API</a>
+                </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse">
+                <div class="panel-body">
                     {% raw %}
-                    <p>This API is available via HTTP POST (Form data) method to set all DL+ tag.</p>
-                    <p>You have to send a JSON with a dlplus key.</p>
-                    <p>This JSON need to have dls key with a string. This string can contain DL+ tag between {{ }} like {{item.artist}}. This DL+ tag need to be available in JSON</p>
+                    <p>This API, available via HTTP POST, allows you to update DLS and DL+.</p>
+                    <p>At a minimum, you must send a JSON containing the DLS field.</p>
+                    <pre>
+{
+    "dls": "You listen your best radio"
+}
+                    </pre>
+                    <pre>curl
+    -X POST
+    -H 'Content-Type: application/json'
+    -d '{ "dls": "You listen your best radio" }'
+    http://{ip}:8080/api/dlplus</pre>
+                    
+                    <p>To use the DL+ features, you must specify the DL+ tags in the DLS string, and fill in the values in the JSON</p>
                     <pre>
 {
     "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}",
@@ -86,10 +117,34 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
     "stationname.short": "MyRadio"
 }
                     </pre>
-                    <pre>curl -X POST -F 'dlplus={ "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}", "item.artist": "Madonna", "item.title": "Dancing for the queen", "stationname.short": "MyRadio" }' http://{ip}:8080/api/dlplus</pre>
+                    
+                    <pre>curl
+    -X POST
+    -H 'Content-Type: application/json'
+    -d '{ "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}", "item.artist": "Madonna", "item.title": "Dancing for the queen", "stationname.short": "MyRadio" }'
+    http://{ip}:8080/api/dlplus</pre>
+                    
+                    <p>Other tags than DL+ are supported.</p>
+                    <p>In this example, we use a tag "my_specific_tag" to update the DLS string.</p>
+                    <pre>
+{
+    "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}. {{my_specific_tag}}",
+    "item.artist": "Madonna",
+    "item.title": "Dancing for the queen",
+    "stationname.short": "MyRadio",
+    "my_specific_tag": "Hello world !"
+}
+                    </pre>
+                    <pre>curl
+    -X POST
+    -H 'Content-Type: application/json'
+    -d '{ "dls": "You listen {{item.artist}} with {{item.title}} on {{stationname.short}}. {{my_specific_tag}}", "item.artist": "Madonna", "item.title": "Dancing for the queen", "stationname.short": "MyRadio", "my_specific_tag": "Hello world !" }'
+    http://{ip}:8080/api/dlplus</pre>
+                    
+
                     {% endraw %}
                     
-                    <b>DL+ tags supported are listed below :</b>
+                    <b>The DL+ tags are as follows :</b>
                     <p>Description are available on <a target="_blank" href="https://www.etsi.org/deliver/etsi_ts/102900_102999/102980/02.01.02_60/ts_102980v020102p.pdf">ETSI TS 102 980</a>, Annex A</p>
                     <table class="table table-hover">
                         <tr><td>1</td><td>item.title</td></tr>
@@ -148,24 +203,9 @@ along with ODR-EncoderManager.  If not, see <http://www.gnu.org/licenses/>.
                 </div>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">How to set SLS (SlideShow)</a>
-                </h4>
-                </div>
-                <div id="collapse3" class="panel-collapse collapse">
-                <div class="panel-body">
-                    <b>Set SLS for all encoder</b>
-                    <p>To send slide used for SLS, use http POST on the Encoder Manager API.</p>
-                    <pre>curl -X POST -F 'slide_file=@"live.jpg"' http://{ip}:8080/api/setSLS</pre>
-
-                    <b>Set SLS for specific encoder</b>
-                    <p>If you want to update SLS for a specific encoder, you need to find the uniq_id on <a href="/encodermanage">Encoder > Manage</a> page under Information button</p>
-                    <pre>curl -X POST -F 'uniq_id={00000000-0000-0000-0000-000000000000}' -F 'slide_file=@"{file.jpg}"' http://{ip}:8080/api/setSLS</pre>
-                </div>
-                </div>
-            </div>
+            
+            
+            
         </div>
 
 

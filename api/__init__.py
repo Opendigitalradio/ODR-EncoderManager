@@ -1026,19 +1026,21 @@ class API():
         return build_response({'status': 0, 'statusText': 'Ok'}, result)
 
     @cherrypy.expose
-    def dlplus(self, dlplus=None, uniq_id=None, **params):
+    @cherrypy.tools.json_in()
+    def dlplus(self):
         self.conf = Config(self.config_file)
         
         inv_dlplusCode = {v: k for k, v in dlplusCode.items()}
         
         if cherrypy.request.method == 'POST':
+            
             try:
-                dlplus = json.loads( dlplus )
-            except:
+                dlplus = cherrypy.request.json
+            except Exception as e:
                 cherrypy.response.status = 500
                 cherrypy.response.headers['content-type'] = "text/plain"
-                return 'malformed dlplus JSON'
-            
+                return 'malformed dlplus JSON - {}'.format(e)
+                        
             if 'dls' not in dlplus:
                 cherrypy.response.status = 500
                 cherrypy.response.headers['content-type'] = "text/plain"
@@ -1053,15 +1055,12 @@ class API():
                 for dls_item in matches:
                     # Check if all dls_item are available in json
                     if dls_item not in dlplus:
-                        cherrypy.response.status = 500
+                        cherrypy.response.status = 400
                         cherrypy.response.headers['content-type'] = "text/plain"
                         return '{} argument is not available in json'.format( dls_item )
                     
-                    # Check if all dls_item are dlplus compatible
-                    # ? really needed
-                    
-                    if dls_item not in inv_dlplusCode:
-                        print( "{} not a dl+ argument".format( dls_item ) )
+                    #if dls_item not in inv_dlplusCode:
+                        #print( "{} not a dl+ argument".format( dls_item ) )
                     
                     # Replace tag in dls with item
                     dls = dls.replace( '{}{}{}'.format(delim_start, dls_item, delim_end), dlplus[dls_item], 1 )
@@ -1075,7 +1074,7 @@ class API():
                         data += 'DL_PLUS_TAG={} {} {}\n'.format( inv_dlplusCode[ dls_item ], dls.find(dlplus[dls_item]), len(dlplus[dls_item])-1 )
                 data += '##### parameters } #####\n'
                 data += '{}\n'.format( dls )
-                
+                                
                 def process_dls(odr, data):
                     output = {}
                     output['coder_name'] = odr['name']
@@ -1094,15 +1093,15 @@ class API():
                         return output
                 
                 output = []
-                if uniq_id:
+                if 'uniq_id' in dlplus:
                     for odr in self.conf.config['odr']:
-                        if odr['uniq_id'] == uniq_id:
+                        if odr['uniq_id'] == dlplus['uniq_id']:
                             output.append( process_dls(odr, data) )
                             break
                 else:
                     for odr in self.conf.config['odr']:
                         output.append( process_dls(odr, data) )
-
+                
                 # Return the result
                 cherrypy.response.status = 200
                 cherrypy.response.headers['content-type'] = "text/plain"
@@ -1110,11 +1109,11 @@ class API():
                     if o['status'] << 0:
                         cherrypy.response.status = 500
                         break
-                    
+                                        
                 # Return 500 when uniq_id is receive but output list is empty (uniq_id not found)
-                if uniq_id and not output:
+                if 'uniq_id' in dlplus and not output:
                     cherrypy.response.status = 500
-                    return 'uniq_id {} not found'.format( uniq_id )
+                    return 'uniq_id {} not found'.format( dlplus['uniq_id'] )
                 
                 # Return all statusText
                 r = "{}\n".format(dls)
@@ -1126,7 +1125,6 @@ class API():
             cherrypy.response.status = 400
             cherrypy.response.headers['content-type'] = "text/plain"
             return 'Method not available here'
-
 
     @cherrypy.expose
     def setDLS(self, dls=None, artist=None, title=None, output=None, uniq_id=None, **params):
